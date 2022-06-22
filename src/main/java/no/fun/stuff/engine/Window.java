@@ -1,4 +1,4 @@
-package no.fun.stuff.spaceship;
+package no.fun.stuff.engine;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
@@ -58,4 +58,9 @@ public class Window {
 	public JFrame getFrame() {
 		return frame;
 	}
+
+	public Graphics getG() {
+		return g;
+	}
+	
 }

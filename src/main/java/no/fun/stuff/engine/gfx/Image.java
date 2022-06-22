@@ -1,4 +1,4 @@
-package no.fun.stuff.spaceship.gfx;
+package no.fun.stuff.engine.gfx;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;

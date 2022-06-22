@@ -1,4 +1,4 @@
-package no.fun.stuff.spaceship;
+package no.fun.stuff.engine;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;

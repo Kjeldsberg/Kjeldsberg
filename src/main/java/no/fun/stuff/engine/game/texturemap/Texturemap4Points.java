@@ -1,0 +1,374 @@
+package no.fun.stuff.engine.game.texturemap;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+import no.fun.stuff.engine.Renderer;
+import no.fun.stuff.engine.gfx.Image;
+import no.fun.stuff.engine.matrix.Matrix3x3;
+import no.fun.stuff.engine.matrix.Point;
+
+public class Texturemap4Points {
+	private Image texture;
+	private Point[] ordered;
+	private final Renderer r;
+	private final Point[] uv = new Point[4];
+	private final String[] text = new String[4];
+	public Texturemap4Points(final Renderer r) {
+		this.r = r;
+		ordered = new Point[4];
+	}
+
+	public void texturemap(final Face2d face, final Image image) {
+		Point[] world = face.pos;
+		int index = topPoint(world);
+		for (int i = 0; i < world.length; i++) {
+			if(index == 2) {
+				int d = 0;
+			}
+			int test = (index+i)%4;
+			ordered[i] = world[test]; 
+			uv[i] = face.uv[test];
+			text[i] = face.point[test];
+		}
+		
+		//x = x1 + (y-y1)* ((x2-x1)/(y2-y1))
+		Point p0 = ordered[0];
+		Point p1 = ordered[1];
+		Point p2 = ordered[2];
+		Point p3 = ordered[3];
+		List<SideScan> left = new ArrayList<>();
+		List<SideScan> right = new ArrayList<>();
+		
+		final SideScan firstLeft = new SideScan(p3, p0, uv[3], uv[0]);
+		final SideScan secondLeft = new SideScan(p2, p3, uv[2], uv[3]);
+		final SideScan firstRight = new SideScan(p1, p0, uv[1], uv[0]);
+		final SideScan secondRight = new SideScan(p2, p1, uv[2], uv[1]);
+		
+		if(!firstLeft.aFlatLine()) {
+			left.add(firstLeft);
+		}
+		if(!secondLeft.aFlatLine()) {
+			left.add(secondLeft);
+		}
+		if(!firstRight.aFlatLine()) {
+			right.add(firstRight);
+		}
+		if(!secondRight.aFlatLine()) {
+			right.add(secondRight);
+		}
+		List<NextSwitch> switches = new ArrayList<>();
+		if(left.size() == right.size() && left.size() == 1) {
+			final SideScan sideScan = left.get(0);
+			final SideScan sideScan2 = right.get(0);
+			switches.add(new NextSwitch(sideScan.getYStep(), sideScan, sideScan2));
+		} else {
+			
+			if(firstLeft.getYStep() > firstRight.getYStep()) {
+				float y = p1.getY();
+				Point pl1Point = new Point(firstLeft.xOfY(y),  y);
+				SideScan pl1 = new SideScan(pl1Point, firstLeft.p1, firstLeft.uv0, firstLeft.uv1);
+				pl1.uv0 = firstLeft.interpolateUV(pl1);
+				switches.add(new NextSwitch(pl1.getYStep(),  pl1, firstRight));
+				
+				SideScan nextLeft = new SideScan(firstLeft.p0, pl1Point, firstLeft.uv0, pl1.uv0);
+//				nextLeft.uv1 = firstLeft.interpolateUV(nextLeft);
+				
+				float righty = firstLeft.p0.getY();
+				Point pr1 = new Point(secondRight.xOfY(righty), righty);
+				SideScan nextRight = new SideScan(pr1, firstRight.p0, secondRight.uv0, secondRight.uv1);
+				nextRight.uv0 = secondRight.interpolateUV(nextRight);
+				switches.add(new NextSwitch(nextRight.getYStep(), nextLeft, nextRight));
+				System.out.println("left > right: " + pl1.uv0 + "\t" + pl1.uv1 + "\tindex: " + index);
+				
+				SideScan lastRight = new SideScan(secondRight.p0, pr1, secondRight.uv0, nextRight.uv0);
+				switches.add(new NextSwitch(secondLeft.getYStep(), secondLeft, lastRight));
+				NextSwitch s = switches.get(0);
+				List<Point> pLeft = new ArrayList<>();
+				pLeft.add(s.left.uv0);
+				pLeft.add(s.left.uv1);
+				NextSwitch s1 = switches.get(1);
+				pLeft.add(s1.left.uv0);
+				pLeft.add(s1.left.uv1);
+				NextSwitch s2 = switches.get(2);
+				pLeft.add(s2.left.uv0);
+				pLeft.add(s2.left.uv1);
+				
+				dravLines(pLeft);
+				List<Point> pRightt = new ArrayList<>();
+				pRightt.add(s.right.uv0);
+				pRightt.add(s.right.uv1);
+				pRightt.add(s1.right.uv0);
+				pRightt.add(s1.right.uv1);
+				pRightt.add(s2.right.uv0);
+				pRightt.add(s2.right.uv1);
+				dravLines(pRightt);
+//				NextSwitch s1 = switches.get(1);
+//				p.add(s1.left.uv0);
+//				p.add(s1.left.uv1);
+//				p.add(s1.right.uv0);
+//				p.add(s1.right.uv1);
+//				for(NextSwitch s : switches) {
+//					p.add(s.left.uv0);
+//					p.add(s.left.uv1);
+//					p.add(s.right.uv0);
+//					p.add(s.right.uv1);
+//				}
+				int i = 0;
+//				for(NextSwitch s : switches) {
+//					Point uv0 = scale.mul(s.left.uv0);
+//					Point uv1 = scale.mul(s.left.uv1);
+//					drawBresenhamLineInternal((int)uv0.getX(), (int)uv0.getY(), (int)uv1.getX(), (int)uv1.getY(), color[i++%4]);
+//					Point ruv0 = scale.mul(s.right.uv0);
+//					Point ruv1 = scale.mul(s.right.uv1);
+//					drawBresenhamLineInternal((int)ruv0.getX(), (int)ruv0.getY(), (int)ruv1.getX(), (int)ruv1.getY(), color[i++%4]);
+					
+//				}
+			} else if(firstLeft.getYStep() < firstRight.getYStep()) {
+				
+				float yr = firstLeft.p0.getY();//p3.getY();
+				float xr = firstRight.xOfY(yr);
+				Point pr = new Point(xr, yr);
+				SideScan prr = new SideScan(pr, firstRight.p1, firstRight.uv0, firstRight.uv1);
+				prr.uv0 = firstRight.interpolateUV(prr);
+				switches.add(new NextSwitch(prr.getYStep(), firstLeft, prr));
+				
+				float yl = firstRight.p0.getY();
+				float xl = secondLeft.xOfY(yl);
+				Point pll = new Point(xl, yl);
+				SideScan plll = new SideScan(pll, secondLeft.p1, secondLeft.uv0, secondLeft.uv1);
+				plll.uv0 = secondLeft.interpolateUV(plll);
+				
+				SideScan prr2 = new SideScan(firstRight.p0, prr.p0, firstRight.uv0, prr.uv0);
+//				prr2.uv1 = firstRight.interpolateUV(prr2);
+				switches.add(new NextSwitch(plll.getYStep(), plll, prr2));
+				
+				SideScan lastLeft = new SideScan(secondLeft.p0, pll, secondLeft.uv0, plll.uv0);
+//				lastLeft.uv1 = secondLeft.interpolateUV(lastLeft);
+				
+				switches.add(new NextSwitch(lastLeft.getYStep(), lastLeft, secondRight));
+				final NextSwitch s = switches.get(0);	
+				System.out.println("left < right: " + s.left.uv0 + "\t" + s.left.uv1  );
+				List<Point> p = new ArrayList<>();
+				final NextSwitch first = switches.get(0);
+				p.add(first.left.uv0);
+				p.add(first.left.uv1);
+				p.add(first.right.uv0);
+				p.add(first.right.uv1);
+//				dravLines(p);
+				final NextSwitch second = switches.get(1);
+				p.add(second.left.uv0);
+				p.add(second.left.uv1);
+				p.add(second.right.uv0);
+				p.add(second.right.uv1);
+				final NextSwitch third = switches.get(2);
+				p.add(third.left.uv0);
+				p.add(third.left.uv1);
+				p.add(third.right.uv0);
+				p.add(third.right.uv1);
+				dravLines(p);
+
+			} else {
+				switches.add(new NextSwitch(firstLeft.getYStep(), firstLeft, firstRight));
+				switches.add(new NextSwitch(secondLeft.getYStep(), secondLeft, secondRight));
+			}
+		}		
+
+		for(final NextSwitch s : switches) {
+			SideScan leftScan = s.left; 
+			SideScan rightScan = s.right; 
+			
+			float dl = leftScan.dl;
+			float dr = rightScan.dl;
+			 
+			float xl = leftScan.p1.getX();
+			float xr = rightScan.p1.getX();
+			int y = (int)leftScan.p1.getY();
+// textureing.
+			float ul = leftScan.uv1.getX();
+			float vl = leftScan.uv1.getY();
+			float ur = rightScan.uv1.getX();
+			float vr = rightScan.uv1.getY();
+			float u = leftScan.uv1.getX();
+			float v = leftScan.uv1.getY();
+			
+			float uDelta = leftScan.uv1.getX() - leftScan.uv0.getX(); 
+			float vDelta = leftScan.uv1.getY() - leftScan.uv0.getY(); 
+			for(int step = 0; step<s.steps; y++, step++) {
+//				SideScan leftU = findSide(left, leftScan.p1.getY());
+//				SideScan rightU = findSide(right, leftScan.p1.getY());
+				
+				
+				int rightx = ((int)xr) + 1;
+				int leftx = ((int)xl);
+				float xrMinusXl = rightx -leftx;
+				float du = xrMinusXl < 0.001f ? 0 : (ur - ul)/xrMinusXl;
+				float dv = xrMinusXl < 0.001f ? 0 : vDelta/xrMinusXl;
+//				System.out.println("Yen: " + y);
+				for(int x = leftx; x <= rightx; x++) {
+//					int color = image.getP()[(int)u + (int)v*image.getW()];
+					r.setPixel(x,  y, 0x30ff0000);
+					u += du;
+					v += dv;
+				}
+				ul += leftScan.uDelta;
+				vl += leftScan.vDelta;
+				xr += dr;
+				xl += dl;
+			}
+		}
+		for(int i=0;i<text.length;i++) {
+			Point p = ordered[i];
+			r.drawText(text[i], (int)p.getX(), (int)p.getY(), 0xffffffff);
+		}
+	}
+	private void dravLines(final List<Point> p) {
+		final Matrix3x3 scale = new Matrix3x3();
+		final Matrix3x3 translate = new Matrix3x3();
+		translate.translate(new Point(15,15));
+		scale.mul(translate);
+		scale.scale(60);
+		Point[] scaled = scale.mul(p.toArray(new Point[p.size()]));
+		int[] color = {0x7fffffff, 0x7fff0000, 0x7f00ff00, 0x7f0000ff, 0x7fff00ff};
+		for(int j = 0, i = 0; i< p.size();i+=2, j++) {
+			drawBresenhamLineInternal((int)scaled[i].getX(), (int)scaled[i].getY(), (int)scaled[i+1].getX(), (int)scaled[i+1].getY(), color[j%4]);
+		}
+
+	}
+	public  void drawBresenhamLineInternal(int x0, int y0, int x1, int y1, int color) {
+//		final List<Point> ret = new ArrayList<>();
+		int dx = Math.abs(x1-x0);
+		int dy = Math.abs(y1 -y0);
+		int sx = x0 < x1 ? 1 : -1;
+		int sy = y0 < y1 ? 1 : -1;
+		int err = dx -dy;
+		int e2;
+		while(true) {
+			int screenX = x0;
+			int screenY = y0;
+//			setLightMap(screenX,  screenY,  lightColor);
+//			ret.add(new Point(screenX, screenY));
+			r.setPixel(screenX, screenY, color);
+			if(x0 == x1 && y0 == y1) {
+				break;
+			}
+			e2 = 2 *err;
+			if(e2 > -1 * dy) {
+				err -= dy;
+				x0 += sx;
+			}
+			if(e2 < dx) {
+				err += dx;
+				y0 += sy;
+			}
+		}
+//		return ret;
+	}
+
+	private SideScan findSide(final List<SideScan> side, float y) {
+		if(side.size() == 1) {
+			return side.get(0);
+		}else if(side.size() > 1) {
+			for(final SideScan s : side) {
+				if(y <= s.p0.getY() && y >= s.p1.getY()) {
+					return s;
+				}
+			}
+		}
+		return null;
+	}
+	private int topPoint(Point[] points) {
+		Point p = points[0];
+		int ret = 0;
+		for(int i=1;i<points.length;i++) {
+			boolean yen = points[i].getY() < p.getY();
+			
+			if(yen) {
+				p = points[i];
+				ret = i;
+			}
+		}
+		return ret;
+	}
+	
+	class NextSwitch {
+		public SideScan left;
+		public SideScan right;
+		public int steps;
+		public NextSwitch(final int steps, final SideScan left, final SideScan right) {
+			this.left = left;
+			this.right = right;
+			this.steps = steps;
+		}
+	}
+	class SideScan {
+		public final float dx, dy, dl;
+		public float uDelta, vDelta;
+		public Point p0,p1;
+		public Point uv0, uv1;
+
+		public boolean flatLine = false;
+		public SideScan(final Point p0, final Point p1) {
+			dx = p0.getX() - p1.getX();
+			dy = p0.getY() - p1.getY();
+			flatLine = dy < 0.001;
+			dl = flatLine ? 0 : (dx*(1/dy));
+			this.p0 = p0;
+			this.p1 = p1;
+		}
+		public SideScan(final Point p0, final Point p1, final Point uv0, final Point uv1) {
+			this.p0 = p0;
+			this.p1 = p1;
+			this.uv0 = uv0;
+			this.uv1 = uv1;
+			dx = p0.getX() - p1.getX();
+			dy = p0.getY() - p1.getY();
+			flatLine = dy < 0.001;
+			dl = flatLine ? 0 : (dx*(1/dy));
+			uDelta = flatLine ? 0 : (uv0.getX() - uv1.getX())*(1/dy);
+			vDelta = flatLine ? 0 : (uv0.getY() - uv1.getY())*(1/dy);
+		}
+		public Point interpolateUV(final SideScan other) {
+			float u = uv0.getX(),v = uv0.getY();
+			float deltax = other.p0.getX() - other.p1.getX();
+			float deltay = other.p0.getY() - other.p1.getY();
+			float thisDeltax = p0.getX() - p1.getX();
+			float thisDeltay = p0.getY() - p1.getY();
+			float dx = Math.abs(thisDeltax) < 0.001 ? 0 : deltax/(/*1/*/thisDeltax);
+			float dy = Math.abs(thisDeltay) < 0.001 ? 0 : deltay*(1/thisDeltay);
+			if((uv0.getX() != uv1.getX())) {
+				u = Math.abs(dx*(uv0.getX() - uv1.getX()));
+			}
+			if((uv0.getY() != uv1.getY())) {
+				v = Math.abs(dy*(uv0.getY() - uv1.getY()));
+			}
+//			float thisDeltau = (uv0.getX() == uv1.getX()) ? uv0.getX() : uv0.getX() - uv1.getX(); 
+//			float thisDeltav = (uv0.getY() == uv1.getY()) ? uv0.getY() : uv0.getY() - uv1.getY(); 
+//			float thisDeltau = uv0.getX() - uv1.getX();
+//			float thisDeltav = uv0.getY() - uv1.getY();
+		
+			if(Math.abs(dy - dl)< 0.001) {
+				int test = 0;
+			}
+//			u = Math.abs(thisDeltau*dx);
+//			v = Math.abs(thisDeltav*dy);
+			return new Point(u, v);
+		}
+		
+		public int getYStep() {
+			int bottom = (int)p1.getY();
+			int top = (int)p0.getY();
+			return top - bottom;
+//			return (int)Math.floor(p0.getY() - p1.getY()) + 1;
+		}
+		public boolean aFlatLine() {
+			return dy < 0.001;
+		}
+		public float xOfY(float y) {
+			// x = x1 + (y-y1)*((x2-x1)/(y2-y1))
+			
+			return p1.getX() + (y - p1.getY()) * (dl);
+		}
+	}
+}

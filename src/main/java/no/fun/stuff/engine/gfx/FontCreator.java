@@ -1,4 +1,4 @@
-package no.fun.stuff.spaceship.gfx;
+package no.fun.stuff.engine.gfx;
 
 //package org.j2game.editor;
 

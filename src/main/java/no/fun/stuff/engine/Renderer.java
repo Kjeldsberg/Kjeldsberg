@@ -1,4 +1,4 @@
-package no.fun.stuff.spaceship;
+package no.fun.stuff.engine;
 
 import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
@@ -6,12 +6,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import no.fun.stuff.spaceship.gfx.Font;
-import no.fun.stuff.spaceship.gfx.Image;
-import no.fun.stuff.spaceship.gfx.ImageRequest;
-import no.fun.stuff.spaceship.gfx.ImageTile;
-import no.fun.stuff.spaceship.gfx.Light;
-import no.fun.stuff.spaceship.gfx.LightRequest;
+import no.fun.stuff.engine.gfx.Font;
+import no.fun.stuff.engine.gfx.Image;
+import no.fun.stuff.engine.gfx.ImageRequest;
+import no.fun.stuff.engine.gfx.ImageTile;
+import no.fun.stuff.engine.gfx.Light;
+import no.fun.stuff.engine.gfx.LightRequest;
 
 public class Renderer {
 	private List<ImageRequest> imageRequests = new ArrayList<>();
@@ -23,10 +23,10 @@ public class Renderer {
 	private int[] zb;
 	private int[] lm;
 	private int[] lb;
-//	private int ambientcolor = 0xff1b1b1b;
 	private int ambientcolor = 0xffffffff;
 	private int zDept = 0;
 	private boolean processing = false;
+	private int camX, camY;
 
 	public Renderer(GameContainer spaceship) {
 		pW = spaceship.getWith();
@@ -46,7 +46,6 @@ public class Renderer {
 			lb[i] = 0;
 		}
 	}
-
 	public void process() {
 		processing = true;
 		Collections.sort(imageRequests, new Comparator<ImageRequest>() {
@@ -79,6 +78,7 @@ public class Renderer {
 
 	public void setPixel(int x, int y, int value) {
 		int alfa = ((value >> 24) & 0xff);
+		
 		if ((x < 0 || x >= pW || y < 0 || y >= pH) || alfa == 0) {
 			return;
 		}
@@ -93,9 +93,6 @@ public class Renderer {
 			p[index] = value;
 		} else {
 			float alfaDevided = alfa / 256f;
-			int r = ((pixelColor >> 16) & 0xff);
-			int g = ((pixelColor >> 8) & 0xff);
-			int b = ((pixelColor) & 0xff);
 			int newRed = ((pixelColor >> 16) & 0xff) - (int) ((((pixelColor >> 16) & 0xff) - ((value >> 16) & 0xff)) * alfaDevided);
 			int newGreen = ((pixelColor >> 8) & 0xff) - (int) ((((pixelColor >> 8) & 0xff) - ((value >> 8) & 0xff)) * alfaDevided);
 			int newBlue = (pixelColor & 0xff) - (int)(((pixelColor & 0xff) - (value & 0xff)) * alfaDevided);
@@ -103,8 +100,10 @@ public class Renderer {
 			p[index] = (newRed << 16 | newGreen << 8 | newBlue);
 		}
 	}
+	
 
 	public void setLightBlock(int x, int y, int value) {
+
 		if (x < 0 || x >= pW || y < 0 || y >= pH) {
 			return;
 		}
@@ -113,7 +112,9 @@ public class Renderer {
 		}
 		lb[x + y * pW] = value;
 	}
+	
 	public void setLightMap(int x, int y, int value) {
+		
 		if (x < 0 || x >= pW || y < 0 || y >= pH) {
 			return;
 		}
@@ -125,6 +126,9 @@ public class Renderer {
 	}
 
 	public void drawText(String text, int offx, int offy, int color) {
+		offx -= camX;
+		offy -= camY;
+
 		int len = text.length();
 		int imageWith = font.getFontImage().getW();
 		int offset = 0;
@@ -144,6 +148,9 @@ public class Renderer {
 	}
 
 	public void drawImageTile(final ImageTile image, int offx, int offy, int tileX, int tileY) {
+		offx -= camX;
+		offy -= camY;
+
 		if (image.isAlfa() && !processing) {
 			imageRequests.add(new ImageRequest(image.getTileImage(tileX, tileY), zDept, offx, offy));
 			return;
@@ -190,6 +197,9 @@ public class Renderer {
 	}
 
 	public void drawImage(final Image image, int offx, int offy) {
+		offx -= camX;
+		offy -= camY;
+
 		if (image.isAlfa() && !processing) {
 			imageRequests.add(new ImageRequest(image, zDept, offx, offy));
 			return;
@@ -235,6 +245,8 @@ public class Renderer {
 	}
 
 	public void drawRect(int offx, int offy, int width, int height, int color) {
+		offx -= camX;
+		offy -= camY;
 		for (int y = 0; y <= height; y++) {
 			setPixel(offx, y + offy, color);
 			setPixel(offx + width, y + offy, color);
@@ -245,40 +257,70 @@ public class Renderer {
 
 		}
 	}
-
+	
+	public void drawBresenhamLine(int x0, int y0, int x1, int y1) {
+		int dx = Math.abs(x1-x0);
+		int dy = Math.abs(y1 -y0);
+		int sx = x0 < x1 ? 1 : -1;
+		int sy = y0 < y1 ? 1 : -1;
+		int err = dx -dy;
+		int e2;
+		while(true) {
+			int screenX = x0;
+			int screenY = y0;
+//			setLightMap(screenX,  screenY,  lightColor);
+			setPixel(screenX, screenY, 0xffffff00);
+			if(x0 == x1 && y0 == y1) {
+				break;
+			}
+			e2 = 2 *err;
+			if(e2 > -1 * dy) {
+				err -= dy;
+				x0 += sx;
+			}
+			if(e2 < dx) {
+				err += dx;
+				y0 += sy;
+			}
+		}
+		
+	}
+	
 	public void drawFillRec(int offx, int offy, int width, int height, int color) {
-		if (offx < -width) {
-			return;
-		}
-		if (offy < -height) {
-			return;
-		}
-		if (offx >= pW) {
-			return;
-		}
-		if (offy >= pH) {
-			return;
-		}
+//		if (offx < -width) {
+//			return;
+//		}
+//		if (offy < -height) {
+//			return;
+//		}
+//		if (offx >= pW) {
+//			return;
+//		}
+//		if (offy >= pH) {
+//			return;
+//		}
 
-		int newX = 0;
-		int newY = 0;
-		int newWith = width;
-		int newHeight = height;
-
-		if (offx < 0) {
-			newX -= offx;
-		}
-		if (offy < 0) {
-			newY -= offy;
-		}
-		if (newWith + offx > pW) {
-			newWith -= (newWith + offx - pW);
-		}
-		if (newHeight + offy > pW) {
-			newHeight -= (newHeight + offy - pH);
-		}
-		for (int y = newY; y < newHeight; y++) {
-			for (int x = newX; x < newWith; x++) {
+//		int newX = 0;
+//		int newY = 0;
+//		int newWith = width;
+//		int newHeight = height;
+//
+//		if (offx < 0) {
+//			newX -= offx;
+//		}
+//		if (offy < 0) {
+//			newY -= offy;
+//		}
+//		if (newWith + offx > pW) {
+//			newWith -= (newWith + offx - pW);
+//		}
+//		if (newHeight + offy > pW) {
+//			newHeight -= (newHeight + offy - pH);
+//		}
+		offx -= camX;
+		offy -= camY;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
 				setPixel(offx + x, offy + y, color);
 				
 			}
@@ -288,6 +330,9 @@ public class Renderer {
 		lightRequest.add(new LightRequest(l, offX, offY));
 	}
 	private void drawLightRequest(Light l, int offx, int offy) {
+		offx -= camX;
+		offy -= camY;
+
 		for(int i=0;i<=l.getDiameter();i++) {
 			drawLightLine(l, l.getRadius(), l.getRadius(), i, 0, offx, offy);
 			drawLightLine(l, l.getRadius(), l.getRadius(), i, l.getDiameter(), offx, offy);
@@ -337,4 +382,29 @@ public class Renderer {
 	public void setzDept(int zDept) {
 		this.zDept = zDept;
 	}
+
+	public int getAmbientcolor() {
+		return ambientcolor;
+	}
+
+	public void setAmbientcolor(int ambientcolor) {
+		this.ambientcolor = ambientcolor;
+	}
+
+	public int getCamX() {
+		return camX;
+	}
+
+	public void setCamX(int camX) {
+		this.camX = camX;
+	}
+
+	public int getCamY() {
+		return camY;
+	}
+
+	public void setCamY(int camY) {
+		this.camY = camY;
+	}
+	
 }

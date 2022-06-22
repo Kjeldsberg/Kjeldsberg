@@ -1,4 +1,4 @@
-package no.fun.stuff.spaceship.gfx;
+package no.fun.stuff.engine.gfx;
 
 public class Light {
 	public static final int NONE = 0;

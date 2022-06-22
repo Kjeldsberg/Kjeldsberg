@@ -1,4 +1,4 @@
-package no.fun.stuff.spaceship.audio;
+package no.fun.stuff.engine.audio;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;

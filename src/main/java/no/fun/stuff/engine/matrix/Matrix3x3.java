@@ -63,8 +63,8 @@ public class Matrix3x3 {
 	}
 	public Point mul(final Point points) {
 			final Point p = points;
-			return new Point(p.getX() *  m[0][0] + p.getY() * m[1][0] + m[2][0],
-					p.getX() *  m[0][1] + p.getY() * m[1][1] + m[1][2]);
+			return new Point(p.getX() *  m[0][0] + p.getY() * m[0][1] + m[0][2],
+					p.getX() *  m[1][0] + p.getY() * m[1][1] + m[1][2]);
 	}
 
 	public Matrix3x3 mul(final Matrix3x3 matrix) {

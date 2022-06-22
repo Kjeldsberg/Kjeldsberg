@@ -1,4 +1,4 @@
-package no.fun.stuff.spaceship;
+package no.fun.stuff.engine;
 
 
 public class GameContainer implements Runnable{
@@ -42,6 +42,7 @@ public class GameContainer implements Runnable{
 		int frames = 0;
 		int fps = 0;
 		
+		game.init(this);
 		while(running) {
 			render = true;
 			firstTime = System.nanoTime() / 1000000000.0d;
@@ -65,7 +66,9 @@ public class GameContainer implements Runnable{
 				renderer.clear();
 				game.render(this, renderer);
 				renderer.process();
-				renderer.drawText(" FPS: " + fps, 0,0,0xffffffff);
+				renderer.setCamX(0);
+				renderer.setCamY(0);
+//				renderer.drawText(" FPS: " + fps, 0,0,0xffffffff);
 				window.updata();
 				frames++;
 					
@@ -113,6 +116,10 @@ public class GameContainer implements Runnable{
 
 	public Input getInput() {
 		return input;
+	}
+
+	public Renderer getRenderer() {
+		return renderer;
 	}
 	
 }
