@@ -15,6 +15,7 @@ public class Texturemap4Points {
 	private final Renderer r;
 	private final Point[] uv = new Point[4];
 	private final String[] text = new String[4];
+	public final float THRESHOLD = 0.0001f;
 	public Texturemap4Points(final Renderer r) {
 		this.r = r;
 		ordered = new Point[4];
@@ -24,9 +25,6 @@ public class Texturemap4Points {
 		Point[] world = face.pos;
 		int index = topPoint(world);
 		for (int i = 0; i < world.length; i++) {
-			if(index == 2) {
-				int d = 0;
-			}
 			int test = (index+i)%4;
 			ordered[i] = world[test]; 
 			uv[i] = face.uv[test];
@@ -66,23 +64,29 @@ public class Texturemap4Points {
 		} else {
 			
 			if(firstLeft.getYStep() > firstRight.getYStep()) {
-				float y = p1.getY();
+				float y = firstRight.p0.getY();
 				Point pl1Point = new Point(firstLeft.xOfY(y),  y);
 				SideScan pl1 = new SideScan(pl1Point, firstLeft.p1, firstLeft.uv0, firstLeft.uv1);
-				pl1.uv0 = firstLeft.interpolateUV(pl1);
+//				pl1.uv0 = firstLeft.interpolateUV(pl1);
+//				pl1.uDelta = firstLeft.uDelta;
+//				pl1.vDelta = firstLeft.vDelta;
 				switches.add(new NextSwitch(pl1.getYStep(),  pl1, firstRight));
 				
-				SideScan nextLeft = new SideScan(firstLeft.p0, pl1Point, firstLeft.uv0, pl1.uv0);
-//				nextLeft.uv1 = firstLeft.interpolateUV(nextLeft);
-				
+				SideScan nextLeft = new SideScan(firstLeft.p0, pl1Point, firstLeft.uv0, firstLeft.uv1/*pl1.uv0*/);
+//				nextLeft.uDelta = firstLeft.uDelta;
+//				nextLeft.vDelta = firstLeft.vDelta;
 				float righty = firstLeft.p0.getY();
 				Point pr1 = new Point(secondRight.xOfY(righty), righty);
 				SideScan nextRight = new SideScan(pr1, firstRight.p0, secondRight.uv0, secondRight.uv1);
-				nextRight.uv0 = secondRight.interpolateUV(nextRight);
+//				nextRight.uv0 = secondRight.interpolateUV(nextRight);
+//				nextRight.uDelta = secondRight.uDelta;
+//				nextRight.vDelta = secondRight.vDelta;
 				switches.add(new NextSwitch(nextRight.getYStep(), nextLeft, nextRight));
-				System.out.println("left > right: " + pl1.uv0 + "\t" + pl1.uv1 + "\tindex: " + index);
+//				System.out.println("left > right: " + pl1.uv0 + "\t" + pl1.uv1 + "\tindex: " + index);
 				
-				SideScan lastRight = new SideScan(secondRight.p0, pr1, secondRight.uv0, nextRight.uv0);
+				SideScan lastRight = new SideScan(secondRight.p0, pr1, secondRight.uv0, secondRight.uv1/*nextRight.uv0*/);
+//				lastRight.uDelta = secondRight.uDelta;
+//				lastRight.vDelta = secondRight.vDelta;
 				switches.add(new NextSwitch(secondLeft.getYStep(), secondLeft, lastRight));
 				NextSwitch s = switches.get(0);
 				List<Point> pLeft = new ArrayList<>();
@@ -95,7 +99,7 @@ public class Texturemap4Points {
 				pLeft.add(s2.left.uv0);
 				pLeft.add(s2.left.uv1);
 				
-				dravLines(pLeft);
+//				drawLines(pLeft);
 				List<Point> pRightt = new ArrayList<>();
 				pRightt.add(s.right.uv0);
 				pRightt.add(s.right.uv1);
@@ -103,28 +107,8 @@ public class Texturemap4Points {
 				pRightt.add(s1.right.uv1);
 				pRightt.add(s2.right.uv0);
 				pRightt.add(s2.right.uv1);
-				dravLines(pRightt);
-//				NextSwitch s1 = switches.get(1);
-//				p.add(s1.left.uv0);
-//				p.add(s1.left.uv1);
-//				p.add(s1.right.uv0);
-//				p.add(s1.right.uv1);
-//				for(NextSwitch s : switches) {
-//					p.add(s.left.uv0);
-//					p.add(s.left.uv1);
-//					p.add(s.right.uv0);
-//					p.add(s.right.uv1);
-//				}
-				int i = 0;
-//				for(NextSwitch s : switches) {
-//					Point uv0 = scale.mul(s.left.uv0);
-//					Point uv1 = scale.mul(s.left.uv1);
-//					drawBresenhamLineInternal((int)uv0.getX(), (int)uv0.getY(), (int)uv1.getX(), (int)uv1.getY(), color[i++%4]);
-//					Point ruv0 = scale.mul(s.right.uv0);
-//					Point ruv1 = scale.mul(s.right.uv1);
-//					drawBresenhamLineInternal((int)ruv0.getX(), (int)ruv0.getY(), (int)ruv1.getX(), (int)ruv1.getY(), color[i++%4]);
+//				drawLines(pRightt);
 					
-//				}
 			} else if(firstLeft.getYStep() < firstRight.getYStep()) {
 				
 				float yr = firstLeft.p0.getY();//p3.getY();
@@ -132,6 +116,8 @@ public class Texturemap4Points {
 				Point pr = new Point(xr, yr);
 				SideScan prr = new SideScan(pr, firstRight.p1, firstRight.uv0, firstRight.uv1);
 				prr.uv0 = firstRight.interpolateUV(prr);
+				prr.uDelta = firstRight.uDelta;
+				prr.vDelta = firstRight.vDelta;
 				switches.add(new NextSwitch(prr.getYStep(), firstLeft, prr));
 				
 				float yl = firstRight.p0.getY();
@@ -139,24 +125,26 @@ public class Texturemap4Points {
 				Point pll = new Point(xl, yl);
 				SideScan plll = new SideScan(pll, secondLeft.p1, secondLeft.uv0, secondLeft.uv1);
 				plll.uv0 = secondLeft.interpolateUV(plll);
+				plll.uDelta = secondLeft.uDelta;
+				plll.vDelta = secondLeft.vDelta;
 				
 				SideScan prr2 = new SideScan(firstRight.p0, prr.p0, firstRight.uv0, prr.uv0);
-//				prr2.uv1 = firstRight.interpolateUV(prr2);
+				prr2.uDelta = firstRight.uDelta;
+				prr2.vDelta = firstRight.vDelta;
 				switches.add(new NextSwitch(plll.getYStep(), plll, prr2));
 				
 				SideScan lastLeft = new SideScan(secondLeft.p0, pll, secondLeft.uv0, plll.uv0);
-//				lastLeft.uv1 = secondLeft.interpolateUV(lastLeft);
-				
+				lastLeft.uDelta = secondLeft.uDelta;
+				lastLeft.vDelta = secondLeft.vDelta;
 				switches.add(new NextSwitch(lastLeft.getYStep(), lastLeft, secondRight));
 				final NextSwitch s = switches.get(0);	
-				System.out.println("left < right: " + s.left.uv0 + "\t" + s.left.uv1  );
+//				System.out.println("left < right: " + s.right.uv0 + "\t" + s.right.uv1  );
 				List<Point> p = new ArrayList<>();
 				final NextSwitch first = switches.get(0);
 				p.add(first.left.uv0);
 				p.add(first.left.uv1);
 				p.add(first.right.uv0);
 				p.add(first.right.uv1);
-//				dravLines(p);
 				final NextSwitch second = switches.get(1);
 				p.add(second.left.uv0);
 				p.add(second.left.uv1);
@@ -167,7 +155,7 @@ public class Texturemap4Points {
 				p.add(third.left.uv1);
 				p.add(third.right.uv0);
 				p.add(third.right.uv1);
-				dravLines(p);
+//				drawLines(p);
 
 			} else {
 				switches.add(new NextSwitch(firstLeft.getYStep(), firstLeft, firstRight));
@@ -193,27 +181,46 @@ public class Texturemap4Points {
 			float u = leftScan.uv1.getX();
 			float v = leftScan.uv1.getY();
 			
-			float uDelta = leftScan.uv1.getX() - leftScan.uv0.getX(); 
-			float vDelta = leftScan.uv1.getY() - leftScan.uv0.getY(); 
 			for(int step = 0; step<s.steps; y++, step++) {
-//				SideScan leftU = findSide(left, leftScan.p1.getY());
-//				SideScan rightU = findSide(right, leftScan.p1.getY());
 				
-				
+//				System.out.println("yen: " + y);
 				int rightx = ((int)xr) + 1;
 				int leftx = ((int)xl);
-				float xrMinusXl = rightx -leftx;
-				float du = xrMinusXl < 0.001f ? 0 : (ur - ul)/xrMinusXl;
-				float dv = xrMinusXl < 0.001f ? 0 : vDelta/xrMinusXl;
-//				System.out.println("Yen: " + y);
+				float xrMinusXl = 1f/(rightx - leftx);
+				float vrMinusUr = (vr - vl);
+//				if(vr == 1.0 && ul == 1.0) {
+//					vrMinusUr = 1.0f;
+//				}
+				float du = xrMinusXl < 0.001f ? 0 : (ur - ul)*xrMinusXl;
+				float dv = xrMinusXl < 0.001f ? 0 : (vrMinusUr)*xrMinusXl;
+//				System.out.println("du: " + du + "\tdv: " +dv);
+				int imageX, imageY;
+				imageX = imageY = 0;
 				for(int x = leftx; x <= rightx; x++) {
-//					int color = image.getP()[(int)u + (int)v*image.getW()];
-					r.setPixel(x,  y, 0x30ff0000);
+					if(u > 1.0f)
+						u = 1.0f;
+					if(u < 0.0f) u = 0.0f;
+					
+					if(v >1.0f)
+						v = 1.0f;
+					if(v <0.0f) v = 0.0f;
+					imageX = (int)(u * image.getW());
+					imageY = (int) (v * image.getH());
+					if(imageY > 23) imageY = 23;
+					if(imageX > 23) imageX = 23;
+//					System.out.println("imagex: " + imageX + "\timagey: " + imageY);
+					int color = image.getP()[imageX + imageY*image.getW()];
+					int tempColor = 0x30ff0000;
+					r.setPixel(x,  y, color);
 					u += du;
 					v += dv;
 				}
 				ul += leftScan.uDelta;
 				vl += leftScan.vDelta;
+				ur += rightScan.uDelta;
+				vr += rightScan.vDelta;
+				u = ul;
+				v = vl;
 				xr += dr;
 				xl += dl;
 			}
@@ -223,7 +230,7 @@ public class Texturemap4Points {
 			r.drawText(text[i], (int)p.getX(), (int)p.getY(), 0xffffffff);
 		}
 	}
-	private void dravLines(final List<Point> p) {
+	private void drawLines(final List<Point> p) {
 		final Matrix3x3 scale = new Matrix3x3();
 		final Matrix3x3 translate = new Matrix3x3();
 		translate.translate(new Point(15,15));
@@ -307,6 +314,7 @@ public class Texturemap4Points {
 		public float uDelta, vDelta;
 		public Point p0,p1;
 		public Point uv0, uv1;
+		public Point switchPoint;
 
 		public boolean flatLine = false;
 		public SideScan(final Point p0, final Point p1) {
@@ -324,10 +332,11 @@ public class Texturemap4Points {
 			this.uv1 = uv1;
 			dx = p0.getX() - p1.getX();
 			dy = p0.getY() - p1.getY();
-			flatLine = dy < 0.001;
-			dl = flatLine ? 0 : (dx*(1/dy));
-			uDelta = flatLine ? 0 : (uv0.getX() - uv1.getX())*(1/dy);
-			vDelta = flatLine ? 0 : (uv0.getY() - uv1.getY())*(1/dy);
+			flatLine = dy < 0.0001f;
+			float oneOverDy = 1/dy;
+			dl = flatLine ? 0 : dx*oneOverDy;
+			uDelta = flatLine ? 0 : (uv0.getX() - uv1.getX())*oneOverDy;
+			vDelta = flatLine ? 0 : (uv0.getY() - uv1.getY())*oneOverDy;
 		}
 		public Point interpolateUV(final SideScan other) {
 			float u = uv0.getX(),v = uv0.getY();
@@ -337,11 +346,14 @@ public class Texturemap4Points {
 			float thisDeltay = p0.getY() - p1.getY();
 			float dx = Math.abs(thisDeltax) < 0.001 ? 0 : deltax/(/*1/*/thisDeltax);
 			float dy = Math.abs(thisDeltay) < 0.001 ? 0 : deltay*(1/thisDeltay);
-			if((uv0.getX() != uv1.getX())) {
-				u = Math.abs(dx*(uv0.getX() - uv1.getX()));
+			float deltaU = Math.abs(uv0.getX() - uv1.getX());
+			float deltaV = Math.abs(uv0.getY() - uv1.getY());
+			
+			if(deltaU > 0.001f) {
+				u = Math.abs(dx*deltaU);
 			}
-			if((uv0.getY() != uv1.getY())) {
-				v = Math.abs(dy*(uv0.getY() - uv1.getY()));
+			if(deltaV > 0.001f) {
+				v = Math.abs(dy*deltaV);
 			}
 //			float thisDeltau = (uv0.getX() == uv1.getX()) ? uv0.getX() : uv0.getX() - uv1.getX(); 
 //			float thisDeltav = (uv0.getY() == uv1.getY()) ? uv0.getY() : uv0.getY() - uv1.getY(); 
@@ -357,8 +369,8 @@ public class Texturemap4Points {
 		}
 		
 		public int getYStep() {
-			int bottom = (int)p1.getY();
-			int top = (int)p0.getY();
+			int top = (int)Math.floor(p0.getY());
+			int bottom = (int)Math.floor(p1.getY());
 			return top - bottom;
 //			return (int)Math.floor(p0.getY() - p1.getY()) + 1;
 		}
