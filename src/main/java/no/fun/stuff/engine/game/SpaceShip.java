@@ -13,6 +13,7 @@ import no.fun.stuff.engine.game.texturemap.Face2d;
 import no.fun.stuff.engine.gfx.Image;
 import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Point;
+import no.fun.stuff.engine.matrix.Vector2D;
 
 public class SpaceShip extends GameObject {
 	private final Image spaceship;
@@ -27,52 +28,66 @@ public class SpaceShip extends GameObject {
 	private Matrix3x3 translate = new Matrix3x3();
 	private Matrix3x3 scale = new Matrix3x3();
 	private Matrix3x3 rotate = new Matrix3x3();
+	private Vector2D gravity = new Vector2D(0, 9.81f);
+	private float mass = 30.0f;
+	private final Point pos;
 	float totAngle = 0;
 	public SpaceShip(int posX, int posY) {
+		this.tag = "Spaceship";
 		spaceship = new Image("/pitrizzo-SpaceShip-gpl3-opengameart-24x24.png");
+//		spaceship = new Image("/png-transparent-spider-man-heroes-download-with-transparent-background-free-thumbnail.png");
+			
 		this.tag = "spaceship";
 		this.posX = posX;
 		this.posY = posY;
+		pos = new Point(posX, posY);
 		this.height = spaceship.getH();
 		this.width = spaceship.getW();
 		this.dead = false;
 		this.world = new Point[4];
 		this.newOrder = new Point[4];
 
-		m.scale(8.5f);
+//		m.scale(8.5f);
 		m.translate(center);
-		rotate.rotate(0.523598f);
+//		rotate.rotate(0.523598f);
+//		rotate.rotate((float)(Math.PI/4));// + 0.01f));
 		m.mul(rotate);
 		world = m.mul(p);
 		face.pos = world;
 
 	}
+	private Vector2D motionVector() {
+		// sumOfForces = m*a
+		//a = sum/m;
+		Vector2D currentVector = m.getMotionVector();
+		Vector2D forces = gravity.scale(1/mass);
+		return forces.minus(currentVector);
+	}
 	@Override
 	public void update(GameContainer gc, GameManager gm, float dt) {
-		float angleAdd = 0.001f;
-		if(gc.getInput().isKeyDown(KeyEvent.VK_Z)) {
+//		float angleAdd = 0.001f;
+		float angleAdd = dt/20;
+		if(gc.getInput().isKey(KeyEvent.VK_Z)) {
+			angle -= angleAdd;
+		}	
+		if(gc.getInput().isKey(KeyEvent.VK_X)) {
 			angle += angleAdd;
 		}
-		if(gc.getInput().isKeyDown(KeyEvent.VK_X)) {
-			angle -= angleAdd;
-		}
 		totAngle += angle;
-		m.scale(8.5f);
+//		if(angle < 0f ) angle = (float)Math.PI*2f;
+//		if(angle > Math.PI*2f ) angle = 0f;
+//		m.scale(8.5f);
+//		m.translate(motionVector().toPoint());
+		
 		m.translate(center);
 		rotate.rotate(angle);
-//		System.out.println("Angle: " + totAngle);
+//		System.out.println("Angle: " + angle);
 		m.mul(rotate);
 		world = m.mul(p);
 		face.pos = world;
 		m.clear();
 	}
 	
-	private void swap(int i, int y) {
-		Point temp= world[i];
-		world[i] = world[y];
-		world[y] = temp;
-	}
-
 	@Override
 	public void render(GameContainer gc, Renderer r) {
 		r.setCamX(0);

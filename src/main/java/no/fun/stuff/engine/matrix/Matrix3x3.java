@@ -30,6 +30,13 @@ public class Matrix3x3 {
 //		mul(i);
 		
 	}
+	public void translate(final Vector2D p) {
+		
+	}
+	public Vector2D getMotionVector() {
+		return new Vector2D(m[0][2], m[1][2]);
+	}
+	
 	public void clear() {
 		for(int i=0;i<3;i++) {
 			for(int j = 0; j<3;j++) {
@@ -48,7 +55,6 @@ public class Matrix3x3 {
 						{0, scale, 0},
 							{0,0,1}};
 		mul(i);
-		int id=0;
 		
 	}
 	public Point[] mul(final Point[] points) {
@@ -93,8 +99,17 @@ public class Matrix3x3 {
 		return this;
 	}
 	
+//	private 
+//	private void clearTmp() {
+//		for(int i=0;i<3;i++) {
+//			for(int j = 0; j<3;j++) {
+//				tmp[i][j] = 0.0f;
+//			}
+//			}		
+//	}
 	public Matrix3x3 mul(final float u[][]) {
 		float[][] tmp = new float[3][3];
+//		clearTmp();
 		for(int i=0;i<3;i++) {
 			for(int j = 0; j<3;j++) {
 				for(int k=0;k<3;k++) {
@@ -113,6 +128,7 @@ public class Matrix3x3 {
 //		tmp[2][0] = m[2][0]*u[0][0] + m[2][1]*u[1][0] + m[2][2]*u[2][0];
 //		tmp[2][1] = m[2][0]*u[0][1] + m[2][1]*u[1][1] + m[2][2]*u[2][1];
 //		tmp[2][2] = m[2][0]*u[0][2] + m[2][1]*u[1][2] + m[2][2]*u[2][2];
+//		System.arraycopy(tmp, 0, m, 0, 9);
 		m = tmp;
 		return this;
 	}

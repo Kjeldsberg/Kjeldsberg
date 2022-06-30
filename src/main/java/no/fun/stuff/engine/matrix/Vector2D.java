@@ -16,6 +16,10 @@ public class Vector2D {
 	public Vector2D() {
 	}
 	
+	public Point toPoint() {
+		return new Point(x, y);
+	}
+	
 	public Vector2D minus(final Vector2D v) {
 		return new Vector2D(this.x - v.x, this.y - v.y);
 	}
