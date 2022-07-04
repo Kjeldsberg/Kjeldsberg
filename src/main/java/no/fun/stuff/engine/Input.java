@@ -23,15 +23,15 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, M
 	
 	private int mouseX, mouseY;
 	private int scroll;
-	public Input(final GameContainer spaceship) {
-		this.gc = spaceship;
+	public Input(final GameContainer container) {
+		this.gc = container;
 		mouseX = 0;
 		mouseY = 0;
 		scroll = 0;
-		spaceship.getWindow().getCanvas().addKeyListener(this);
-		spaceship.getWindow().getCanvas().addMouseListener(this);
-		spaceship.getWindow().getCanvas().addMouseMotionListener(this);
-		spaceship.getWindow().getCanvas().addMouseWheelListener(this);
+		container.getWindow().getCanvas().addKeyListener(this);
+		container.getWindow().getCanvas().addMouseListener(this);
+		container.getWindow().getCanvas().addMouseMotionListener(this);
+		container.getWindow().getCanvas().addMouseWheelListener(this);
 	}
 
 	public void updata() {

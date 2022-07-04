@@ -83,7 +83,6 @@ public class Renderer {
 			return;
 		}
 		int index = x + y * pW;
-		int pixelColor = p[index];
 		if (zb[index] > zDept) {
 			return;
 		}
@@ -93,6 +92,7 @@ public class Renderer {
 			p[index] = value;
 		} else {
 			float alfaDevided = alfa / 256f;
+			int pixelColor = p[index];
 			int newRed = ((pixelColor >> 16) & 0xff) - (int) ((((pixelColor >> 16) & 0xff) - ((value >> 16) & 0xff)) * alfaDevided);
 			int newGreen = ((pixelColor >> 8) & 0xff) - (int) ((((pixelColor >> 8) & 0xff) - ((value >> 8) & 0xff)) * alfaDevided);
 			int newBlue = (pixelColor & 0xff) - (int)(((pixelColor & 0xff) - (value & 0xff)) * alfaDevided);
@@ -269,7 +269,7 @@ public class Renderer {
 			int screenX = x0;
 			int screenY = y0;
 //			setLightMap(screenX,  screenY,  lightColor);
-			setPixel(screenX, screenY, 0xffffff00);
+			setPixel(screenX, screenY, 0xffffffff);
 			if(x0 == x1 && y0 == y1) {
 				break;
 			}

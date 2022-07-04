@@ -72,6 +72,10 @@ public class Matrix3x3 {
 			return new Point(p.getX() *  m[0][0] + p.getY() * m[0][1] + m[0][2],
 					p.getX() *  m[1][0] + p.getY() * m[1][1] + m[1][2]);
 	}
+	public Vector2D mul(final Vector2D p) {
+		return new Vector2D(p.getX() *  m[0][0] + p.getY() * m[0][1] + m[0][2],
+				p.getX() *  m[1][0] + p.getY() * m[1][1] + m[1][2]);
+}
 
 	public Matrix3x3 mul(final Matrix3x3 matrix) {
 		float[][] u = matrix.m;
