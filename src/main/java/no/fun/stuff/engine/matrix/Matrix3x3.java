@@ -31,7 +31,9 @@ public class Matrix3x3 {
 		
 	}
 	public void translate(final Vector2D p) {
-		
+		translate = p.toPoint();
+		m[0][2] = p.getX();
+		m[1][2] = p.getY();
 	}
 	public Vector2D getMotionVector() {
 		return new Vector2D(m[0][2], m[1][2]);

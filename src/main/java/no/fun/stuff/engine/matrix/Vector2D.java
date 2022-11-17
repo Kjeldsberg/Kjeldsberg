@@ -19,6 +19,16 @@ public class Vector2D {
 	
 	public Vector2D() {
 	}
+	
+	public void setXY(final Point p) {
+		x = p.getX();
+		y = p.getY();
+	}
+	public void setXY(final Vector2D p) {
+		x = p.getX();
+		y = p.getY();
+	}
+	
 	public void normaize() {
 		float len = 1/(float)Math.sqrt(x*x + y*y);
 		x *= len;
@@ -33,6 +43,10 @@ public class Vector2D {
 	}
 	public Vector2D add(final Vector2D v) {
 		return new Vector2D(this.x + v.x, this.y + v.y);
+	}
+	public void sub(final Vector2D v) {
+		this.x -= v.x; 
+		this.y -= v.y;
 	}
 	
 	public void pluss(final Vector2D v) {

@@ -4,6 +4,7 @@ import no.fun.stuff.engine.GameContainer;
 import no.fun.stuff.engine.Renderer;
 
 public class Camera {
+	public static int counter = 0;
 	float offX, offY;
 	private GameObject target;
 	private String targetTag = null;
@@ -17,17 +18,18 @@ public class Camera {
 		if(target == null) {
 			return;
 		}
-		float targetX = (target.getPosX() + target.getWidth() / 2)- gc.getWith() /2;
-		float targetY = (target.getPosY() + target.getHeight() / 2)- gc.getWith() /2;
-		offX -= dt * (offX - targetX) * 5;
-		offY -= dt * (offY - targetY) * 5;
-//		offX = (target.getPosX() + target.getWidth() / 2)- gc.getWith() /2;
-//		offY = (target.getPosY() + target.getHeight() / 2)- gc.getWith() /2;
+//		float targetX = (target.getPosX() + target.getWidth() / 2) - gc.getWith() /2;
+//		float targetY = (target.getPosY() + target.getHeight() / 2)- gc.getWith() /2;
+//		offX -= dt * (offX - targetX) * 5;
+//		offY -= dt * (offY - targetY) * 5;
+		offX = (target.getPosX() + target.getWidth() / 2)- gc.getWith() /2;
+		offY = (target.getPosY() + target.getHeight() / 2)- gc.getWith() /2;
+		
 		
 	}
 	public void render(Renderer r) {
-		r.setCamX((int)offX);
-		r.setCamY((int)offY);
+			r.setCamX((int)offX);
+			r.setCamY((int)offY);
 	}
 	public float getOffX() {
 		return offX;

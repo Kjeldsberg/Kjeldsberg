@@ -17,10 +17,10 @@ public class GameManager extends AbstractGame {
 	private int levelW, levelH;
 	public GameManager() {
 //		objects.add(new Player(3, 3));
-		objects.add(new SpaceShip(100, 10));
-//		loadLevel("/level.png");
+		objects.add(new SpaceShip(3, 3));
+		loadLevel("/level3.png");
 //		camera = new Camera("player");
-		camera = new Camera("Spachship");
+		camera = new Camera("Spaceship");
 	}
 
 	@Override

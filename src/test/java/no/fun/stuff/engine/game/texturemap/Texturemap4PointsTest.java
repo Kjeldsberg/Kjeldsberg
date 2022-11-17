@@ -27,8 +27,8 @@ class Texturemap4PointsTest {
 		Point[] world = m.mul(p);
 		m.clear();
 		final Face2d get = new Face2d(world , p2);
-		Texturemap4Points test = new Texturemap4Points(null);
-		test.texturemap(get, null);
+		Texturemap4Points test = new Texturemap4Points();
+		test.texturemap(get, null, null);
 		int t = 0;
 	}
 

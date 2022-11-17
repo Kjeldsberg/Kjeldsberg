@@ -6,6 +6,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import no.fun.stuff.engine.game.texturemap.Face2d;
+import no.fun.stuff.engine.matrix.Point;
+import no.fun.stuff.engine.game.texturemap.Texturemap4Points;
 import no.fun.stuff.engine.gfx.Font;
 import no.fun.stuff.engine.gfx.Image;
 import no.fun.stuff.engine.gfx.ImageRequest;
@@ -35,7 +38,17 @@ public class Renderer {
 		zb = new int[p.length];
 		lm = new int[p.length];
 		lb = new int[p.length];
+	}
+	
+	public void drawTexture(final Face2d face , final Image texture) {
+		final Texturemap4Points mapping = new Texturemap4Points();
 
+		for(int i=0;i<face.pos.length;i++) {
+			final Point s = face.pos[i];
+			s.setX(s.getX() - this.camX); 
+			s.setY(s.getY() - this.camY);
+		}
+		mapping.texturemap(face, texture, this);
 	}
 
 	public void clear() {
@@ -64,12 +77,14 @@ public class Renderer {
 			LightRequest l = lightRequest.get(i);
 			drawLightRequest(l.light, l.locX, l.locY);
 		}
-		for (int i = 0; i < p.length; i++) {
-			int lightMapColor = lm[i];
-			float r = ((lightMapColor >> 16) & 0xff) / 255f;
-			float g = ((lightMapColor >> 8) & 0xff) / 255f;
-			float b = (lightMapColor & 0xff) / 255f;
-			p[i] = ((int) (((p[i] >> 16) & 0xff) * r) << 16 | (int) (((p[i] >> 8) & 0xff) * g) << 8 | (int) ((p[i] & 0xff) * b));
+		if(lightRequest.size()> 0) {
+			for (int i = 0; i < p.length; i++) {
+				int lightMapColor = lm[i];
+				float r = ((lightMapColor >> 16) & 0xff) / 255f;
+				float g = ((lightMapColor >> 8) & 0xff) / 255f;
+				float b = (lightMapColor & 0xff) / 255f;
+				p[i] = ((int) (((p[i] >> 16) & 0xff) * r) << 16 | (int) (((p[i] >> 8) & 0xff) * g) << 8 | (int) ((p[i] & 0xff) * b));
+			}
 		}
 		imageRequests.clear();
 		lightRequest.clear();
@@ -78,7 +93,6 @@ public class Renderer {
 
 	public void setPixel(int x, int y, int value) {
 		int alfa = ((value >> 24) & 0xff);
-		
 		if ((x < 0 || x >= pW || y < 0 || y >= pH) || alfa == 0) {
 			return;
 		}
@@ -144,7 +158,6 @@ public class Renderer {
 			}
 			offset += font.getWidths()[num];
 		}
-
 	}
 
 	public void drawImageTile(final ImageTile image, int offx, int offy, int tileX, int tileY) {
@@ -191,7 +204,6 @@ public class Renderer {
 				setPixel(x + offx, y + offy,
 						image.getP()[(x + tileX * image.getTileW()) + (y + tileY * image.getTileH()) * image.getW()]);
 				setLightBlock(x + offx, y+ offy, image.getLightBlock());
-
 			}
 		}
 	}
@@ -258,7 +270,12 @@ public class Renderer {
 		}
 	}
 	
-	public void drawBresenhamLine(int x0, int y0, int x1, int y1) {
+	public void drawBresenhamLine(int x0, int y0, int x1, int y1, int color) {
+		x0 -= camX;
+		x1 -= camX;
+		y0 -= camY;
+		y1 -= camY;
+		
 		int dx = Math.abs(x1-x0);
 		int dy = Math.abs(y1 -y0);
 		int sx = x0 < x1 ? 1 : -1;
@@ -269,7 +286,7 @@ public class Renderer {
 			int screenX = x0;
 			int screenY = y0;
 //			setLightMap(screenX,  screenY,  lightColor);
-			setPixel(screenX, screenY, 0xffffffff);
+			setPixel(screenX, screenY, color);
 			if(x0 == x1 && y0 == y1) {
 				break;
 			}

@@ -5,23 +5,20 @@ import java.util.List;
 
 import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.gfx.Image;
-import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Point;
 
 public class Texturemap4Points {
 	private Point[] ordered;
-	private final Renderer r;
 	private final Point[] uv = new Point[4];
 	private final String[] text = new String[4];
 	public final float THRESHOLD = 0.0001f;
 	public final float ONE_MINUS_THRESHOLD = 1.0f - THRESHOLD;
 
-	public Texturemap4Points(final Renderer r) {
-		this.r = r;
+	public Texturemap4Points() {
 		ordered = new Point[4];
 	}
 
-	public void texturemap(final Face2d face, final Image image) {
+	public void texturemap(final Face2d face, final Image image, final Renderer r) {
 		Point[] world = face.pos;
 		int index = topPoint(world);
 		for (int i = 0; i < world.length; i++) {
@@ -241,48 +238,45 @@ public class Texturemap4Points {
 		}
 	}
 
-	private void drawLines(final List<Point> p) {
-		final Matrix3x3 scale = new Matrix3x3();
-		final Matrix3x3 translate = new Matrix3x3();
-		translate.translate(new Point(15, 15));
-		scale.mul(translate);
-		scale.scale(60);
-		Point[] scaled = scale.mul(p.toArray(new Point[p.size()]));
-		int[] color = { 0x7fffffff, 0x7fff0000, 0x7f00ff00, 0x7f0000ff, 0x7fff00ff };
-		for (int j = 0, i = 0; i < p.size(); i += 2, j++) {
-			drawBresenhamLineInternal((int) scaled[i].getX(), (int) scaled[i].getY(), (int) scaled[i + 1].getX(),
-					(int) scaled[i + 1].getY(), color[j % 4]);
-		}
+//	private void drawLines(final List<Point> p) {
+//		final Matrix3x3 scale = new Matrix3x3();
+//		final Matrix3x3 translate = new Matrix3x3();
+//		translate.translate(new Point(15, 15));
+//		scale.mul(translate);
+//		scale.scale(60);
+//		Point[] scaled = scale.mul(p.toArray(new Point[p.size()]));
+//		int[] color = { 0x7fffffff, 0x7fff0000, 0x7f00ff00, 0x7f0000ff, 0x7fff00ff };
+//		for (int j = 0, i = 0; i < p.size(); i += 2, j++) {
+//			drawBresenhamLineInternal((int) scaled[i].getX(), (int) scaled[i].getY(), (int) scaled[i + 1].getX(),
+//					(int) scaled[i + 1].getY(), color[j % 4]);
+//		}
+//
+//	}
 
-	}
-
-	public void drawBresenhamLineInternal(int x0, int y0, int x1, int y1, int color) {
-//		final List<Point> ret = new ArrayList<>();
-		int dx = Math.abs(x1 - x0);
-		int dy = Math.abs(y1 - y0);
-		int sx = x0 < x1 ? 1 : -1;
-		int sy = y0 < y1 ? 1 : -1;
-		int err = dx - dy;
-		int e2;
-		while (true) {
-			int screenX = x0;
-			int screenY = y0;
-//			setLightMap(screenX,  screenY,  lightColor);
-//			ret.add(new Point(screenX, screenY));
-			r.setPixel(screenX, screenY, color);
-			if (x0 == x1 && y0 == y1) {
-				break;
-			}
-			e2 = 2 * err;
-			if (e2 > -1 * dy) {
-				err -= dy;
-				x0 += sx;
-			}
-			if (e2 < dx) {
-				err += dx;
-				y0 += sy;
-			}
-		}
-//		return ret;
-	}
+//	public void drawBresenhamLineInternal(int x0, int y0, int x1, int y1, int color) {
+//		int dx = Math.abs(x1 - x0);
+//		int dy = Math.abs(y1 - y0);
+//		int sx = x0 < x1 ? 1 : -1;
+//		int sy = y0 < y1 ? 1 : -1;
+//		int err = dx - dy;
+//		int e2;
+//		while (true) {
+//			int screenX = x0;
+//			int screenY = y0;
+//			r.setPixel(screenX, screenY, color);
+//			if (x0 == x1 && y0 == y1) {
+//				break;
+//			}
+//			e2 = 2 * err;
+//			if (e2 > -1 * dy) {
+//				err -= dy;
+//				x0 += sx;
+//			}
+//			if (e2 < dx) {
+//				err += dx;
+//				y0 += sy;
+//			}
+//		}
+////		return ret;
+//	}
 }
