@@ -6,8 +6,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import no.fun.stuff.engine.game.texturemap.Face2d;
-import no.fun.stuff.engine.matrix.Point;
+import no.fun.stuff.engine.game.Rect;
+import no.fun.stuff.engine.game.objects.Rect4PointRenderer;
+import no.fun.stuff.engine.game.texturemap.Texture2d;
 import no.fun.stuff.engine.game.texturemap.Texturemap4Points;
 import no.fun.stuff.engine.gfx.Font;
 import no.fun.stuff.engine.gfx.Image;
@@ -17,10 +18,11 @@ import no.fun.stuff.engine.gfx.Light;
 import no.fun.stuff.engine.gfx.LightRequest;
 
 public class Renderer {
+	private final Texturemap4Points drawTexture = new Texturemap4Points();
+	private final Rect4PointRenderer drawFilledRect = new Rect4PointRenderer();
 	private List<ImageRequest> imageRequests = new ArrayList<>();
 	private List<LightRequest> lightRequest = new ArrayList<>();
 	private Font font = Font.STANDARD;
-
 	private int pW, pH;
 	private int[] p;
 	private int[] zb;
@@ -40,15 +42,11 @@ public class Renderer {
 		lb = new int[p.length];
 	}
 	
-	public void drawTexture(final Face2d face , final Image texture) {
-		final Texturemap4Points mapping = new Texturemap4Points();
-
-		for(int i=0;i<face.pos.length;i++) {
-			final Point s = face.pos[i];
-			s.setX(s.getX() - this.camX); 
-			s.setY(s.getY() - this.camY);
-		}
-		mapping.texturemap(face, texture, this);
+	public void drawRect4(final Rect r) {
+		drawFilledRect.drawRect(r.getWordCordinate(), this);
+	}
+	public void drawTexture(final Texture2d face , final Image texture) {
+		drawTexture.texturemap(face, texture, this);
 	}
 
 	public void clear() {
@@ -107,9 +105,12 @@ public class Renderer {
 		} else {
 			float alfaDevided = alfa / 256f;
 			int pixelColor = p[index];
-			int newRed = ((pixelColor >> 16) & 0xff) - (int) ((((pixelColor >> 16) & 0xff) - ((value >> 16) & 0xff)) * alfaDevided);
-			int newGreen = ((pixelColor >> 8) & 0xff) - (int) ((((pixelColor >> 8) & 0xff) - ((value >> 8) & 0xff)) * alfaDevided);
-			int newBlue = (pixelColor & 0xff) - (int)(((pixelColor & 0xff) - (value & 0xff)) * alfaDevided);
+			final int redpart = ((pixelColor >> 16) & 0xff);
+			final int greenPart = ((pixelColor >> 8) & 0xff);
+			final int bluePart = pixelColor & 0xff;
+			int newRed = redpart - (int) ((redpart - ((value >> 16) & 0xff)) * alfaDevided);
+			int newGreen = greenPart - (int) ((greenPart - ((value >> 8) & 0xff)) * alfaDevided);
+			int newBlue = bluePart - (int)((bluePart - (value & 0xff)) * alfaDevided);
 
 			p[index] = (newRed << 16 | newGreen << 8 | newBlue);
 		}

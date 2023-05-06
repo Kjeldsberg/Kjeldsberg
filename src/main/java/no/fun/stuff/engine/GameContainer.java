@@ -1,6 +1,5 @@
 package no.fun.stuff.engine;
 
-
 public class GameContainer implements Runnable{
 	private Window window;
 	private Thread thread;
@@ -10,7 +9,7 @@ public class GameContainer implements Runnable{
 	private boolean running = false;
 	private double UPDATE_CAP = 1/60.0;
 	private int with = 320, height = 240;
-	private float scale = 3f;
+	private float scale = 1f;
 	private String title = "Spaceship landing";
 	
 	public GameContainer(final AbstractGame game) {
@@ -121,5 +120,7 @@ public class GameContainer implements Runnable{
 	public Renderer getRenderer() {
 		return renderer;
 	}
-	
+	public AbstractGame getGameManager() {
+		return game;
+	}
 }

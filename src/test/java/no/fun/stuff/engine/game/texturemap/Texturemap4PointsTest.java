@@ -23,10 +23,10 @@ class Texturemap4PointsTest {
 		m.scale(8.5f);
 		m.translate(center);
 		rotate.rotate(angle);
-		m.mul(rotate);
+		m.mulCopy(rotate);
 		Point[] world = m.mul(p);
 		m.clear();
-		final Face2d get = new Face2d(world , p2);
+		final Texture2d get = new Texture2d(world , p2);
 		Texturemap4Points test = new Texturemap4Points();
 		test.texturemap(get, null, null);
 		int t = 0;

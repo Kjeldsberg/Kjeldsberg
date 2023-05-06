@@ -13,12 +13,13 @@ public class Texturemap4Points {
 	private final String[] text = new String[4];
 	public final float THRESHOLD = 0.0001f;
 	public final float ONE_MINUS_THRESHOLD = 1.0f - THRESHOLD;
+	final List<NextSwitch> switches = new ArrayList<>();
 
 	public Texturemap4Points() {
 		ordered = new Point[4];
 	}
 
-	public void texturemap(final Face2d face, final Image image, final Renderer r) {
+	public void texturemap(final Texture2d face, final Image image, final Renderer r) {
 		Point[] world = face.pos;
 		int index = topPoint(world);
 		for (int i = 0; i < world.length; i++) {
@@ -39,7 +40,6 @@ public class Texturemap4Points {
 		final SideScan firstRight = new SideScan(p1, p0, uv[1], uv[0]);
 		final SideScan secondRight = new SideScan(p2, p1, uv[2], uv[1]);
 
-		final List<NextSwitch> switches = new ArrayList<>();
 
 		if (firstLeft.flatLine || secondLeft.flatLine || firstRight.flatLine || secondRight.flatLine) {
 			if (firstLeft.flatLine) {
@@ -132,6 +132,7 @@ public class Texturemap4Points {
 				xl += dl;
 			}
 		}
+		switches.clear();
 	}
 
 	private int topPoint(Point[] points) {
@@ -181,7 +182,7 @@ public class Texturemap4Points {
 			uDelta = flatLine ? 0 : (uv0.getX() - uv1.getX()) * oneOverDy;
 			vDelta = flatLine ? 0 : (uv0.getY() - uv1.getY()) * oneOverDy;
 		}
-
+		
 		public SideScan toY(final float y) {
 			final Point interSectionPoint = new Point(this.xOfY(y), y);
 			final Point interSectionUV = this.interpolateUV(interSectionPoint, this.p1);

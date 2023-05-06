@@ -7,59 +7,48 @@ import no.fun.stuff.engine.AbstractGame;
 import no.fun.stuff.engine.GameContainer;
 import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.gfx.Image;
+import no.fun.stuff.engine.matrix.Vector2D;
 
 public class GameManager extends AbstractGame {
 	public static final int TS = 16; 
 	private List<GameObject> objects = new ArrayList<>();
-	private Camera camera;
-	
+//	private Camera2D camera;
+	private GameScene scene = new GameScene();
 	private boolean[] collition;
 	private int levelW, levelH;
 	public GameManager() {
 //		objects.add(new Player(3, 3));
-		objects.add(new SpaceShip(3, 3));
-		loadLevel("/level3.png");
-//		camera = new Camera("player");
-		camera = new Camera("Spaceship");
+//		scene.setCamera2D(camera);
 	}
 
 	@Override
 	public void init(GameContainer gc) {
 		gc.getRenderer().setAmbientcolor(-1);
+		final World world = new World(gc);
+		scene.setRenderer(gc.getRenderer());
+		scene.getObjects().add(world);
+		scene.getObjects().add(new SpaceShip(gc, 48, 48));
+		scene.getObjects().add(new ImageLevel("/level3.png"));
+		final SceneObject lookat = scene.findGameObjectByName("Spaceship");
+		scene.getCamera().lookAt(lookat);
 	}
 	@Override
 	public void update(GameContainer gc, float dt) {
-		for(int i=0;i<objects.size();i++) {
-			objects.get(i).update(gc,this, dt);
-			if(objects.get(i).dead) {
-				objects.remove(i);
-				i--;
-			}
-		}
-		camera.update(gc,this, dt);
+		scene.update(dt);
 	}
 
 	float temp = 0;
 
 	@Override
 	public void render(GameContainer gc, Renderer r) {
-		camera.render(r);
-		for(int y=0;y<levelH;y++) {
-			for(int x =0;x<levelW;x++) {
-				if(collition[x +y * levelW]) {
-					r.drawFillRec(x*TS, y *TS, TS, TS, 0xff0f0f0f);
-					
-				}else {
-					r.drawFillRec(x*TS, y *TS, TS, TS, 0xfff9f9f9);
-					
-				}
-			}
-		}
-		for(GameObject object : objects) {
-			object.render(gc, r);
-		}
+		scene.render(r);
+//		for(GameObject object : objects) {
+//			object.render(gc, r);
+//		}
 	}
-
+	public Camera2D getCamera() {
+		return scene.getCamera();
+	}
 	public void loadLevel(String path) {
 		Image level = new Image(path);
 		levelH = level.getH();
@@ -74,6 +63,19 @@ public class GameManager extends AbstractGame {
 	 			}
 			}
 		}
+ 		final float w = GameManager.TS*0.5f;
+ 		final float h = GameManager.TS*0.5f;
+
+ 		for(int y=0;y<level.getH();y++) {
+			for(int x =0;x<level.getW();x++) {
+				if(collition[x + y * level.getW()]) {
+					final Rectangle rec = new Rectangle(new Vector2D((x*2+1)*w, (y*2+1)*h));
+					rec.setColor(0xff444444);
+					objects.add(rec);
+				}
+			}
+		}
+ 		
 	}
 	
 	public void addObject(final GameObject gameObject) {

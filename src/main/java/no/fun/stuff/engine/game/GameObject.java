@@ -2,15 +2,18 @@ package no.fun.stuff.engine.game;
 
 import no.fun.stuff.engine.GameContainer;
 import no.fun.stuff.engine.Renderer;
+import no.fun.stuff.engine.matrix.Matrix3x3;
 
 public abstract class GameObject {
 	protected String tag;
 	protected float posX, posY;
 	protected int width, height;
 	protected boolean dead = false;
+	protected Matrix3x3 localMatrix = new Matrix3x3();
 	
 	public abstract void update(GameContainer gc, GameManager gm, float dt);
 	public abstract void render(GameContainer gc, Renderer r);
+	
 	public String getTag() {
 		return tag;
 	}
@@ -46,6 +49,12 @@ public abstract class GameObject {
 	}
 	public void setDead(boolean dead) {
 		this.dead = dead;
+	}
+	public Matrix3x3 getLocalMatrix() {
+		return localMatrix;
+	}
+	public void setLocalMatrix(Matrix3x3 localMatrix) {
+		this.localMatrix = localMatrix;
 	}
 
 }
