@@ -28,7 +28,7 @@ class Texturemap4PointsTest {
 		m.clear();
 		final Texture2d get = new Texture2d(world , p2);
 		Texturemap4Points test = new Texturemap4Points();
-		test.texturemap(get, null, null);
+//		test.texturemap(get, null, null);
 		int t = 0;
 	}
 

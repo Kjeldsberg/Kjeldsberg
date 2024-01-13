@@ -44,7 +44,7 @@ public class Triangle extends SceneObject {
     @Override
     public void update(SceneObject parent, float dt) {
 //        translate.translate(worldCenter);
-//        rotate.rotate(-0.01f);
+        rotate.rotate(-0.001f);
 //        translate.translate(pos);
 //        scale.scale(6.0f);
     }

@@ -25,8 +25,8 @@ public class Vector2D {
 		y = p.getY();
 	}
 	public void setXY(final Vector2D p) {
-		x = p.getX();
-		y = p.getY();
+		x = p.x;
+		y = p.y;
 	}
 	
 	public void normaize() {

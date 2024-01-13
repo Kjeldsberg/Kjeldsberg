@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import no.fun.stuff.engine.game.Rect;
+import no.fun.stuff.engine.game.geo.triangle.TriangleRendererV2;
 import no.fun.stuff.engine.game.objects.Rect4PointRenderer;
 import no.fun.stuff.engine.game.geo.triangle.TriangleRenderer;
 import no.fun.stuff.engine.game.texturemap.Texture2d;
@@ -22,7 +23,7 @@ import no.fun.stuff.engine.matrix.Vector2D;
 public class Renderer {
     private final Texturemap4Points drawTexture = new Texturemap4Points();
     private final Rect4PointRenderer drawFilledRect = new Rect4PointRenderer();
-    private final TriangleRenderer triangleRenderer;
+    private final TriangleRendererV2 triangleRenderer;
     private List<ImageRequest> imageRequests = new ArrayList<>();
     private List<LightRequest> lightRequest = new ArrayList<>();
     private Font font = Font.STANDARD;
@@ -43,7 +44,7 @@ public class Renderer {
         zb = new int[p.length];
         lm = new int[p.length];
         lb = new int[p.length];
-        triangleRenderer = new TriangleRenderer(this);
+        triangleRenderer = new TriangleRendererV2(this);
     }
 
     public void fillTriangle(Vector2D p1, Vector2D p2, Vector2D p3, int color) {
