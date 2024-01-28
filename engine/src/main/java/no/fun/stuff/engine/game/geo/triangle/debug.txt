@@ -1,0 +1,25 @@
+
+
+
+                dl = -0.4905893
+                dr = -2,9261053
+                y start = 82.62727
+
+Øvre                nedre
+y=83, stopx=83  -
+y=82, stopx=86      y=82, startx=84
+y=81, stopx=89      y=81, startx=87
+y=80, stopx=92      y=80, startx=90
+y=79, stopx=95      y=79, startx=93
+y=78, stopx=98      y=78, startx=96
+y=77, stopx=101     y=77, startx=99
+y=76, stopx=104     y=76, startx=102
+                    y=75, stopx=107
+xl = 83.
+
+
+
+flattop, flatbottom fix.
+
+bottom:
+

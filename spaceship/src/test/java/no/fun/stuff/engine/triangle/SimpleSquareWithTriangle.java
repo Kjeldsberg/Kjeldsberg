@@ -47,17 +47,25 @@ public class SimpleSquareWithTriangle extends AbstractGame {
             final Vector2D org[] = new Vector2D[list.size()];
             list.toArray(org);
             final Matrix3x3 mod = new Matrix3x3();
-            mod.scale(2.0f);
-            mod.rotate(0.001f);
+            mod.scale(6.0f);
+//            mod.rotate(0.001f);
+//            mod.rotate(0.01f);
+//            float radians = -6.2809f;
+            float radians = -0.784f;
+            this.rotation = radians;
+//            float radians = -8.99f;
+            mod.rotate(radians);
             mod.mul(org, localCoordinate);
+            SimpleSquareWithTriangle.this.rotate = false;
         }
         @Override
         public void update(SceneObject parent, float dt) {
             if(SimpleSquareWithTriangle.this.rotate) {
+//                float radians = -3.4709f;
+                float radians2 = -0.001f;
+                this.rotation += radians2;
+                this.rotate.rotate(radians2);
 
-                float radians = -0.013f;
-                this.rotation += radians;
-                this.rotate.rotate(radians);
             }
         }
 

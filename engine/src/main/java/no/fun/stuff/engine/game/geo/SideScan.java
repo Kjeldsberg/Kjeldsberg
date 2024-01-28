@@ -9,6 +9,7 @@ public class SideScan {
 
     public boolean flatLine = false;
     public boolean leftside = false;
+    public int flattLiner = 0;
     public SideScan(final Vector2D p0, final Vector2D p1) {
         this.p0 = p0;
         this.p1 = p1;

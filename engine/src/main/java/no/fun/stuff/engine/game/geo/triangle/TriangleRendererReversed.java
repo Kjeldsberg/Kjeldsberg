@@ -57,7 +57,9 @@ public class TriangleRendererReversed {
                 upperLeft = new SideScan(p2, p0);
                 lowerLeft = new SideScan(p1, p2);
 //                upperLeft.flatLine = (p0.getY() - p2.getY()) < 1.0f;
-                upperLeft.flatLine =((int) Math.floor(p0.getY()) - (int) Math.floor(p2.getY()) == 0);
+                int liner = Math.abs((int) Math.floor(p0.getY()) - (int) Math.floor(p2.getY()));
+                upperLeft.flattLiner = liner;
+                upperLeft.flatLine =(liner == 0);
                 longSide.leftside = b;
                 upperLeft.leftside = b2;
                 lowerLeft.leftside = b1;
@@ -69,8 +71,19 @@ public class TriangleRendererReversed {
                 longSide.leftside = b2;
                 upperLeft.leftside = b;
                 lowerLeft.leftside = b1;
+                float absLowerLeft = Math.abs(lowerLeft.p1.getY() - lowerLeft.p0.getY());
+                float absupperLeft = Math.abs(upperLeft.p1.getY() - upperLeft.p0.getY());
+
+                if(absupperLeft < 1.0f || absLowerLeft < 1.0f) {
+                    int test = 0;
+                }
+
 //                upperLeft.flatLine = (p2.getY() - p1.getY()) < 1.0f;
-                upperLeft.flatLine = ((int) Math.floor(p2.getY()) - (int) Math.floor(p1.getY()) == 0);
+                int topliner = Math.abs((int) Math.floor(p1.getY()) - (int) Math.floor(p0.getY()));
+                int liner = Math.abs((int) Math.floor(p2.getY()) - (int) Math.floor(p1.getY()));
+
+                upperLeft.flattLiner = liner;
+                upperLeft.flatLine = (liner == 0);
                 drawLeftSegments(upperLeft, lowerLeft, longSide, color);
             }
         }
@@ -81,41 +94,46 @@ public class TriangleRendererReversed {
                                   final SideScan lowerPart,
                                   final SideScan longPart,
                                   int color) {
-        int yStart = Math.round(upperPart.p1.getY());
-        int yStop = Math.round(upperPart.p0.getY());
-        float dl = upperPart.dl;
+
+
+
+//        int yStart = Math.round(longPart.p0.getY());
+        int yStart = (int)Math.floor(longPart.p0.getY());
+        int yStop = (int)Math.floor(lowerPart.p1.getY());
+        float dl = lowerPart.dl;
         float dr = longPart.dl;
-        float xl = upperPart.p1.getX();
-        float xr = longPart.p1.getX();
-        if(upperPart.flatLine) {
-            yStart++;
-            xl += dl + (upperPart.leftside ? 1.0f : 0.0f);
-            xr += dr;
-        }
-        int y;
-        for (y = yStart; y < yStop; y++) {
-            int startX = upperPart.leftside ? (int) Math.ceil(xl) : (int) Math.floor(xl);
+        float xl = lowerPart.p0.getX();
+        float xr = longPart.p0.getX();
+        int y = yStart;
+        for (; y > yStop; y--) {
+            int startX = lowerPart.leftside ? (int) Math.ceil(xl) : (int) Math.floor(xl);
             int stopX = (int) Math.floor(xr);
             for (int x = startX; x <= stopX; x++) {
                 renderer.setPixel(x, y, color);
             }
-            xl += dl;
-            xr += dr;
+            xl -= dl;
+            xr -= dr;
         }
 
-        yStop = Math.round(lowerPart.p0.getY());
-        dl = lowerPart.dl;
-        xl = lowerPart.p1.getX();
-        for (; y <= yStop; y++) {
+//        yStop = Math.round(longPart.p1.getY());
+        yStop = (int)Math.floor(longPart.p1.getY());
+        xl = upperPart.p0.getX();
+        if(upperPart.flatLine) {
+            yStop--;
+            xl -= dl + (lowerPart.leftside ? 1.0f : 0.0f);
+            xr -= dr;
+        }
+        dl = upperPart.dl;
+        for (; y > yStop; y--) {
             int ceil = (int) Math.ceil(xl);
             int floor = (int) Math.floor(xl);
-            int startX = lowerPart.leftside ? ceil : floor;
+            int startX = upperPart.leftside ? ceil : floor;
             int stopX = (int) Math.floor(xr);
             for (int x = startX; x <= stopX; x++) {
                 renderer.setPixel(x, y, color);
             }
-            xl += dl;
-            xr += dr;
+            xl -= dl;
+            xr -= dr;
         }
     }
 
@@ -125,40 +143,48 @@ public class TriangleRendererReversed {
                                    int color) {
 
 
-        int yStart = Math.round(upperPart.p1.getY());
-        int yStop = Math.round(upperPart.p0.getY());
+//        int yStart = Math.round(longPart.p0.getY());
+        int yStart = (int)Math.floor(longPart.p0.getY());
+        int yStop = (int)Math.floor(upperPart.p0.getY());
         float dl = longPart.dl;
-        float dr = upperPart.dl;
-        float xl = upperPart.p1.getX();
-        float xr = longPart.p1.getX();
+        float dr = lowerPart.dl;
+        float xl = lowerPart.p0.getX();
+        float xr = lowerPart.p0.getX();
         int y;
-        for (y = yStart; y < yStop; y++) {
+        for (y = yStart; y > yStop; y--) {
 
             int startX = longPart.leftside ? (int) Math.ceil(xl) : (int) Math.floor(xl);
             int stopX = (int) Math.floor(xr);
             for (int x = startX; x <= stopX; x++) {
                 renderer.setPixel(x, y, color);
             }
-            xl += dl;
-            xr += dr;
+            xl -= dl;
+            xr -= dr;
         }
 
-        yStop = Math.round(lowerPart.p0.getY());
-        dr = lowerPart.dl;
-        xr = lowerPart.p1.getX();
+//        yStop = Math.round(longPart.p1.getY());
+        yStop = (int)Math.floor(longPart.p1.getY());
+        dr = upperPart.dl;
+        xr = upperPart.p0.getX();
         if(upperPart.flatLine) {
-            y++;
-            xr += dr;
-            xl += dl + (upperPart.flatLine ? 1.0f : 0.0f);
+            yStop++;
+            xr -= dr;
+            xl -= (dl + (upperPart.flatLine ? 1.0f : 0.0f));
         }
-        for (; y <= yStop; y++) {
+        int flattLiner = upperPart.flattLiner;
+        for (; y > yStop; y--) {
+//            if(flattLiner-- == 1) {
+//                xl -= dl;
+//                xr -= dr;
+////                continue;
+//            }
             int stopX = (int) Math.floor(xr);
             int startX = longPart.leftside ? (int) Math.ceil(xl) : (int) Math.floor(xl);
             for (int x = startX; x <= stopX; x++) {
                 renderer.setPixel(x, y, color);
             }
-            xl += dl;
-            xr += dr;
+            xl -= dl;
+            xr -= dr;
         }
     }
 
