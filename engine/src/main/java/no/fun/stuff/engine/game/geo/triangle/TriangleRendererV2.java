@@ -24,12 +24,12 @@ public class TriangleRendererV2 {
         boolean b = firstSide.getY() > 0.0f;
         boolean b1 = secondSide.getY() > 0.0f;
         boolean b2 = thirdSide.getY() > 0.0f;
-        if (color == 0x88556677) {
-            renderer.drawText("p0", (int) v1.getX(), (int) v1.getY(), 0xffffffff);
-            renderer.drawText("p1", (int) v2.getX(), (int) v2.getY(), 0xffffffff);
-            renderer.drawText("p2", (int) v3.getX(), (int) v3.getY(), 0xffffffff);
-
-        }
+//        if (color == 0x88556677) {
+//            renderer.drawText("p0", (int) v1.getX(), (int) v1.getY(), 0xffffffff);
+//            renderer.drawText("p1", (int) v2.getX(), (int) v2.getY(), 0xffffffff);
+//            renderer.drawText("p2", (int) v3.getX(), (int) v3.getY(), 0xffffffff);
+//
+//        }
         final Vector2D p0 = ordered[0];
         final Vector2D p1 = ordered[1];
         final Vector2D p2 = ordered[2];

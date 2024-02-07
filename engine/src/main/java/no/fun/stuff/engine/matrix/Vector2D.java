@@ -34,6 +34,9 @@ public class Vector2D {
 		x *= len;
 		y *= len;
 	}
+	public float length() {
+		return (float)Math.sqrt(x*x + y*y);
+	}
 	public Point toPoint() {
 		return new Point(x, y);
 	}

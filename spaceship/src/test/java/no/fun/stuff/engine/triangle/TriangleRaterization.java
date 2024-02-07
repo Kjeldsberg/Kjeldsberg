@@ -45,8 +45,8 @@ public class TriangleRaterization extends AbstractGame {
 //        triangle.setAngle((float)Math.PI);
         LookAtCamera camera = new LookAtCamera(flatTop, new Vector2D(gc.getWith(), gc.getHeight()));
 //        scene.setCamera(camera);
-        scene.getChild().add(flatTop);
-        flatTop.getRotate().rotate(0.02f);
+//        scene.getChild().add(flatTop);
+//        flatTop.getRotate().rotate(0.02f);
 //        scene.getChild().add(flatBottom);
 //        scene.getChild().add(triangle);
         scene.getChild().add(objectAsTriangle);
@@ -59,6 +59,17 @@ public class TriangleRaterization extends AbstractGame {
             objectAsTriangle.setRotating(!objectAsTriangle.isRotating());
         }
         if(gc.getInput().isKeyDown(KeyEvent.VK_LEFT)) {
+            leftKey = true;
+        }
+        if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
+            float scaleValue = objectAsTriangle.getScaleValue();
+            scaleValue += 0.01f;
+            objectAsTriangle.setScaleValue(scaleValue);
+        }
+        if(gc.getInput().isKeyDown(KeyEvent.VK_S)) {
+            float scaleValue = objectAsTriangle.getScaleValue();
+            scaleValue -= 0.01f;
+            objectAsTriangle.setScaleValue(scaleValue);
             leftKey = true;
         }
         if(!gc.getInput().isKeyDown(KeyEvent.VK_LEFT) && leftKey) {

@@ -26,15 +26,15 @@ public class SimpleSquareWithTriangle extends AbstractGame {
                     new Vector2D(-10, -10),
                     new Vector2D(-10, 10),
                     new Vector2D(10, 10),
-//                    new Vector2D(-10, -10),
-//                    new Vector2D(10, 10),
-//                    new Vector2D(10, -10),
+                    new Vector2D(-10, -10),
+                    new Vector2D(10, 10),
+                    new Vector2D(10, -10),
                     new Vector2D(-10, 10),
                     new Vector2D(0, 20),
-                    new Vector2D(10, 10)
-//                    new Vector2D(-10, -10),
-//                    new Vector2D(-20, 0),
-//                    new Vector2D(-10, 10)
+                    new Vector2D(10, 10),
+                    new Vector2D(-10, -10),
+                    new Vector2D(-20, 0),
+                    new Vector2D(-10, 10)
 
                     );
 
