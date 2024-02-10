@@ -45,31 +45,41 @@ public class ObjectAsTriangle extends SceneObject {
                 list.add(new Vector2D(currX, currY));
             }
         }
-        for (int x = 0; x <= xDim; x++) {
-            int secondLine = (xDim + 1);
-            indexList.add(x);
-            indexList.add(secondLine + x);
-            indexList.add(x + 1);
+        if (xDim == 1 && yDim == 1) {
+            indexList.add(0);
+            indexList.add(2);
+            indexList.add(1);
+            indexList.add(1);
+            indexList.add(2);
+            indexList.add(3);
 
-            indexList.add(x + 1);
-            indexList.add(secondLine + x);
-            indexList.add(secondLine + x + 1);
-        }
+        } else {
+            for (int x = 0; x <= xDim; x++) {
+                int secondLine = (xDim + 1);
+                indexList.add(x);
+                indexList.add(secondLine + x);
+                indexList.add(x + 1);
 
-        for (int y = 1; y < yDim; y++) {
-            int lineStartElement = y * (xDim + 1);
-            int secondLineStartElement = lineStartElement + (xDim + 1);
-            for (int x = 0; x < xDim; x++) {
-                int startElement = lineStartElement + x;
-                int lineUnderElement = secondLineStartElement + x;
-                indexList.add(startElement);
-                indexList.add(lineUnderElement);
-                indexList.add(startElement + 1);
+                indexList.add(x + 1);
+                indexList.add(secondLine + x);
+                indexList.add(secondLine + x + 1);
+            }
 
-                indexList.add(startElement + 1);
-                indexList.add(lineUnderElement);
-                indexList.add(lineUnderElement + 1);
+            for (int y = 1; y < yDim; y++) {
+                int lineStartElement = y * (xDim + 1);
+                int secondLineStartElement = lineStartElement + (xDim + 1);
+                for (int x = 0; x < xDim; x++) {
+                    int startElement = lineStartElement + x;
+                    int lineUnderElement = secondLineStartElement + x;
+                    indexList.add(startElement);
+                    indexList.add(lineUnderElement);
+                    indexList.add(startElement + 1);
 
+                    indexList.add(startElement + 1);
+                    indexList.add(lineUnderElement);
+                    indexList.add(lineUnderElement + 1);
+
+                }
             }
         }
         initCoordinates();
@@ -77,25 +87,25 @@ public class ObjectAsTriangle extends SceneObject {
 
     public ObjectAsTriangle() {
 
-//        list.add(new Vector2D(0.0f, -3.0f));
-//        list.add(new Vector2D(-1.0f, -1.0f));
-//        list.add(new Vector2D(1.0f, -1.0f));
+        list.add(new Vector2D(0.0f, -3.0f));
+        list.add(new Vector2D(-1.0f, -1.0f));
+        list.add(new Vector2D(1.0f, -1.0f));
 
         list.add(new Vector2D(-1.0f, -1.0f));
         list.add(new Vector2D(-1.0f, 3.0f));
         list.add(new Vector2D(1.0f, 3.0f));
 
-//        list.add(new Vector2D(-1.0f, -1.0f));
-//        list.add(new Vector2D(1.0f, 3.0f));
-//        list.add(new Vector2D(1.0f, -1.0f));
+        list.add(new Vector2D(-1.0f, -1.0f));
+        list.add(new Vector2D(1.0f, 3.0f));
+        list.add(new Vector2D(1.0f, -1.0f));
 
         list.add(new Vector2D(-1.0f, 0.0f));
         list.add(new Vector2D(-5.0f, 3.0f));
         list.add(new Vector2D(-1.0f, 3.0f));
 
-//        list.add(new Vector2D(1.0f, 0.0f));
-//        list.add(new Vector2D(1.0f, 3.0f));
-//        list.add(new Vector2D(5.0f, 3.0f));
+        list.add(new Vector2D(1.0f, 0.0f));
+        list.add(new Vector2D(1.0f, 3.0f));
+        list.add(new Vector2D(5.0f, 3.0f));
         initCoordinates();
     }
 

@@ -15,7 +15,7 @@ public class ManyManyTriangles extends AbstractGame {
     @Override
     public void init(GameContainer gc) {
 
-        objectAsTriangle = new ObjectAsTriangle(50, 50);
+        objectAsTriangle = new ObjectAsTriangle(100, 100);
         gc.getRenderer().setAmbientcolor(-1);
 //∕        e = new SimpleSquareWithTriangle.Square(gc);
         scene.addChild(objectAsTriangle);
@@ -50,11 +50,11 @@ public class ManyManyTriangles extends AbstractGame {
     }
     public static void main(final String[] args) {
         GameContainer gc = new GameContainer(new ManyManyTriangles());
-        gc.setWith(320);
-        gc.setHeight(240);
+        gc.setWith(800);
+        gc.setHeight(600);
 //        gc.setWith(640);
 //        gc.setHeight(480);
-        gc.setScale(3.0f);
+        gc.setScale(1.0f);
         gc.start();
 
     }

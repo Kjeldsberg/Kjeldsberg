@@ -4,15 +4,22 @@ import no.fun.stuff.engine.game.util.Util;
 import no.fun.stuff.engine.matrix.Vector2D;
 
 public class SideScan {
-    public final float dx, dy, dl;
+    public float dx, dy, dl;
     public Vector2D p0, p1;
 
     public boolean flatLine = false;
     public boolean leftside = false;
-    public int flattLiner = 0;
     public SideScan(final Vector2D p0, final Vector2D p1) {
         this.p0 = p0;
         this.p1 = p1;
+        newSlope();
+    }
+    public void setNewEgde(final Vector2D p0, final Vector2D p1) {
+        this.p0.setXY(p0);
+        this.p1.setXY(p1);
+        newSlope();
+    }
+    private void newSlope() {
         dx = p0.getX() - p1.getX();
         dy = p0.getY() - p1.getY();
         flatLine = Math.abs(dy) < Util.epsilon;
