@@ -1,4 +1,4 @@
-package no.fun.stuff.engine.game.geo;
+package no.fun.stuff.engine.game.geo.triangle;
 
 import no.fun.stuff.engine.game.util.Util;
 import no.fun.stuff.engine.matrix.Vector2D;

@@ -8,9 +8,8 @@ import java.util.List;
 
 import no.fun.stuff.engine.game.Rect;
 import no.fun.stuff.engine.game.geo.triangle.TriangleRendererReversed;
-import no.fun.stuff.engine.game.geo.triangle.TriangleRendererV2;
+import no.fun.stuff.engine.game.geo.triangle.TriangleRendererReversedTexture;
 import no.fun.stuff.engine.game.objects.Rect4PointRenderer;
-import no.fun.stuff.engine.game.geo.triangle.TriangleRenderer;
 import no.fun.stuff.engine.game.texturemap.Texture2d;
 import no.fun.stuff.engine.game.texturemap.Texturemap4Points;
 import no.fun.stuff.engine.gfx.Font;
@@ -25,6 +24,7 @@ public class Renderer {
     private final Texturemap4Points drawTexture = new Texturemap4Points();
     private final Rect4PointRenderer drawFilledRect = new Rect4PointRenderer();
     private final TriangleRendererReversed triangleRenderer;
+    private final TriangleRendererReversedTexture textureTriangleRenderer;
     private List<ImageRequest> imageRequests = new ArrayList<>();
     private List<LightRequest> lightRequest = new ArrayList<>();
     private Font font = Font.STANDARD;
@@ -46,8 +46,13 @@ public class Renderer {
         lm = new int[p.length];
         lb = new int[p.length];
         triangleRenderer = new TriangleRendererReversed(this);
+        textureTriangleRenderer = new TriangleRendererReversedTexture(this);
     }
 
+    public void textureTriangle(final Vector2D p1, final Vector2D p2, final Vector2D p3,
+                                final Vector2D uv1, final Vector2D uv2, final Vector2D uv3, Image texture) {
+        textureTriangleRenderer.drawTriangle(p1, p2, p3, uv1, uv2, uv3, texture);
+    }
     public void fillTriangle(Vector2D p1, Vector2D p2, Vector2D p3, int color) {
         triangleRenderer.drawTriangle2(p1, p2, p3, color);
     }

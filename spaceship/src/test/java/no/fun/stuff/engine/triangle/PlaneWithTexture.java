@@ -3,14 +3,17 @@ package no.fun.stuff.engine.triangle;
 import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.game.SceneObject;
 import no.fun.stuff.engine.game.geo.triangle.SideScan;
+import no.fun.stuff.engine.gfx.Image;
 import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Vector2D;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ObjectAsTriangle extends SceneObject {
+public class PlaneWithTexture extends SceneObject {
     private List<Vector2D> list = new ArrayList<>();
+    private List<Vector2D> uv = new ArrayList<>();
+    private List<Integer> textureCoordinateIndex = new ArrayList<>();
     private int xDim, yDim;
     private List<Integer> indexList = new ArrayList<>();
     private Vector2D[] localCoordinate;
@@ -25,24 +28,31 @@ public class ObjectAsTriangle extends SceneObject {
     private Vector2D lowerLeft = new Vector2D(-10.0f, 10.0f);
     private Vector2D lowerRight = new Vector2D(10.0f, 10.0f);
 
+    private Image texture;
     private final int color = 0x88556677;
 
-    public ObjectAsTriangle(int xDim, int yDim) {
+    public PlaneWithTexture(int xDim, int yDim) {
         this.xDim = xDim;
         this.yDim = yDim;
         final SideScan upperLine = new SideScan(upLeft, upRight);
         final SideScan leftDown = new SideScan(upLeft, lowerLeft);
-
+//        texture = new Image("/pitrizzo-SpaceShip-gpl3-opengameart-24x24.png");
+        texture = new Image("/png-transparent-spider-man-heroes-download-with-transparent-background-free-thumbnail.png");
         float xDimLength = upRight.minus(upLeft).length();
         float yDimLength = lowerLeft.minus(upLeft).length();
 
         float xStep = xDimLength / xDim;
         float yStep = yDimLength / yDim;
+        float uStep = 1.0f/xDim;
+        float vStep = 1.0f/yDim;
         for (int y = 0; y <= yDim; y++) {
             float currY = leftDown.p0.getY() + y * yStep;
+            float v = y*vStep;
             for (int x = 0; x <= xDim; x++) {
                 float currX = upperLine.p0.getX() + x * xStep;
                 list.add(new Vector2D(currX, currY));
+                float u = x*uStep;
+                uv.add(new Vector2D(u, v));
             }
         }
         if (xDim == 1 && yDim == 1) {
@@ -52,6 +62,12 @@ public class ObjectAsTriangle extends SceneObject {
             indexList.add(1);
             indexList.add(2);
             indexList.add(3);
+            textureCoordinateIndex.add(0);
+            textureCoordinateIndex.add(2);
+            textureCoordinateIndex.add(1);
+            textureCoordinateIndex.add(1);
+            textureCoordinateIndex.add(2);
+            textureCoordinateIndex.add(3);
 
         } else {
             for (int x = 0; x <= xDim; x++) {
@@ -63,6 +79,14 @@ public class ObjectAsTriangle extends SceneObject {
                 indexList.add(x + 1);
                 indexList.add(secondLine + x);
                 indexList.add(secondLine + x + 1);
+
+                textureCoordinateIndex.add(x);
+                textureCoordinateIndex.add(secondLine + x);
+                textureCoordinateIndex.add(x + 1);
+
+                textureCoordinateIndex.add(x + 1);
+                textureCoordinateIndex.add(secondLine + x);
+                textureCoordinateIndex.add(secondLine + x + 1);
             }
 
             for (int y = 1; y < yDim; y++) {
@@ -79,13 +103,20 @@ public class ObjectAsTriangle extends SceneObject {
                     indexList.add(lineUnderElement);
                     indexList.add(lineUnderElement + 1);
 
+                    textureCoordinateIndex.add(startElement);
+                    textureCoordinateIndex.add(lineUnderElement);
+                    textureCoordinateIndex.add(startElement + 1);
+
+                    textureCoordinateIndex.add(startElement + 1);
+                    textureCoordinateIndex.add(lineUnderElement);
+                    textureCoordinateIndex.add(lineUnderElement + 1);
                 }
             }
         }
         initCoordinates();
     }
 
-    public ObjectAsTriangle() {
+    public PlaneWithTexture() {
 
         list.add(new Vector2D(0.0f, -3.0f));
         list.add(new Vector2D(-1.0f, -1.0f));
@@ -151,7 +182,7 @@ public class ObjectAsTriangle extends SceneObject {
     public void update(SceneObject parent, float dt) {
         scale.scale(scaleValue);
         if (this.rotating) {
-            final float rad = 0.011f;
+            final float rad = 0.001f;
             this.rotation += rad;
             rotate.rotate(rad);
         }
@@ -169,14 +200,19 @@ public class ObjectAsTriangle extends SceneObject {
         viewModel.mul(localCoordinate, worldCoordinate);
         if (indexList == null || indexList.isEmpty()) {
             for (int i = 0; i < localCoordinate.length; i += 3) {
-                r.fillTriangle(worldCoordinate[i], worldCoordinate[i + 1], worldCoordinate[i + 2], color);
+//                r.textureTriangle(worldCoordinate[i], worldCoordinate[i + 1], worldCoordinate[i + 2], color);
             }
         } else {
             for (int i = 0; i < indexList.size(); i += 3) {
                 Integer p0 = indexList.get(i);
                 Integer p1 = indexList.get(i + 1);
                 Integer p2 = indexList.get(i + 2);
-                r.fillTriangle(worldCoordinate[p0], worldCoordinate[p1], worldCoordinate[p2], color);
+                Integer index = textureCoordinateIndex.get(i);
+                Integer index1 = textureCoordinateIndex.get(i + 1);
+                Integer index2 = textureCoordinateIndex.get(i + 2);
+                r.textureTriangle(worldCoordinate[p0], worldCoordinate[p1], worldCoordinate[p2],
+                                    uv.get(index), uv.get(index1), uv.get(index2),
+                        texture);
             }
         }
     }

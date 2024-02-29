@@ -24,6 +24,10 @@ public class Vector2D {
 		x = p.getX();
 		y = p.getY();
 	}
+	public void setXY(float x, float y) {
+		this.x = x;
+		this.y = y;
+	}
 	public void setXY(final Vector2D p) {
 		x = p.x;
 		y = p.y;
@@ -59,7 +63,12 @@ public class Vector2D {
 	public Vector2D scale(float scale) {
 		return new Vector2D(this.x * scale, this.y * scale);
 	}
-	
+	public Vector2D mul(float scale) {
+		this.x *= scale;
+		this.y *= scale;
+		return this;
+	}
+
 	public float getX() {
 		return x;
 	}

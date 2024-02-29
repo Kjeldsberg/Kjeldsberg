@@ -1,7 +1,6 @@
 package no.fun.stuff.engine.game.geo.triangle;
 
 import no.fun.stuff.engine.Renderer;
-import no.fun.stuff.engine.game.geo.SideScan;
 import no.fun.stuff.engine.matrix.Vector2D;
 
 public class TriangleRendererReversed {

@@ -1,6 +1,6 @@
 package no.fun.stuff.engine;
 
-import no.fun.stuff.engine.game.geo.SideScan;
+import no.fun.stuff.engine.game.geo.triangle.SideScan;
 import no.fun.stuff.engine.matrix.Vector2D;
 import org.junit.jupiter.api.Test;
 

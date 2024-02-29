@@ -10,7 +10,7 @@ class TriangleRendererTest {
     @Test
     void rotateToLowestY() {
 
-        TriangleRenderer triangleRenderer = new TriangleRenderer(null);
+        TriangleRendererReversed triangleRenderer = new TriangleRendererReversed(null);
         Vector2D v1 = new Vector2D(0, 1f);
         Vector2D v0 = new Vector2D(0, 0f);
         Vector2D v3 = new Vector2D(0, 3f);
