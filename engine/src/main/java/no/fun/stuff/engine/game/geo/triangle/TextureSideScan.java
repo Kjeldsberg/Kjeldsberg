@@ -30,8 +30,8 @@ public class TextureSideScan {
         flatLine = Math.abs(dy) < THRESHOLD;
         oneOverDy = 1 / dy;
         dl = flatLine ? 0 : dx * oneOverDy;
-        uDelta = flatLine ? 0 : (uv0.getX() - uv1.getX()) * oneOverDy;
-        vDelta = flatLine ? 0 : (uv0.getY() - uv1.getY()) * oneOverDy;
+//        uDelta = flatLine ? 0 : (uv0.getX() - uv1.getX()) * oneOverDy;
+//        vDelta = flatLine ? 0 : (uv0.getY() - uv1.getY()) * oneOverDy;
     }
 
     public void setNewEgde(final Vector2D p0, final Vector2D p1, final Vector2D uv0, final Vector2D uv1) {

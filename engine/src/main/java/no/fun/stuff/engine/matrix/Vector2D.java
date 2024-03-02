@@ -69,6 +69,12 @@ public class Vector2D {
 		return this;
 	}
 
+	public Vector2D mulXYComponent(final Vector2D scale) {
+		this.x *= scale.x;
+		this.y *= scale.y;
+		return this;
+	}
+
 	public float getX() {
 		return x;
 	}

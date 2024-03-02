@@ -183,10 +183,10 @@ public class TriangleRendererReversedTexture {
         CBuv.setXY(rightPart.uv1); CBuv.sub(rightPart.uv0);
         dAB.setXY(leftPart.p1); dAB.sub(leftPart.p0);
         dCB.setXY(rightPart.p1); dCB.sub(rightPart.p0);
-        float dABlu = Util.compare2(dAB.getX(), 0.0f) ? 0 : ABuv.getX()/dAB.getX();
-        float dABlv = Util.compare2(dAB.getY(), 0.0f) ? 0 : ABuv.getY()/dAB.getY();
-        float dCBlu = Util.compare2(dCB.getX(), 0.0f) ? 0 : CBuv.getX()/dCB.getX();
-        float dCBlv = Util.compare2(dCB.getY(), 0.0f) ? 0 : CBuv.getY()/dCB.getY();
+        float dABlu = Util.compare2(dAB.getX(), 0.0f) ? 0 : 1.0f/Math.abs(dAB.getX());
+        float dABlv = Util.compare2(dAB.getY(), 0.0f) ? 0 : 1.0f/Math.abs(dAB.getY());
+        float dCBlu = Util.compare2(dCB.getX(), 0.0f) ? 0 : 1.0f/Math.abs(dCB.getX());
+        float dCBlv = Util.compare2(dCB.getY(), 0.0f) ? 0 : 1.0f/Math.abs(dCB.getY());
         float ABduvx = dABlu * ABuv.getX();
         float ABduvy = dABlv * ABuv.getY();
         float CBduvx = dCBlu * CBuv.getX();
@@ -194,9 +194,9 @@ public class TriangleRendererReversedTexture {
         Vector2D rightDelta = new Vector2D(rightPart.uv0);
         Vector2D leftDelta = new Vector2D(leftPart.uv0);
         for (int y = yStart; y > yStop; y--) {
-            int start = (int) xl;
-            int stop = (int) xr;
-            float deltaX = Math.abs(xl - xr);
+            int start = (int)Math.floor(xl);
+            int stop = (int) Math.floor(xr);
+            float deltaX = stop - start;
             float oneOverDeltaX = Util.compare(deltaX, 0.0f) ? 0.0f : 1.0f/ deltaX;
             float oneOverDeltaXInc = oneOverDeltaX;
             for (int x = start; x < stop; x++) {

@@ -13,7 +13,6 @@ import java.util.List;
 public class PlaneWithTexture extends SceneObject {
     private List<Vector2D> list = new ArrayList<>();
     private List<Vector2D> uv = new ArrayList<>();
-    private List<Integer> textureCoordinateIndex = new ArrayList<>();
     private int xDim, yDim;
     private List<Integer> indexList = new ArrayList<>();
     private Vector2D[] localCoordinate;
@@ -62,15 +61,9 @@ public class PlaneWithTexture extends SceneObject {
             indexList.add(1);
             indexList.add(2);
             indexList.add(3);
-            textureCoordinateIndex.add(0);
-            textureCoordinateIndex.add(2);
-            textureCoordinateIndex.add(1);
-            textureCoordinateIndex.add(1);
-            textureCoordinateIndex.add(2);
-            textureCoordinateIndex.add(3);
 
         } else {
-            for (int x = 0; x <= xDim; x++) {
+            for (int x = 0; x < xDim; x++) {
                 int secondLine = (xDim + 1);
                 indexList.add(x);
                 indexList.add(secondLine + x);
@@ -80,13 +73,6 @@ public class PlaneWithTexture extends SceneObject {
                 indexList.add(secondLine + x);
                 indexList.add(secondLine + x + 1);
 
-                textureCoordinateIndex.add(x);
-                textureCoordinateIndex.add(secondLine + x);
-                textureCoordinateIndex.add(x + 1);
-
-                textureCoordinateIndex.add(x + 1);
-                textureCoordinateIndex.add(secondLine + x);
-                textureCoordinateIndex.add(secondLine + x + 1);
             }
 
             for (int y = 1; y < yDim; y++) {
@@ -103,13 +89,6 @@ public class PlaneWithTexture extends SceneObject {
                     indexList.add(lineUnderElement);
                     indexList.add(lineUnderElement + 1);
 
-                    textureCoordinateIndex.add(startElement);
-                    textureCoordinateIndex.add(lineUnderElement);
-                    textureCoordinateIndex.add(startElement + 1);
-
-                    textureCoordinateIndex.add(startElement + 1);
-                    textureCoordinateIndex.add(lineUnderElement);
-                    textureCoordinateIndex.add(lineUnderElement + 1);
                 }
             }
         }
@@ -207,11 +186,15 @@ public class PlaneWithTexture extends SceneObject {
                 Integer p0 = indexList.get(i);
                 Integer p1 = indexList.get(i + 1);
                 Integer p2 = indexList.get(i + 2);
-                Integer index = textureCoordinateIndex.get(i);
-                Integer index1 = textureCoordinateIndex.get(i + 1);
-                Integer index2 = textureCoordinateIndex.get(i + 2);
-                r.textureTriangle(worldCoordinate[p0], worldCoordinate[p1], worldCoordinate[p2],
-                                    uv.get(index), uv.get(index1), uv.get(index2),
+
+                Vector2D p11 = worldCoordinate[p0];
+                Vector2D p21 = worldCoordinate[p1];
+                Vector2D p3 = worldCoordinate[p2];
+                Vector2D uv1 = uv.get(p0);
+                Vector2D uv2 = uv.get(p1);
+                Vector2D uv3 = uv.get(p2);
+                r.textureTriangle(p11, p21, p3,
+                        uv1, uv2, uv3,
                         texture);
             }
         }

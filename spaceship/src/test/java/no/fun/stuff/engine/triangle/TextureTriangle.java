@@ -14,7 +14,7 @@ public class TextureTriangle extends AbstractGame {
     private boolean rotate;
     @Override
     public void init(GameContainer gc) {
-        planeWithTexture = new PlaneWithTexture(2, 2);
+        planeWithTexture = new PlaneWithTexture(50, 50);
         gc.getRenderer().setAmbientcolor(-1);
 //∕        e = new SimpleSquareWithTriangle.Square(gc);
         scene.addChild(planeWithTexture);
