@@ -74,6 +74,11 @@ public class Vector2D {
 		this.y *= scale.y;
 		return this;
 	}
+	public Vector2D pluss(float x, float y) {
+		this.x += x;
+		this.y += y;
+		return this;
+	}
 
 	public float getX() {
 		return x;

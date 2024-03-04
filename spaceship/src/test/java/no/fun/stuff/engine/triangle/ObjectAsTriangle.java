@@ -38,11 +38,16 @@ public class ObjectAsTriangle extends SceneObject {
 
         float xStep = xDimLength / xDim;
         float yStep = yDimLength / yDim;
+        float uStep = 1.0f/xDim;
+        float vStep = 1.0f/yDim;
         for (int y = 0; y <= yDim; y++) {
             float currY = leftDown.p0.getY() + y * yStep;
+            float v = y*vStep;
             for (int x = 0; x <= xDim; x++) {
                 float currX = upperLine.p0.getX() + x * xStep;
                 list.add(new Vector2D(currX, currY));
+                float u = x*uStep;
+//                uv.add(new Vector2D(u, v));
             }
         }
         if (xDim == 1 && yDim == 1) {
@@ -54,7 +59,7 @@ public class ObjectAsTriangle extends SceneObject {
             indexList.add(3);
 
         } else {
-            for (int x = 0; x <= xDim; x++) {
+            for (int x = 0; x < xDim; x++) {
                 int secondLine = (xDim + 1);
                 indexList.add(x);
                 indexList.add(secondLine + x);
@@ -63,6 +68,7 @@ public class ObjectAsTriangle extends SceneObject {
                 indexList.add(x + 1);
                 indexList.add(secondLine + x);
                 indexList.add(secondLine + x + 1);
+
             }
 
             for (int y = 1; y < yDim; y++) {

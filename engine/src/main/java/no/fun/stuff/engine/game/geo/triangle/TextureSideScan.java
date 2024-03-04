@@ -86,11 +86,11 @@ public class TextureSideScan {
     public void lerp(float delta, final Vector2D p0, Vector2D p1, final Vector2D result) {
         this.a = result;
         if(delta <= Util.epsilon) {
-            a.setXY(p1);
+            a.setXY(p0);
             return;
         }
         if(delta >= 1.0f) {
-            a.setXY(p0);
+            a.setXY(p1);
             return;
         }
         b.setXY(p1);

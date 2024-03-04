@@ -14,12 +14,14 @@ public class TextureTriangle extends AbstractGame {
     private boolean rotate;
     @Override
     public void init(GameContainer gc) {
-        planeWithTexture = new PlaneWithTexture(50, 50);
+        planeWithTexture = new PlaneWithTexture(1, 1);
         gc.getRenderer().setAmbientcolor(-1);
 //∕        e = new SimpleSquareWithTriangle.Square(gc);
         scene.addChild(planeWithTexture);
         LookAtCamera lookAtCamera = new LookAtCamera(planeWithTexture, new Vector2D(gc.getWith(), gc.getHeight()));
         scene.setCamera(lookAtCamera);
+        planeWithTexture.getRotate().rotate(0.2f);
+        planeWithTexture.getScale().scale(13.0f);
 
     }
 
@@ -27,12 +29,12 @@ public class TextureTriangle extends AbstractGame {
     public void update(GameContainer gc, float dt) {
         if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
             float scaleValue = planeWithTexture.getScaleValue();
-            scaleValue += 0.01f;
+            scaleValue += 0.05f;
             planeWithTexture.setScaleValue(scaleValue);
         }
         if(gc.getInput().isKeyDown(KeyEvent.VK_S)) {
             float scaleValue = planeWithTexture.getScaleValue();
-            scaleValue -= 0.01f;
+            scaleValue -= 0.05f;
             planeWithTexture.setScaleValue(scaleValue);
         }
         if(gc.getInput().isKeyDown(KeyEvent.VK_SPACE)) {
@@ -51,9 +53,12 @@ public class TextureTriangle extends AbstractGame {
         GameContainer gc = new GameContainer(new TextureTriangle());
         gc.setWith(800);
         gc.setHeight(600);
+        gc.setScale(1.0f);
 //        gc.setWith(640);
 //        gc.setHeight(480);
-        gc.setScale(1.0f);
+//        gc.setWith(340);
+//        gc.setHeight(200);
+//        gc.setScale(3.0f);
         gc.start();
 
     }
