@@ -170,23 +170,47 @@ public class TriangleRendererReversedTexture {
         float dr = lowerPart.dl;
         float xl = lowerPart.p0.getX();
         float xr = lowerPart.p0.getX();
-        float uv0l = lowerPart.uv0.getX();
-        float uv0r = lowerPart.uv1.getX();
-        float uv1l = lowerPart.uv0.getX();
-        float uv1r = lowerPart.uv1.getX();
-        float uv2l = lowerPart.uv0.getX();
-        float uv3r = lowerPart.uv1.getX();
+        TextureSideScan leftPart = longPart;
+        TextureSideScan rightPart = lowerPart;
+        ABuv.setXY(leftPart.uv1); ABuv.sub(leftPart.uv0);
+        CBuv.setXY(rightPart.uv1); CBuv.sub(rightPart.uv0);
+        dAB.setXY(leftPart.p1); dAB.sub(leftPart.p0);
+        dCB.setXY(rightPart.p1); dCB.sub(rightPart.p0);
+        float dABlv = Util.compare2(dAB.getY(), 0.0f) ? 0 : 1.0f/Math.abs(dAB.getY());
+        float dCBlv = Util.compare2(dCB.getY(), 0.0f) ? 0 : 1.0f/Math.abs(dCB.getY());
+        float ABduvx = dABlv * ABuv.getX();
+        float ABduvy = dABlv * ABuv.getY();
+        float CBduvx = dCBlv * CBuv.getX();
+        float CBduvy = dCBlv * CBuv.getY();
+        Vector2D rightDelta = new Vector2D(rightPart.uv0);
+        Vector2D leftDelta = new Vector2D(leftPart.uv0);
+
         int y;
         for (y = yStart; y > yStop; y--) {
             int startX = longPart.leftside ? (int) Math.ceil(xl) : (int) Math.floor(xl);
             int stopX = (int) Math.floor(xr);
+            float deltaX = stopX - startX;
+            float oneOverDeltaX = Util.compare(deltaX, 0.0f) ? 0.0f : 1.0f/(deltaX+1);
+            float oneOverDeltaXInc = oneOverDeltaX;
 
             for (int x = startX; x <= stopX; x++) {
-                renderer.setPixel(x, y, 0xffddeeee/*color*/);
+                leftPart.lerp(oneOverDeltaXInc, leftDelta, rightDelta, result);
+                setColor(color, y, x);
+                oneOverDeltaXInc += oneOverDeltaX;
+
             }
+            leftDelta.pluss(ABduvx, ABduvy);
+            rightDelta.pluss(CBduvx, CBduvy);
             xl -= dl;
             xr -= dr;
         }
+        rightPart = upperPart;
+        dCB.setXY(rightPart.p1); dCB.sub(rightPart.p0);
+        CBuv.setXY(rightPart.uv1); CBuv.sub(rightPart.uv0);
+        dCBlv = Util.compare2(dCB.getY(), 0.0f) ? 0 : 1.0f/Math.abs(dCB.getY());
+        CBduvx = dCBlv * CBuv.getX();
+        CBduvy = dCBlv * CBuv.getY();
+        rightDelta.setXY(rightPart.uv0);
 
         yStop = (int) Math.floor(longPart.p1.getY());
         dr = upperPart.dl;
@@ -194,9 +218,16 @@ public class TriangleRendererReversedTexture {
         for (; y > yStop; y--) {
             int stopX = (int) Math.floor(xr);
             int startX = longPart.leftside ? (int) Math.ceil(xl) : (int) Math.floor(xl);
+            float deltaX = stopX - startX;
+            float oneOverDeltaX = Util.compare(deltaX, 0.0f) ? 0.0f : 1.0f/(deltaX + 1);
+            float oneOverDeltaXInc = oneOverDeltaX;
             for (int x = startX; x <= stopX; x++) {
-                renderer.setPixel(x, y, 0xffddeeee);
+                rightPart.lerp(oneOverDeltaXInc, leftDelta, rightDelta, result);
+                setColor(color, y, x);
+                oneOverDeltaXInc += oneOverDeltaX;
             }
+            leftDelta.pluss(ABduvx, ABduvy);
+            rightDelta.pluss(CBduvx, CBduvy);
             xl -= dl;
             xr -= dr;
         }
