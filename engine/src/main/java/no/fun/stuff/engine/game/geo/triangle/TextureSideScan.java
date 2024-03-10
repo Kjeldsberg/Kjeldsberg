@@ -30,8 +30,11 @@ public class TextureSideScan {
         flatLine = Math.abs(dy) < THRESHOLD;
         oneOverDy = 1 / dy;
         dl = flatLine ? 0 : dx * oneOverDy;
-//        uDelta = flatLine ? 0 : (uv0.getX() - uv1.getX()) * oneOverDy;
-//        vDelta = flatLine ? 0 : (uv0.getY() - uv1.getY()) * oneOverDy;
+        float tdu = uv1.getX() - uv0.getX();
+        float tdv = uv1.getY() - uv0.getY();
+
+        uDelta = oneOverDy * tdu;
+        vDelta = oneOverDy * tdv;
     }
 
     public void setNewEgde(final Vector2D p0, final Vector2D p1, final Vector2D uv0, final Vector2D uv1) {
@@ -99,5 +102,20 @@ public class TextureSideScan {
         b.mul(delta);
         a.pluss(b);
     }
-
+    public static boolean isOutsideScreen(Vector2D v1, Vector2D v2, Vector2D v3, int screenWidth, int screenHeight) {
+        int ret = 0;
+        boolean b1 = v1.getX() < 0 || v1.getX() > screenWidth || v1.getY() < 0 || v1.getY() > screenHeight;
+        if (!b1) {
+            ret |=1;
+        }
+        boolean b2 = v2.getX() < 0 || v2.getX() > screenWidth || v2.getY() < 0 || v2.getY() > screenHeight;
+        if (!b2) {
+            ret |=2;
+        }
+        boolean b3 = v3.getX() < 0 || v3.getX() > screenWidth || v3.getY() < 0 || v3.getY() > screenHeight;
+        if (!b3) {
+            ret |=4;
+        }
+        return ret == 0;
+    }
 }

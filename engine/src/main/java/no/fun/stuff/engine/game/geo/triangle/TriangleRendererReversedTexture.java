@@ -11,16 +11,23 @@ public class TriangleRendererReversedTexture {
     private final Vector2D[] workingtexture = new Vector2D[]{new Vector2D(), new Vector2D(), new Vector2D()};
     private final Vector2D[] orderedTexture = new Vector2D[]{new Vector2D(), new Vector2D(), new Vector2D()};
     private final Vector2D[] ordered = new Vector2D[]{new Vector2D(), new Vector2D(), new Vector2D()};
-    private final Vector2D[] texture = new Vector2D[3];
     private final TextureSideScan p1p0 = new TextureSideScan(new Vector2D(), new Vector2D(), new Vector2D(), new Vector2D());
     private final TextureSideScan p2p0 = new TextureSideScan(new Vector2D(), new Vector2D(), new Vector2D(), new Vector2D());
     private final TextureSideScan lowerLeft = new TextureSideScan(new Vector2D(), new Vector2D(), new Vector2D(), new Vector2D());
+    private final Vector2D rightDelta = new Vector2D();
+    private final Vector2D leftDelta = new Vector2D();
+    private final Vector2D adden = new Vector2D();
+    private final Vector2D result = new Vector2D();
+
     public TriangleRendererReversedTexture(final Renderer renderer) {
         this.renderer = renderer;
     }
+
     private RotateToLowestY rotateToLowestY = new RotateToLowestY();
+
     public void drawTriangle(final Vector2D v1, final Vector2D v2, final Vector2D v3,
                              final Vector2D uv1, final Vector2D uv2, final Vector2D uv3, final Image theImage) {
+
         workingVectors[0].setXY(v1);
         workingVectors[1].setXY(v2);
         workingVectors[2].setXY(v3);
@@ -44,38 +51,35 @@ public class TriangleRendererReversedTexture {
         final Vector2D UV0 = orderedTexture[0];
         final Vector2D UV1 = orderedTexture[1];
         final Vector2D UV2 = orderedTexture[2];
-        final boolean toLeft = p1.getX() <= p2.getX();
         TextureSideScan longSide;
         TextureSideScan upperLeft;
         p1p0.setNewEgde(p1, p0, UV1, UV0);
         p2p0.setNewEgde(p2, p0, UV2, UV0);
 
-        if (toLeft) {
-            if (p1.getY() > p2.getY()) {
-                longSide = p1p0;    //new SideScan(p1, p0);
-                upperLeft = p2p0;//new SideScan(p2, p0);
-                lowerLeft.setNewEgde(p1, p2, UV1, UV2);// = new SideScan(p1, p2);
-                longSide.leftside = firstSideLefts;
-                upperLeft.leftside = thirdSideLefts;
-                lowerLeft.leftside = secondSideLefts;
-                if (upperLeft.flatLine) {
-                    drawFlattTop(longSide, lowerLeft, upperLeft, theImage);
-                } else {
-                    drawRightSegments(upperLeft, lowerLeft, longSide, theImage);
-                }
+        if (p1.getY() > p2.getY()) {
+            longSide = p1p0;
+            upperLeft = p2p0;
+            lowerLeft.setNewEgde(p1, p2, UV1, UV2);
+            longSide.leftside = firstSideLefts;
+            upperLeft.leftside = thirdSideLefts;
+            lowerLeft.leftside = secondSideLefts;
+            if (upperLeft.flatLine) {
+                drawFlattTop(longSide, lowerLeft, theImage);
             } else {
-                longSide = p2p0; //new SideScan(p2, p0);
-                upperLeft = p1p0; //new SideScan(p1, p0);
-                lowerLeft.setNewEgde(p2, p1, UV2, UV1); //= new SideScan(p2, p1);
-                longSide.leftside = thirdSideLefts;
-                upperLeft.leftside = firstSideLefts;
-                lowerLeft.leftside = secondSideLefts;
+                drawRightSegments(upperLeft, lowerLeft, longSide, theImage);
+            }
+        } else {
+            longSide = p2p0;
+            upperLeft = p1p0;
+            longSide.leftside = thirdSideLefts;
+            upperLeft.leftside = firstSideLefts;
+            lowerLeft.leftside = secondSideLefts;
+            lowerLeft.setNewEgde(p2, p1, UV2, UV1);
 
-                if (lowerLeft.flatLine) {
-                    drawFlattBottom(upperLeft, longSide, lowerLeft,theImage);
-                } else {
-                    drawLeftSegments(upperLeft, lowerLeft, longSide, theImage);
-                }
+            if (lowerLeft.flatLine) {
+                drawFlattBottom(upperLeft, longSide, theImage);
+            } else {
+                drawLeftSegments(upperLeft, lowerLeft, longSide, theImage);
             }
         }
     }
@@ -95,44 +99,31 @@ public class TriangleRendererReversedTexture {
         float xr = longPart.p0.getX();
         TextureSideScan leftPart = lowerPart;
         TextureSideScan rightPart = longPart;
-        ABuv.setXY(leftPart.uv1); ABuv.sub(leftPart.uv0);
-        CBuv.setXY(rightPart.uv1); CBuv.sub(rightPart.uv0);
-        dAB.setXY(leftPart.p1); dAB.sub(leftPart.p0);
-        dCB.setXY(rightPart.p1); dCB.sub(rightPart.p0);
-        float dABlv = Util.compare2(dAB.getY(), 0.0f) ? 0 : 1.0f/Math.abs(dAB.getY());
-        float dCBlv = Util.compare2(dCB.getY(), 0.0f) ? 0 : 1.0f/Math.abs(dCB.getY());
-        float ABduvx = dABlv * ABuv.getX();
-        float ABduvy = dABlv * ABuv.getY();
-        float CBduvx = dCBlv * CBuv.getX();
-        float CBduvy = dCBlv * CBuv.getY();
-        Vector2D rightDelta = new Vector2D(rightPart.uv0);
-        Vector2D leftDelta = new Vector2D(leftPart.uv0);
+        rightDelta.setXY(rightPart.uv0);
+        leftDelta.setXY(leftPart.uv0);
 
         int y = yStart;
         for (; y > yStop; y--) {
             int startX = lowerPart.leftside ? (int) Math.ceil(xl) : (int) Math.floor(xl);
             int stopX = (int) Math.floor(xr);
             float deltaX = stopX - startX;
-            float oneOverDeltaX = Util.compare(deltaX, 0.0f) ? 0.0f : 1.0f/(deltaX+1);
-            float oneOverDeltaXInc = oneOverDeltaX;
-
+            float oneOverDeltaX = Util.compare(deltaX, 0.0f) ? 0.0f : 1.0f / (deltaX + 1);
+            result.setXY(leftDelta);
+            adden.setXY(rightDelta);
+            adden.sub(leftDelta);
+            adden.mul(oneOverDeltaX, oneOverDeltaX);
             for (int x = startX; x <= stopX; x++) {
-                leftPart.lerp(oneOverDeltaXInc, leftDelta, rightDelta, result);
-                setColor(texture, y, x);
-                oneOverDeltaXInc += oneOverDeltaX;
+                int i = getColor(texture);
+                renderer.setPixel(x, y, i);
+                result.pluss(adden);
             }
-            leftDelta.pluss(ABduvx, ABduvy);
-            rightDelta.pluss(CBduvx, CBduvy);
+            leftDelta.pluss(leftPart.uDelta, leftPart.vDelta);
+            rightDelta.pluss(rightPart.uDelta, rightPart.vDelta);
             xl -= dl;
             xr -= dr;
         }
 
         leftPart = upperPart;
-        dAB.setXY(leftPart.p1); dAB.sub(leftPart.p0);
-        ABuv.setXY(leftPart.uv1); ABuv.sub(leftPart.uv0);
-        dABlv = Util.compare2(dAB.getY(), 0.0f) ? 0 : 1.0f/Math.abs(dAB.getY());
-        ABduvx = dABlv * ABuv.getX();
-        ABduvy = dABlv * ABuv.getY();
         leftDelta.setXY(leftPart.uv0);
 
         yStop = (int) Math.floor(longPart.p1.getY());
@@ -142,16 +133,19 @@ public class TriangleRendererReversedTexture {
             int startX = upperPart.leftside ? (int) Math.ceil(xl) : (int) Math.floor(xl);
             int stopX = (int) Math.floor(xr);
             float deltaX = stopX - startX;
-            float oneOverDeltaX = Util.compare(deltaX, 0.0f) ? 0.0f : 1.0f/(deltaX+1);
-            float oneOverDeltaXInc = oneOverDeltaX;
+            float oneOverDeltaX = Util.compare(deltaX, 0.0f) ? 0.0f : 1.0f / (deltaX + 1);
+            result.setXY(leftDelta);
+            adden.setXY(rightDelta);
+            adden.sub(leftDelta);
+            adden.mul(oneOverDeltaX, oneOverDeltaX);
 
             for (int x = startX; x <= stopX; x++) {
-                leftPart.lerp(oneOverDeltaXInc, leftDelta, rightDelta, result);
-                setColor(texture, y, x);
-                oneOverDeltaXInc += oneOverDeltaX;
+                int i = getColor(texture);
+                renderer.setPixel(x, y, i);
+                result.pluss(adden);
             }
-            leftDelta.pluss(ABduvx, ABduvy);
-            rightDelta.pluss(CBduvx, CBduvy);
+            leftDelta.pluss(leftPart.uDelta, leftPart.vDelta);
+            rightDelta.pluss(rightPart.uDelta, rightPart.vDelta);
             xl -= dl;
             xr -= dr;
         }
@@ -172,44 +166,31 @@ public class TriangleRendererReversedTexture {
         float xr = lowerPart.p0.getX();
         TextureSideScan leftPart = longPart;
         TextureSideScan rightPart = lowerPart;
-        ABuv.setXY(leftPart.uv1); ABuv.sub(leftPart.uv0);
-        CBuv.setXY(rightPart.uv1); CBuv.sub(rightPart.uv0);
-        dAB.setXY(leftPart.p1); dAB.sub(leftPart.p0);
-        dCB.setXY(rightPart.p1); dCB.sub(rightPart.p0);
-        float dABlv = Util.compare2(dAB.getY(), 0.0f) ? 0 : 1.0f/Math.abs(dAB.getY());
-        float dCBlv = Util.compare2(dCB.getY(), 0.0f) ? 0 : 1.0f/Math.abs(dCB.getY());
-        float ABduvx = dABlv * ABuv.getX();
-        float ABduvy = dABlv * ABuv.getY();
-        float CBduvx = dCBlv * CBuv.getX();
-        float CBduvy = dCBlv * CBuv.getY();
-        Vector2D rightDelta = new Vector2D(rightPart.uv0);
-        Vector2D leftDelta = new Vector2D(leftPart.uv0);
+        rightDelta.setXY(rightPart.uv0);
+        leftDelta.setXY(leftPart.uv0);
 
         int y;
         for (y = yStart; y > yStop; y--) {
             int startX = longPart.leftside ? (int) Math.ceil(xl) : (int) Math.floor(xl);
             int stopX = (int) Math.floor(xr);
             float deltaX = stopX - startX;
-            float oneOverDeltaX = Util.compare(deltaX, 0.0f) ? 0.0f : 1.0f/(deltaX+1);
-            float oneOverDeltaXInc = oneOverDeltaX;
+            float oneOverDeltaX = Util.compare(deltaX, 0.0f) ? 0.0f : 1.0f / (deltaX + 1);
+            result.setXY(leftDelta);
+            adden.setXY(rightDelta);
+            adden.sub(leftDelta);
+            adden.mul(oneOverDeltaX, oneOverDeltaX);
 
             for (int x = startX; x <= stopX; x++) {
-                leftPart.lerp(oneOverDeltaXInc, leftDelta, rightDelta, result);
-                setColor(color, y, x);
-                oneOverDeltaXInc += oneOverDeltaX;
-
+                int i = getColor(color);
+                renderer.setPixel(x, y, i);
+                result.pluss(adden);
             }
-            leftDelta.pluss(ABduvx, ABduvy);
-            rightDelta.pluss(CBduvx, CBduvy);
+            leftDelta.pluss(leftPart.uDelta, leftPart.vDelta);
+            rightDelta.pluss(rightPart.uDelta, rightPart.vDelta);
             xl -= dl;
             xr -= dr;
         }
         rightPart = upperPart;
-        dCB.setXY(rightPart.p1); dCB.sub(rightPart.p0);
-        CBuv.setXY(rightPart.uv1); CBuv.sub(rightPart.uv0);
-        dCBlv = Util.compare2(dCB.getY(), 0.0f) ? 0 : 1.0f/Math.abs(dCB.getY());
-        CBduvx = dCBlv * CBuv.getX();
-        CBduvy = dCBlv * CBuv.getY();
         rightDelta.setXY(rightPart.uv0);
 
         yStop = (int) Math.floor(longPart.p1.getY());
@@ -219,29 +200,28 @@ public class TriangleRendererReversedTexture {
             int stopX = (int) Math.floor(xr);
             int startX = longPart.leftside ? (int) Math.ceil(xl) : (int) Math.floor(xl);
             float deltaX = stopX - startX;
-            float oneOverDeltaX = Util.compare(deltaX, 0.0f) ? 0.0f : 1.0f/(deltaX + 1);
-            float oneOverDeltaXInc = oneOverDeltaX;
+            //deltaX + 1 because x <= stopX in the x-axis loop
+            float oneOverDeltaX = Util.compare(deltaX, 0.0f) ? 0.0f : 1.0f / (deltaX + 1);
+            result.setXY(leftDelta);
+            adden.setXY(rightDelta);
+            adden.sub(leftDelta);
+            adden.mul(oneOverDeltaX, oneOverDeltaX);
+
             for (int x = startX; x <= stopX; x++) {
-                rightPart.lerp(oneOverDeltaXInc, leftDelta, rightDelta, result);
-                setColor(color, y, x);
-                oneOverDeltaXInc += oneOverDeltaX;
+                int i = getColor(color);
+                renderer.setPixel(x, y, i);
+                result.pluss(adden);
             }
-            leftDelta.pluss(ABduvx, ABduvy);
-            rightDelta.pluss(CBduvx, CBduvy);
+            leftDelta.pluss(leftPart.uDelta, leftPart.vDelta);
+            rightDelta.pluss(rightPart.uDelta, rightPart.vDelta);
             xl -= dl;
             xr -= dr;
         }
     }
-    final Vector2D ABuv = new Vector2D();
-    final Vector2D CBuv = new Vector2D();
-    final Vector2D dAB = new Vector2D();
-    final Vector2D dCB = new Vector2D();
-    final Vector2D result = new Vector2D();
-    final Vector2D add = new Vector2D();
 
     public void drawFlattTop(final TextureSideScan leftPart,
-                                     final TextureSideScan rightPart,
-                                     final TextureSideScan upperpart, Image color) {
+                             final TextureSideScan rightPart,
+                             final Image color) {
 
         int yStart = (int) Math.floor(leftPart.p0.getY());
         float yStop = (int) Math.floor(leftPart.p1.getY());
@@ -249,72 +229,63 @@ public class TriangleRendererReversedTexture {
         float xr = rightPart.p0.getX();
         float dl = leftPart.dl;
         float dr = rightPart.dl;
-        ABuv.setXY(leftPart.uv1); ABuv.sub(leftPart.uv0);
-        CBuv.setXY(rightPart.uv1); CBuv.sub(rightPart.uv0);
-        dAB.setXY(leftPart.p1); dAB.sub(leftPart.p0);
-        dCB.setXY(rightPart.p1); dCB.sub(rightPart.p0);
-        float dABlu = Util.compare2(dAB.getX(), 0.0f) ? 0 : 1.0f/Math.abs(dAB.getX());
-        float dABlv = Util.compare2(dAB.getY(), 0.0f) ? 0 : 1.0f/Math.abs(dAB.getY());
-        float dCBlu = Util.compare2(dCB.getX(), 0.0f) ? 0 : 1.0f/Math.abs(dCB.getX());
-        float dCBlv = Util.compare2(dCB.getY(), 0.0f) ? 0 : 1.0f/Math.abs(dCB.getY());
-        float ABduvx = dABlu * ABuv.getX();
-        float ABduvy = dABlv * ABuv.getY();
-        float CBduvx = dCBlu * CBuv.getX();
-        float CBduvy = dCBlv * CBuv.getY();
-        Vector2D rightDelta = new Vector2D(rightPart.uv0);
-        Vector2D leftDelta = new Vector2D(leftPart.uv0);
+        rightDelta.setXY(rightPart.uv0);
+        leftDelta.setXY(leftPart.uv0);
+
         for (int y = yStart; y > yStop; y--) {
             int start = (int) Math.floor(xl);
             int stop = (int) Math.floor(xr);
             float deltaX = stop - start;
-            float oneOverDeltaX = Util.compare(deltaX, 0.0f) ? 0.0f : 1.0f/deltaX;
-            float oneOverDeltaXInc = oneOverDeltaX;
+            float oneOverDeltaX = Util.compare(deltaX, 0.0f) ? 0.0f : 1.0f / deltaX;
+            result.setXY(leftDelta);
+            adden.setXY(rightDelta);
+            adden.sub(leftDelta);
+            adden.mul(oneOverDeltaX, oneOverDeltaX);
+
             for (int x = start; x < stop; x++) {
-                leftPart.lerp(oneOverDeltaXInc, leftDelta, rightDelta, result);
-                setColor(color, y, x);
-                oneOverDeltaXInc += oneOverDeltaX;
+                int i = getColor(color);
+                renderer.setPixel(x, y, i);
+                result.pluss(adden);
             }
-            leftDelta.pluss(ABduvx, ABduvy);
-            rightDelta.pluss(CBduvx, CBduvy);
+            leftDelta.pluss(leftPart.uDelta, leftPart.vDelta);
+            rightDelta.pluss(rightPart.uDelta, rightPart.vDelta);
             xr -= dr;
             xl -= dl;
         }
     }
 
-    private void setColor(Image color, int y, int x) {
+    private int getColor(Image color) {
         float u = result.getX();
         float v = result.getY();
-        if(u >= 1.0f) {
+        if (u >= 1.0f) {
             u = Util.ONE_MINUS_THRESHOLD;
         }
-        if(u < 0.0f) {
+        if (u < 0.0f) {
             u = Util.epsilon;
         }
-        if(v >= 1.0f) {
+        if (v >= 1.0f) {
             v = Util.ONE_MINUS_THRESHOLD;
         }
-        if(v < 0.0f) {
+        if (v < 0.0f) {
             v = Util.epsilon;
         }
         int w = color.getW();
         float a = w * u;
-        int tx = (int)Math.floor(a);
+        int tx = (int) Math.floor(a);
         int h = color.getH();
-        int ty = (int)Math.floor(h * v);
+        int ty = (int) Math.floor(h * v);
         int index = ty * w + tx;
-        if(index >= color.getP().length) {
-            int yersy =0;
-        }
-        if(index >= color.getP().length) {
+
+        if (index >= color.getP().length) {
             index = color.getP().length - 1;
         }
-        int i = color.getP()[index];
-        renderer.setPixel(x, y, i);
+        return color.getP()[index];
+
     }
 
     public void drawFlattBottom(final TextureSideScan leftPart,
                                 final TextureSideScan rightPart,
-                                final TextureSideScan upperpart, Image color) {
+                                final Image color) {
 
         int yStart = (int) Math.floor(leftPart.p0.getY());
         float yStop = (int) Math.floor(leftPart.p1.getY());
@@ -322,64 +293,29 @@ public class TriangleRendererReversedTexture {
         float xr = rightPart.p0.getX();
         float dl = leftPart.dl;
         float dr = rightPart.dl;
-        ABuv.setXY(leftPart.uv1); ABuv.sub(leftPart.uv0);
-        CBuv.setXY(rightPart.uv1); CBuv.sub(rightPart.uv0);
-        dAB.setXY(leftPart.p1); dAB.sub(leftPart.p0);
-        dCB.setXY(rightPart.p1); dCB.sub(rightPart.p0);
-        float dABlu = Util.compare2(dAB.getX(), 0.0f) ? 0 : 1.0f/Math.abs(dAB.getX());
-        float dABlv = Util.compare2(dAB.getY(), 0.0f) ? 0 : 1.0f/Math.abs(dAB.getY());
-        float dCBlu = Util.compare2(dCB.getX(), 0.0f) ? 0 : 1.0f/Math.abs(dCB.getX());
-        float dCBlv = Util.compare2(dCB.getY(), 0.0f) ? 0 : 1.0f/Math.abs(dCB.getY());
-        float ABduvx = dABlu * ABuv.getX();
-        float ABduvy = dABlv * ABuv.getY();
-        float CBduvx = dCBlu * CBuv.getX();
-        float CBduvy = dCBlv * CBuv.getY();
-        Vector2D rightDelta = new Vector2D(rightPart.uv0);
-        Vector2D leftDelta = new Vector2D(leftPart.uv0);
+        rightDelta.setXY(rightPart.uv0);
+        leftDelta.setXY(leftPart.uv0);
+
 
         for (int y = yStart; y > yStop; y--) {
             int start = (int) xl;
             int stop = (int) xr;
             float deltaX = stop - start;
 
-            float oneOverDeltaX = Util.compare(deltaX, 0.0f) ? 0.0f : 1.0f/ deltaX;
-            float oneOverDeltaXInc = oneOverDeltaX;
+            float oneOverDeltaX = Util.compare(deltaX, 0.0f) ? 0.0f : 1.0f / deltaX;
+            result.setXY(leftDelta);
+            adden.setXY(rightDelta);
+            adden.sub(leftDelta);
+            adden.mul(oneOverDeltaX, oneOverDeltaX);
+
             for (int x = start; x < stop; x++) {
-                leftPart.lerp(oneOverDeltaXInc, leftDelta, rightDelta, result);
-
-                float u = result.getX();
-                float v = result.getY();
-                if(u >= 1.0f) {
-                    u = Util.ONE_MINUS_THRESHOLD;
-                }
-                if(u < 0.0f) {
-                    u = Util.epsilon;
-                }
-                if(v >= 1.0f) {
-                    v = Util.ONE_MINUS_THRESHOLD;
-                }
-                if(v < 0.0f) {
-                    v = Util.epsilon;
-                }
-                int w = color.getW();
-                float a = w * u;
-                int tx = (int)Math.floor(a);
-                int h = color.getH();
-                int ty = (int)Math.floor(h * v);
-                int index = ty * w + tx;
-                if(index >= color.getP().length) {
-                    index = color.getP().length - 1;
-                }
-                int i = color.getP()[index];
-//                int test4 = i & 0x00FFFFFF;
-//                int test3 = test4 | 0x22000000;
-
+                int i = getColor(color);
                 renderer.setPixel(x, y, i);
-                oneOverDeltaXInc += oneOverDeltaX;
+                result.pluss(adden);
 
             }
-            leftDelta.pluss(ABduvx, ABduvy);
-            rightDelta.pluss(CBduvx, CBduvy);
+            leftDelta.pluss(leftPart.uDelta, leftPart.vDelta);
+            rightDelta.pluss(rightPart.uDelta, rightPart.vDelta);
 
             xr -= dr;
             xl -= dl;

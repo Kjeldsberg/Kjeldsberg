@@ -6,7 +6,10 @@ public class Matrix3x3 {
 	private float[][] m = {	{0, 0, 0},
 							{0, 0, 0},
 							{0, 0, 0}};
-	
+	private float[][] tmp = {	{0, 0, 0},
+							{0, 0, 0},
+							{0, 0, 0}};
+
 	private Point translate = new Point();
 	private float[][] identity = {	{1, 0, 0},
 									{0, 1, 0},
@@ -230,6 +233,19 @@ public class Matrix3x3 {
 		tmp[1][1] = m[1][0]*u[0][1] + m[1][1]*u[1][1];// + m[1][2]*u[2][1];
 		tmp[1][2] = m[1][0]*u[0][2] + m[1][1]*u[1][2] + m[1][2];//*u[2][2];
 		return ret;
+	}
+	public void fastMul(final Matrix3x3 matrix) {
+		float[][] u = matrix.m;
+		tmp[0][0] = m[0][0]*u[0][0] + m[0][1]*u[1][0];// + m[0][2]*u[2][0];
+		tmp[0][1] = m[0][0]*u[0][1] + m[0][1]*u[1][1];// + m[0][2]*u[2][1];
+		tmp[0][2] = m[0][0]*u[0][2] + m[0][1]*u[1][2] + m[0][2];//*u[2][2];
+
+		tmp[1][0] = m[1][0]*u[0][0] + m[1][1]*u[1][0];// + m[1][2]*u[2][0];
+		tmp[1][1] = m[1][0]*u[0][1] + m[1][1]*u[1][1];// + m[1][2]*u[2][1];
+		tmp[1][2] = m[1][0]*u[0][2] + m[1][1]*u[1][2] + m[1][2];//*u[2][2];
+		float[][] t = m;
+		m = tmp;
+		tmp = t;
 	}
 
 	public float[][] getCopy() {

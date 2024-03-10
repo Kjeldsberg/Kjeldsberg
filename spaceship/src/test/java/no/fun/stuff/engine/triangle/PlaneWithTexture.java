@@ -3,6 +3,7 @@ package no.fun.stuff.engine.triangle;
 import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.game.SceneObject;
 import no.fun.stuff.engine.game.geo.triangle.SideScan;
+import no.fun.stuff.engine.game.geo.triangle.TextureSideScan;
 import no.fun.stuff.engine.gfx.Image;
 import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Vector2D;
@@ -14,6 +15,7 @@ public class PlaneWithTexture extends SceneObject {
     private List<Vector2D> list = new ArrayList<>();
     private List<Vector2D> uv = new ArrayList<>();
     private int xDim, yDim;
+    private int screenWidth, screenHeight;
     private List<Integer> indexList = new ArrayList<>();
     private Vector2D[] localCoordinate;
     private Vector2D[] worldCoordinate;
@@ -30,9 +32,11 @@ public class PlaneWithTexture extends SceneObject {
     private Image texture;
     private final int color = 0x88556677;
 
-    public PlaneWithTexture(int xDim, int yDim) {
+    public PlaneWithTexture(int xDim, int yDim, int with, int height) {
         this.xDim = xDim;
         this.yDim = yDim;
+        this.screenWidth = with;
+        this.screenHeight = height;
         final SideScan upperLine = new SideScan(upLeft, upRight);
         final SideScan leftDown = new SideScan(upLeft, lowerLeft);
 //        texture = new Image("/pitrizzo-SpaceShip-gpl3-opengameart-24x24.png");
@@ -161,18 +165,24 @@ public class PlaneWithTexture extends SceneObject {
     public void update(SceneObject parent, float dt) {
         scale.scale(scaleValue);
         if (this.rotating) {
-            final float rad = 0.001f;
+            final float rad = 0.011f;
             this.rotation += rad;
             rotate.rotate(rad);
         }
     }
-
+    final Matrix3x3 tmp = new Matrix3x3();
     @Override
     public void render(SceneObject parent, Renderer r) {
-        this.model.set(this.translate.fastMulCopy(this.rotate).fastMulCopy(this.scale).getCopy());
+        tmp.set(translate);
+        tmp.fastMul(rotate);
+        tmp.fastMul(scale);
+//        Matrix3x3 matrix3x3 = this.translate.fastMulCopy(this.rotate).fastMulCopy(this.scale);
+        this.model.set(tmp.getCopy());
         Matrix3x3 viewModel = new Matrix3x3();
         if (parent != null) {
-            viewModel.set(parent.getModel().fastMulCopy(model));
+            tmp.set(parent.getModel());
+            tmp.fastMul(model);
+            viewModel.set(tmp);
         } else {
             viewModel.set(model);
         }
@@ -193,9 +203,12 @@ public class PlaneWithTexture extends SceneObject {
                 Vector2D uv1 = uv.get(p0);
                 Vector2D uv2 = uv.get(p1);
                 Vector2D uv3 = uv.get(p2);
-                r.textureTriangle(p11, p21, p3,
-                        uv1, uv2, uv3,
-                        texture);
+                boolean outsideScreen = TextureSideScan.isOutsideScreen(p11, p21, p3, screenWidth, screenWidth);
+                if(!outsideScreen) {
+                    r.textureTriangle(p11, p21, p3,
+                            uv1, uv2, uv3,
+                            texture);
+                }
             }
         }
     }
