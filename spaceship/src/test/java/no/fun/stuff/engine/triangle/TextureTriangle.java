@@ -18,10 +18,12 @@ public class TextureTriangle extends AbstractGame {
         gc.getRenderer().setAmbientcolor(-1);
 //∕        e = new SimpleSquareWithTriangle.Square(gc);
         scene.addChild(planeWithTexture);
-        LookAtCamera lookAtCamera = new LookAtCamera(planeWithTexture, new Vector2D(gc.getWith(), gc.getHeight()));
+        LookAtCamera lookAtCamera = new LookAtCamera(planeWithTexture,
+                new Vector2D(gc.getWith(), gc.getHeight()),
+                new Vector2D(360, 326));
         scene.setCamera(lookAtCamera);
         planeWithTexture.getRotate().rotate(0.0f);
-        planeWithTexture.getScale().scale(13.0f);
+//        planeWithTexture.getScale().scale(3.0f);
         planeWithTexture.setRotating(true);
 
     }

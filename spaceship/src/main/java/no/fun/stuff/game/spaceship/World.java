@@ -4,14 +4,14 @@ import no.fun.stuff.engine.GameContainer;
 import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.game.Camera2D;
 import no.fun.stuff.engine.game.ImageLevel;
-import no.fun.stuff.engine.game.SceneObject;
+import no.fun.stuff.engine.game.objects.SceneObject;
 import no.fun.stuff.engine.matrix.Vector2D;
 
 public class World extends SceneObject {
 	final Camera2D camera2;
 
 	public World(final GameContainer gc) {
-		camera2 = new Camera2D(new Vector2D(gc.getWith(), gc.getHeight()));
+		camera2 = new Camera2D(new Vector2D(gc.getWith(), gc.getHeight()), new Vector2D(8, 6));
 		final SpaceShip spaceShip = new SpaceShip(gc, 48, 48);
 		camera2.lookAt(spaceShip);
 		this.child.add(spaceShip);

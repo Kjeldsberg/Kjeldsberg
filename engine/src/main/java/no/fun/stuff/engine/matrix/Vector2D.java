@@ -1,5 +1,7 @@
 package no.fun.stuff.engine.matrix;
 
+import no.fun.stuff.engine.game.util.Util;
+
 public class Vector2D {
 	private float x, y;
 
@@ -19,7 +21,10 @@ public class Vector2D {
 	
 	public Vector2D() {
 	}
-	
+	public float cross(final Vector2D v) {
+		return x * v.y - y * v.x;
+	}
+
 	public void setXY(final Point p) {
 		x = p.getX();
 		y = p.getY();
@@ -32,11 +37,16 @@ public class Vector2D {
 		x = p.x;
 		y = p.y;
 	}
-	
+	public float dot(final Vector2D v) {
+		return x * v.x + y*v.y;
+	}
 	public void normaize() {
-		float len = 1/(float)Math.sqrt(x*x + y*y);
-		x *= len;
-		y *= len;
+		float sqrt = (float) Math.sqrt(x * x + y * y);
+		if(Math.abs(sqrt) > Util.epsilon) {
+			float len = 1/ sqrt;
+			x *= len;
+			y *= len;
+		}
 	}
 	public float length() {
 		return (float)Math.sqrt(x*x + y*y);
@@ -74,11 +84,6 @@ public class Vector2D {
 		return this;
 	}
 
-	public Vector2D mulXYComponent(final Vector2D scale) {
-		this.x *= scale.x;
-		this.y *= scale.y;
-		return this;
-	}
 	public Vector2D pluss(float x, float y) {
 		this.x += x;
 		this.y += y;

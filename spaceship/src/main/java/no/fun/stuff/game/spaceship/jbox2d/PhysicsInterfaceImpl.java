@@ -1,6 +1,6 @@
 package no.fun.stuff.game.spaceship.jbox2d;
 
-import no.fun.stuff.engine.game.SceneObject;
+import no.fun.stuff.engine.game.objects.SceneObject;
 import no.fun.stuff.game.spaceship.physics.PhysicInterface;
 import org.jbox2d.dynamics.Body;
 

@@ -1,28 +1,75 @@
 package no.fun.stuff.engine.game.objects;
 
+import no.fun.stuff.engine.Renderer;
+import no.fun.stuff.engine.game.Clickable;
+import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Vector2D;
 
-public class Circle {
+public class Circle extends Body implements Clickable {
+    private final Vector2D position;
+    private final float radius;
+    private int color;
+    private final Vector2D up;
+    int counter = 0;
 
-    public void drawCircle(Vector2D center, float radius) {
-
-        float diamer = radius*2;
-        final Vector2D up = new Vector2D(0.0f, 1.0f);
-        final Vector2D workingUp = new Vector2D(up).scale(radius);
-        float ySlope = 1.0f/radius;
-        Vector2D workVector = new Vector2D(center);
-//        workVector.pluss(workingUp);
-        workVector.setXY(0.0f, -radius);
-        for(int y = 0;y<(int)diamer;y++) {
-            float y1 = workVector.getY() * workVector.getY();
-            float x = (float)Math.sqrt(radius*radius - y1);
-            int start = (int)-x;
-            int stop = (int)x;
-            System.out.println("Start: " + start + "\t stop: " + stop);
-//            for(int i = start;i<stop;i++) {
-//            }
-            workVector.pluss(-ySlope, ySlope);
-        }
-
+    public Circle(final Vector2D position, float radius, int color) {
+        this.position = position;
+        this.radius = radius;
+        this.color = color;
+        up = new Vector2D(0.0f, radius);
+        localCoordinate = new Vector2D[]{position, up};
+        worldCoordinate = new Vector2D[] {new Vector2D(), new Vector2D()};
     }
+    public Circle(float radius, int color) {
+        this.position = new Vector2D();
+        this.radius = radius;
+        this.color = color;
+        up = new Vector2D(0.0f, radius);
+        localCoordinate = new Vector2D[]{position, up};
+        worldCoordinate = new Vector2D[]{new Vector2D(), new Vector2D()};
+    }
+
+
+    @Override
+    public void update(SceneObject parent, float dt) {
+    }
+
+    @Override
+    public void render(SceneObject parent, Renderer renderer) {
+
+        calculateViewModel(parent);
+        Matrix3x3 scaleMatrix = new Matrix3x3();
+        if (parent != null) {
+            scaleMatrix.set(parent.getScale());
+            scaleMatrix.fastMul(getScale());
+
+        } else {
+            scaleMatrix.set(scaleMatrix);
+        }
+        Vector2D radius = scaleMatrix.mul(localCoordinate[1]);
+        pos.setXY(viewModel.mul(localCoordinate[0]));
+        renderer.drawText("counter: " + counter++, 50, 500, 0xffffffff);
+        renderer.drawCircle(pos, radius.getY(), color);
+    }
+
+    @Override
+    public boolean clickedOn(Vector2D position, final Matrix3x3 cameraMatrix) {
+        Matrix3x3 inverseModel = calculateInverseModel();
+        Matrix3x3 matrix3x3 = inverseModel.mulCopy(cameraMatrix);
+        Vector2D lo = matrix3x3.mul(position);
+        Vector2D mul = matrix3x3.mul(pos);
+        lo.sub(mul);
+        float length = lo.length();
+
+        return length < localCoordinate[1].getY();
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
 }

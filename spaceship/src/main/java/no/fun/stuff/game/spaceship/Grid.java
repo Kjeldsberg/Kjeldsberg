@@ -1,8 +1,7 @@
 package no.fun.stuff.game.spaceship;
 
 import no.fun.stuff.engine.Renderer;
-import no.fun.stuff.engine.game.Rect;
-import no.fun.stuff.engine.game.SceneObject;
+import no.fun.stuff.engine.game.objects.SceneObject;
 import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Point;
 import no.fun.stuff.engine.matrix.Vector2D;

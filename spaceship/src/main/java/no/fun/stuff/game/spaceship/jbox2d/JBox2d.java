@@ -1,7 +1,7 @@
 package no.fun.stuff.game.spaceship.jbox2d;
 
-import no.fun.stuff.engine.game.Rect;
-import no.fun.stuff.engine.game.SceneObject;
+import no.fun.stuff.engine.game.objects.Rect;
+import no.fun.stuff.engine.game.objects.SceneObject;
 import no.fun.stuff.engine.matrix.Vector2D;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;

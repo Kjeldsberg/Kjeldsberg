@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import no.fun.stuff.engine.game.Rect;
+import no.fun.stuff.engine.game.objects.Rect;
 import no.fun.stuff.engine.game.geo.triangle.TriangleRendererReversed;
 import no.fun.stuff.engine.game.geo.triangle.TriangleRendererReversedTexture;
 import no.fun.stuff.engine.game.objects.Rect4PointRenderer;
@@ -47,6 +47,23 @@ public class Renderer {
         lb = new int[p.length];
         triangleRenderer = new TriangleRendererReversed(this);
         textureTriangleRenderer = new TriangleRendererReversedTexture(this);
+    }
+    public void drawCircle(Vector2D center, float radius, int color) {
+        float positiveRadius = Math.abs(radius);
+        float radius2 = positiveRadius * positiveRadius;
+        float x = -positiveRadius;
+        int ra = (int) positiveRadius;
+        for (int xx = -ra; xx <= 0; x += 1.0f, xx++) {
+            int y = (int) Math.sqrt(radius2 - x * x);
+            float y1 = center.getY();
+            int thePlussx = (int)(center.getX() + x);
+            int theMinusx = (int)(center.getX() - x);
+            for (int i = -y; i < y; i++) {
+                int ypos = (int) (y1 + i);
+                setPixel(thePlussx, ypos, color);
+                setPixel(theMinusx, ypos, color);
+            }
+        }
     }
 
     public void textureTriangle(final Vector2D p1, final Vector2D p2, final Vector2D p3,

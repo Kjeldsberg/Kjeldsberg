@@ -1,7 +1,7 @@
 package no.fun.stuff.engine.triangle;
 
 import no.fun.stuff.engine.Renderer;
-import no.fun.stuff.engine.game.SceneObject;
+import no.fun.stuff.engine.game.objects.SceneObject;
 import no.fun.stuff.engine.game.geo.triangle.SideScan;
 import no.fun.stuff.engine.game.geo.triangle.TextureSideScan;
 import no.fun.stuff.engine.gfx.Image;

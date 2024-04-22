@@ -1,7 +1,7 @@
 package no.fun.stuff.engine.triangle;
 
 import no.fun.stuff.engine.Renderer;
-import no.fun.stuff.engine.game.SceneObject;
+import no.fun.stuff.engine.game.objects.SceneObject;
 import no.fun.stuff.engine.game.geo.triangle.SideScan;
 import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Vector2D;
@@ -165,7 +165,7 @@ public class ObjectAsTriangle extends SceneObject {
 
     @Override
     public void render(SceneObject parent, Renderer r) {
-        this.model.set(this.translate.fastMulCopy(this.rotate).fastMulCopy(this.scale).getCopy());
+        this.model.fastMul(translate, rotate, scale);
         Matrix3x3 viewModel = new Matrix3x3();
         if (parent != null) {
             viewModel.set(parent.getModel().fastMulCopy(model));

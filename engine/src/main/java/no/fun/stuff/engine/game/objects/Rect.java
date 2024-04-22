@@ -1,4 +1,4 @@
-package no.fun.stuff.engine.game;
+package no.fun.stuff.engine.game.objects;
 
 import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.matrix.Matrix3x3;

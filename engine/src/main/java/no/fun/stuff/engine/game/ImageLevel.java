@@ -1,8 +1,10 @@
 package no.fun.stuff.engine.game;
 
 import no.fun.stuff.engine.Renderer;
+import no.fun.stuff.engine.game.objects.Rect;
+import no.fun.stuff.engine.game.objects.Rectangle;
+import no.fun.stuff.engine.game.objects.SceneObject;
 import no.fun.stuff.engine.gfx.Image;
-import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Vector2D;
 public class ImageLevel extends SceneObject {
 	private final Image level;

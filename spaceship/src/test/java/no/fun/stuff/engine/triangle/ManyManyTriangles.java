@@ -12,6 +12,7 @@ public class ManyManyTriangles extends AbstractGame {
     private final TriangleScene scene = new TriangleScene();
     private ObjectAsTriangle objectAsTriangle;
     private boolean rotate = false;
+    private LookAtCamera lookAtCamera;
     @Override
     public void init(GameContainer gc) {
 
@@ -19,8 +20,9 @@ public class ManyManyTriangles extends AbstractGame {
 
         //∕        e = new SimpleSquareWithTriangle.Square(gc);
         scene.addChild(objectAsTriangle);
-        scene.addChild(new ObjectAsTriangle());
-        LookAtCamera lookAtCamera = new LookAtCamera(objectAsTriangle, new Vector2D(gc.getWith(), gc.getHeight()));
+//        scene.addChild(new ObjectAsTriangle());
+        Vector2D screenSize = new Vector2D(gc.getWith(), gc.getHeight());
+        lookAtCamera = new LookAtCamera(objectAsTriangle, screenSize, screenSize);
         scene.setCamera(lookAtCamera);
 
     }
@@ -30,12 +32,14 @@ public class ManyManyTriangles extends AbstractGame {
         if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
             float scaleValue = objectAsTriangle.getScaleValue();
             scaleValue += 0.05f;
-            objectAsTriangle.setScaleValue(scaleValue);
+            lookAtCamera.setZoom(0.05f);
+//            objectAsTriangle.setScaleValue(scaleValue);
         }
         if(gc.getInput().isKeyDown(KeyEvent.VK_S)) {
             float scaleValue = objectAsTriangle.getScaleValue();
             scaleValue -= 0.05f;
-            objectAsTriangle.setScaleValue(scaleValue);
+            lookAtCamera.setZoom(-0.05f);
+//            objectAsTriangle.setScaleValue(scaleValue);
         }
         if(gc.getInput().isKeyDown(KeyEvent.VK_SPACE)) {
             rotate = !rotate;

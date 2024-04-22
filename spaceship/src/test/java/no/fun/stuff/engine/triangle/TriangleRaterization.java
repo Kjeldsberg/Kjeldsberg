@@ -40,7 +40,6 @@ public class TriangleRaterization extends AbstractGame {
         triangle.getScale().scale(3.0f);
         triangle.getTranslate().translate(new Vector2D(160, 65));
         objectAsTriangle = new ObjectAsTriangle();
-//        objectAsTriangle.getTranslate().translate(new Vector2D(160, 120));
         objectAsTriangle.getScale().scale(1.0f);
         triangle.setAngle((float)Math.PI);
         LookAtCamera camera = new LookAtCamera(objectAsTriangle, new Vector2D(gc.getWith(), gc.getHeight()));

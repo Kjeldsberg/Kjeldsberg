@@ -5,9 +5,8 @@ package no.fun.stuff.game.spaceship;
 
 import no.fun.stuff.engine.GameContainer;
 import no.fun.stuff.engine.Renderer;
-import no.fun.stuff.engine.game.SceneObject;
+import no.fun.stuff.engine.game.objects.SceneObject;
 import no.fun.stuff.engine.game.texturemap.Texture2d;
-import no.fun.stuff.engine.game.util.Util;
 import no.fun.stuff.engine.gfx.Image;
 import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Point;
