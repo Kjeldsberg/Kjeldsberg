@@ -3,6 +3,10 @@ package no.fun.stuff.engine.game.objects;
 import no.fun.stuff.engine.matrix.Vector2D;
 
 public abstract class Body extends SceneObject {
+    public enum Shape {
+        Polygon, Circle
+    }
+    protected Shape shapeType;
     private boolean reCalculateCoordinate = true;
     private Vector2D center = new Vector2D();
     protected Vector2D[] localCoordinate;
@@ -58,5 +62,8 @@ public abstract class Body extends SceneObject {
         sumy /= vertex.length;
 //        center.setXY(sumX, sumy);
         return new Vector2D(sumX, sumy);
+    }
+    public Shape getShapeType() {
+        return shapeType;
     }
 }

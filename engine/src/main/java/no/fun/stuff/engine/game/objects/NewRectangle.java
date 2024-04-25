@@ -13,6 +13,7 @@ public class NewRectangle extends Body implements Clickable {
     private final boolean wireframe = true;
     private final RecClickedOn clickedOn;
     public NewRectangle(float width, float height) {
+        this.shapeType = Shape.Polygon;
         this.height = height;
         this. width = width;
         float halfWidth = width/2f;

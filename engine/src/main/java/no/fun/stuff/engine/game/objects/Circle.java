@@ -16,6 +16,7 @@ public class Circle extends Body implements Clickable {
         this.position = position;
         this.radius = radius;
         this.color = color;
+        this.shapeType = Shape.Circle;
         up = new Vector2D(0.0f, radius);
         localCoordinate = new Vector2D[]{position, up};
         worldCoordinate = new Vector2D[] {new Vector2D(), new Vector2D()};
@@ -24,12 +25,22 @@ public class Circle extends Body implements Clickable {
         this.position = new Vector2D();
         this.radius = radius;
         this.color = color;
+        this.shapeType = Shape.Circle;
         up = new Vector2D(0.0f, radius);
         localCoordinate = new Vector2D[]{position, up};
         worldCoordinate = new Vector2D[]{new Vector2D(), new Vector2D()};
     }
 
-
+    @Override
+    public Vector2D[] toWorldCoordinate() {
+        if(isReCalculateCoordinate()) {
+            calculateModel();
+            worldCoordinate[0] = model.mul(localCoordinate[0]);
+            worldCoordinate[1] = getScale().mul(up);
+            setReCalculateCoordinate(false);
+        }
+        return worldCoordinate;
+    }
     @Override
     public void update(SceneObject parent, float dt) {
     }
@@ -47,7 +58,8 @@ public class Circle extends Body implements Clickable {
             scaleMatrix.set(scaleMatrix);
         }
         Vector2D radius = scaleMatrix.mul(localCoordinate[1]);
-        pos.setXY(viewModel.mul(localCoordinate[0]));
+        Vector2D motionVector1 = localCoordinate[0];
+        pos.setXY(viewModel.mul(motionVector1));
         renderer.drawText("counter: " + counter++, 50, 500, 0xffffffff);
         renderer.drawCircle(pos, radius.getY(), color);
     }

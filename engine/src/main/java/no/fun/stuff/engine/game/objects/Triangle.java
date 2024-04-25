@@ -25,6 +25,7 @@ public class Triangle extends Body implements Clickable {
     }
 
     private void init() {
+        shapeType = Shape.Polygon;
         localCenter = new Vector2D((p1.getX() + p2.getX() + p3.getX())/3.0f, (p1.getY() + p2.getY() + p3.getY())/3.0f);
         pos.setXY(localCenter);
         Vector2D center = new Vector2D();

@@ -42,12 +42,9 @@ public class ObjectAsTriangle extends SceneObject {
         float vStep = 1.0f/yDim;
         for (int y = 0; y <= yDim; y++) {
             float currY = leftDown.p0.getY() + y * yStep;
-            float v = y*vStep;
             for (int x = 0; x <= xDim; x++) {
                 float currX = upperLine.p0.getX() + x * xStep;
                 list.add(new Vector2D(currX, currY));
-                float u = x*uStep;
-//                uv.add(new Vector2D(u, v));
             }
         }
         if (xDim == 1 && yDim == 1) {

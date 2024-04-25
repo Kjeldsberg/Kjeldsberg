@@ -23,7 +23,7 @@ public abstract class SceneObject {
 	protected Vector2D oldPos = new Vector2D();
 	protected Vector2D motionVector = new Vector2D();
 	protected Vector2D scaleValue = new Vector2D();
-	protected Matrix3x3 forInverseRoatate = new Matrix3x3();
+	protected Matrix3x3 forInverseRotate = new Matrix3x3();
 	protected float angle;
     protected boolean dead = false;
     protected boolean dirty = false;
@@ -136,7 +136,7 @@ public abstract class SceneObject {
     }
 
     public void calculateModel() {
-		forInverseRoatate.set(rotate);
+		forInverseRotate.set(rotate);
         scaleValue = scale.getScale();
         motionVector.setXY(translate.getMotionVector());
         model.fastMul(translate, rotate, scale);
@@ -160,7 +160,7 @@ public abstract class SceneObject {
 		translateInv.invertTranslate();
 		scaleInv.scale(scaleValue);
 		scaleInv.invertScale();
-		rotateInv.set(forInverseRoatate);
+		rotateInv.set(forInverseRotate);
 		rotateInv.transpose();
         modelInv.fastMul(scaleInv, rotateInv, translateInv);
         return modelInv;
