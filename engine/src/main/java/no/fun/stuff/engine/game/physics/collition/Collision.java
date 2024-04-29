@@ -17,7 +17,9 @@ public class Collision {
                 for (int j = i + 1; j < scene.getChild().size(); j++) {
 
                     final Body shapeB = (Body) scene.getChild().get(j);
-
+                    if(shapeA.isStatic() && shapeB.isStatic()) {
+                        continue;
+                    }
                     if (shapeA.getShapeType() == Body.Shape.Polygon) {
                         if (shapeB.getShapeType() == Body.Shape.Polygon) {
                             CollisionInfo collide = sat.polygonCollide(shapeA.toWorldCoordinate(), shapeB.toWorldCoordinate());

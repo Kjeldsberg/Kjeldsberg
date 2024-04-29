@@ -60,7 +60,8 @@ public class Circle extends Body implements Clickable {
         Vector2D radius = scaleMatrix.mul(localCoordinate[1]);
         Vector2D screenPos = viewModel.mul(localCoordinate[0]);
         renderer.drawText("counter: " + counter++, 50, 500, 0xffffffff);
-        renderer.drawCircle(screenPos, radius.getY(), color);
+        int c = isStatic() ? 0xff111111 : color;
+        renderer.drawCircle(screenPos, radius.getY(), c);
     }
 
     @Override

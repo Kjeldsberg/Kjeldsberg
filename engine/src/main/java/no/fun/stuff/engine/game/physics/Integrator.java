@@ -25,7 +25,7 @@ public class Integrator {
         Vector2D acc = new Vector2D(body.getAcceleration()).mul(dt * dt * 0.5f);
         Vector2D new_pos = new Vector2D(pos).add(vel).add(acc);
         Vector2D new_acc = applyForces(body);
-        Vector2D new_vel = body.getVelocity().add(acc.add(new_acc).mul(dt*0.5f));
+        Vector2D new_vel = body.getVelocity().add(acc.add(new_acc).mul(dt * 0.5f));
         body.getPos().setXY(new_pos);
         body.getVelocity().setXY(new_vel);
         body.getAcceleration().setXY(acc);

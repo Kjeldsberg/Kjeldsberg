@@ -32,21 +32,23 @@ public class NewRectangle extends Body implements Clickable {
     }
     @Override
     public void update(SceneObject parent, float dt) {
-        this.rotate(0.01f);
+//        this.rotate(0.01f);
     }
 
     @Override
     public void render(SceneObject parent, Renderer r) {
         calculateViewModel(parent);
         if(wireframe) {
-            drawLine(viewModel.mul(localCoordinate[0]), viewModel.mul(localCoordinate[1]), r);
-            drawLine(viewModel.mul(localCoordinate[1]), viewModel.mul(localCoordinate[2]), r);
-            drawLine(viewModel.mul(localCoordinate[2]), viewModel.mul(localCoordinate[3]), r);
-            drawLine(viewModel.mul(localCoordinate[3]), viewModel.mul(localCoordinate[0]), r);
+            int c = isStatic() ? 0xff111111 : color;
+
+            drawLine(viewModel.mul(localCoordinate[0]), viewModel.mul(localCoordinate[1]), r, c);
+            drawLine(viewModel.mul(localCoordinate[1]), viewModel.mul(localCoordinate[2]), r, c);
+            drawLine(viewModel.mul(localCoordinate[2]), viewModel.mul(localCoordinate[3]), r, c);
+            drawLine(viewModel.mul(localCoordinate[3]), viewModel.mul(localCoordinate[0]), r, c);
         }
     }
-    private void drawLine(final Vector2D v1, final Vector2D v2, final Renderer r) {
-        r.drawBresenhamLine((int)v1.getX(), (int)v1.getY(),(int)v2.getX(),(int)v2.getY(), color);
+    private void drawLine(final Vector2D v1, final Vector2D v2, final Renderer r, int c) {
+        r.drawBresenhamLine((int)v1.getX(), (int)v1.getY(),(int)v2.getX(),(int)v2.getY(), c);
     }
 
     public int getColor() {

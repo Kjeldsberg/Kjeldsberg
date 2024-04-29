@@ -5,11 +5,19 @@ import no.fun.stuff.engine.matrix.Vector2D;
 
 public class Resolve {
     public static void easyResolve(final Body shapeA, final Body shapeB, final CollisionInfo collide) {
-        float len = collide.getDepth() / 2f;
-        Vector2D scaleA = collide.getNormal().scale(len);
-        Vector2D scaleB = collide.getNormal().scale(-len);
-        shapeA.move(scaleA);
-        shapeB.move(scaleB);
+        Vector2D normal = collide.getNormal();
+        float depth = collide.getDepth();
+        if(shapeA.isStatic()) {
+            shapeB.move(normal.scale(-depth));
+        } else if(shapeB.isStatic()) {
+            shapeA.move(normal.scale(depth));
+        }else {
+            float len = depth * 0.5f;
+            Vector2D scaleA = normal.scale(len);
+            Vector2D scaleB = normal.scale(-len);
+            shapeA.move(scaleA);
+            shapeB.move(scaleB);
+        }
     }
     public static void impulse(final Body shapeA, final Body shapeB, final CollisionInfo collide) {
         float e = Math.min(shapeA.getRestitution(), shapeB.getRestitution());

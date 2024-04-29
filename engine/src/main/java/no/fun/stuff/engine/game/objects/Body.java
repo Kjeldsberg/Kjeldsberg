@@ -19,6 +19,7 @@ public abstract class Body extends SceneObject {
     private Vector2D acceleration = new Vector2D();
     protected Shape shapeType;
     private boolean reCalculateCoordinate = true;
+    private boolean isStatic = false;
     private Vector2D center = new Vector2D();
     protected Vector2D[] localCoordinate;
     protected Vector2D[] worldCoordinate;
@@ -42,6 +43,10 @@ public abstract class Body extends SceneObject {
 
     public void rotate(float angle) {
         this.angle += angle;
+        reCalculateCoordinate = true;
+    }
+    public void rotateTo(float angle) {
+        this.angle = angle;
         reCalculateCoordinate = true;
     }
     public void moveTo(final Vector2D position) {
@@ -98,7 +103,7 @@ public abstract class Body extends SceneObject {
     }
 
     public void setMass(float mass) {
-        this.inverseMass = 1f/mass;
+        this.inverseMass = isStatic ? 0f : 1f/mass;
         this.mass = mass;
     }
 
@@ -112,5 +117,16 @@ public abstract class Body extends SceneObject {
 
     public Vector2D getForce() {
         return force;
+    }
+
+    public boolean isStatic() {
+        return isStatic;
+    }
+
+    public void setStatic(boolean aStatic) {
+        isStatic = aStatic;
+        if(aStatic) {
+            inverseMass = 0;
+        }
     }
 }

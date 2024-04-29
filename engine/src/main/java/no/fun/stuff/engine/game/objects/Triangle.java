@@ -53,13 +53,11 @@ public class Triangle extends Body implements Clickable {
     @Override
     public void render(SceneObject parent, Renderer r) {
         calculateViewModel(parent);
-//        viewModel.mul(localCoordinate, worldCoordinate);
-//        setReCalculateCoordinate(false);
-
+        int c = isStatic() ? 0xff111111 : color;
         r.fillTriangle(
                 getViewModel().mul(localCoordinate[0]),
                 getViewModel().mul(localCoordinate[1]),
-                getViewModel().mul(localCoordinate[2]), color);
+                getViewModel().mul(localCoordinate[2]), c);
     }
 
     public int getColor() {

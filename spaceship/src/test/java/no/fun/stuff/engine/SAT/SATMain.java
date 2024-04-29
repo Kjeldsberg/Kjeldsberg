@@ -51,7 +51,8 @@ public class SATMain extends AbstractGame {
             final Vector2D triangle1Pos = new Vector2D(
             (float) Math.random() * viewPort.getX(),
             (float) Math.random() * viewPort.getY());
-
+            boolean b = Math.random() > 0.5;
+            triangle1.setStatic(b);
             triangle1.moveTo(triangle1Pos);
             scene.addChild(triangle1);
         }
@@ -61,6 +62,7 @@ public class SATMain extends AbstractGame {
                     (float) Math.random() * viewPort.getX(),
                     (float) Math.random() * viewPort.getY());
             rectangle.setMass(20.1f);
+            rectangle.setStatic(Math.random() > 0.5);
             rectangle.moveTo(randPos);
             scene.addChild(rectangle);
         }
@@ -70,10 +72,18 @@ public class SATMain extends AbstractGame {
                     (float) Math.random() * viewPort.getX(),
                     (float) Math.random() * viewPort.getY());
 //            circle.setPos(randPos);
+            circle.setStatic(Math.random() > 0.5);
             circle.setMass(1.5f);
             circle.moveTo(randPos);
             scene.addChild(circle);
         }
+//        NewRectangle rectangle = new NewRectangle(1f, 1f);
+//        final Vector2D randPos = new Vector2D(
+//                viewPort.getX()/2f,
+//                viewPort.getY()/2f);
+//        rectangle.setStatic(true);
+//        rectangle.moveTo(randPos);
+//        scene.addChild(rectangle);
         scene.setCamera(lookAtCamera);
 
     }
