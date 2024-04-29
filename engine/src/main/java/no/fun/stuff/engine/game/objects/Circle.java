@@ -58,10 +58,9 @@ public class Circle extends Body implements Clickable {
             scaleMatrix.set(scaleMatrix);
         }
         Vector2D radius = scaleMatrix.mul(localCoordinate[1]);
-        Vector2D motionVector1 = localCoordinate[0];
-        pos.setXY(viewModel.mul(motionVector1));
+        Vector2D screenPos = viewModel.mul(localCoordinate[0]);
         renderer.drawText("counter: " + counter++, 50, 500, 0xffffffff);
-        renderer.drawCircle(pos, radius.getY(), color);
+        renderer.drawCircle(screenPos, radius.getY(), color);
     }
 
     @Override
@@ -69,7 +68,7 @@ public class Circle extends Body implements Clickable {
         Matrix3x3 inverseModel = calculateInverseModel();
         Matrix3x3 matrix3x3 = inverseModel.mulCopy(cameraMatrix);
         Vector2D lo = matrix3x3.mul(position);
-        Vector2D mul = matrix3x3.mul(pos);
+        Vector2D mul = inverseModel.mul(pos);
         lo.sub(mul);
         float length = lo.length();
 

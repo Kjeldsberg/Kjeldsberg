@@ -20,7 +20,6 @@ public abstract class SceneObject {
     protected List<SceneObject> child = new ArrayList<SceneObject>();
     protected SceneObject parent;
 	protected Vector2D pos = new Vector2D();
-	protected Vector2D oldPos = new Vector2D();
 	protected Vector2D motionVector = new Vector2D();
 	protected Vector2D scaleValue = new Vector2D();
 	protected Matrix3x3 forInverseRotate = new Matrix3x3();
@@ -127,18 +126,13 @@ public abstract class SceneObject {
         this.model = model;
     }
 
-    public Vector2D getOldPos() {
-        return oldPos;
-    }
-
-    public void setOldPos(Vector2D oldPos) {
-        this.oldPos = oldPos;
-    }
 
     public void calculateModel() {
 		forInverseRotate.set(rotate);
         scaleValue = scale.getScale();
         motionVector.setXY(translate.getMotionVector());
+        translate.translate(pos);
+        rotate.rotate(angle);
         model.fastMul(translate, rotate, scale);
     }
     public void calculateViewModel(final SceneObject parent) {

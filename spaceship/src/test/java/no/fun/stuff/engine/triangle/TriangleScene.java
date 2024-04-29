@@ -3,7 +3,10 @@ package no.fun.stuff.engine.triangle;
 import no.fun.stuff.engine.GameContainer;
 import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.game.Clickable;
+import no.fun.stuff.engine.game.objects.Body;
+import no.fun.stuff.engine.game.objects.Circle;
 import no.fun.stuff.engine.game.objects.SceneObject;
+import no.fun.stuff.engine.game.physics.Integrator;
 import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Vector2D;
 

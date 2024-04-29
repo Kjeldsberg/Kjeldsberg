@@ -28,6 +28,7 @@ public class SpaceShip extends SceneObject {
 	private Vector2D direction = new Vector2D(0, -1.0f);
 	private Vector2D rotatedDirection = new Vector2D(direction);
 	private Vector2D velocity = new Vector2D();
+	private Vector2D oldPos = new Vector2D();
 	private boolean powerOn = false;
 	float totAngle = 0;
 	float oldTotAngle = 0;
@@ -47,7 +48,6 @@ public class SpaceShip extends SceneObject {
 		this.dead = false;
 		pos.setX(posX);
 		pos.setY(posY);
-		oldPos.setXY(pos);
 		motionVector.setXY(pos);
 		this.world = new Point[4];
 

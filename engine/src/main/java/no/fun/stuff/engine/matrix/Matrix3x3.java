@@ -12,8 +12,6 @@ public class Matrix3x3 {
             {0, 0, 0},
             {0, 0, 0}};
 
-    private Point translate = new Point();
-    private float angle = 0f;
     private float[][] identity = {{1, 0, 0},
             {0, 1, 0},
             {0, 0, 1}};
@@ -170,15 +168,13 @@ public class Matrix3x3 {
 
 
     public void rotate(float radians) {
-        angle += radians;
-        m[0][0] = (float) Math.cos(angle); m[0][1] = -(float) Math.sin(angle);
-        m[1][0] = (float) Math.sin(angle); m[1][1] = (float) Math.cos(angle);
+        m[0][0] = (float) Math.cos(radians); m[0][1] = -(float) Math.sin(radians);
+        m[1][0] = (float) Math.sin(radians); m[1][1] = (float) Math.cos(radians);
     }
-    public void rotateTo(float radians) {
-        angle = radians;
-        m[0][0] = (float) Math.cos(angle); m[0][1] = -(float) Math.sin(angle);
-        m[1][0] = (float) Math.sin(angle); m[1][1] = (float) Math.cos(angle);
-    }
+//    public void rotateTo(float radians) {
+//        m[0][0] = (float) Math.cos(radians); m[0][1] = -(float) Math.sin(radians);
+//        m[1][0] = (float) Math.sin(radians); m[1][1] = (float) Math.cos(radians);
+//    }
     public void inverseRotate() {
         rotateInverse.set(m[0][0], m[0][1], m[1][0], m[1][1]);
         rotateInverse.inverse();
@@ -191,7 +187,6 @@ public class Matrix3x3 {
 
     public void translate(final Point p) {
         setIdentity();
-        translate = p;
         m[0][2] = p.getX();
         m[1][2] = p.getY();
 //		mul(i);
@@ -200,7 +195,6 @@ public class Matrix3x3 {
 
     public void translate(final Vector2D p) {
         setIdentity();
-        translate = p.toPoint();
         m[0][2] = p.getX();
         m[1][2] = p.getY();
     }
@@ -427,8 +421,5 @@ public class Matrix3x3 {
                 {m[1][0], m[1][1], m[1][2]},
                 {m[2][0], m[2][1], m[2][2]}};
         return ret;
-    }
-    public float getAngle() {
-        return angle;
     }
 }

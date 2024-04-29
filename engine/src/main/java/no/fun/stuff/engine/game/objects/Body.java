@@ -6,6 +6,17 @@ public abstract class Body extends SceneObject {
     public enum Shape {
         Polygon, Circle
     }
+    public static float MinDensity = 0.5f;     // g/cm^3
+    public static float MaxDensity = 21.4f;
+
+    // restitution mellom 0.0 og 1.0;
+    private float restitution = 0.5f;
+    private float density = 1.0f;
+    private float mass = 1.0f;
+    private float inverseMass = 1/mass;
+    private Vector2D force = new Vector2D();
+    private Vector2D velocity = new Vector2D();
+    private Vector2D acceleration = new Vector2D();
     protected Shape shapeType;
     private boolean reCalculateCoordinate = true;
     private Vector2D center = new Vector2D();
@@ -31,19 +42,18 @@ public abstract class Body extends SceneObject {
 
     public void rotate(float angle) {
         this.angle += angle;
-        rotate.rotate(angle);
         reCalculateCoordinate = true;
     }
     public void moveTo(final Vector2D position) {
-        translate.translate(position);
+        pos.setXY(position);
         reCalculateCoordinate = true;
     }
     public void moveTo(float x, float y) {
-        translate.translate(x, y);
+        pos.setXY(x, y);
         reCalculateCoordinate = true;
     }
     public void move(final Vector2D motionVector) {
-        translate.move(motionVector);
+        pos.pluss(motionVector);
         reCalculateCoordinate = true;
     }
 
@@ -65,5 +75,42 @@ public abstract class Body extends SceneObject {
     }
     public Shape getShapeType() {
         return shapeType;
+    }
+
+    public float getRestitution() {
+        return restitution;
+    }
+
+    public Vector2D getVelocity() {
+        return velocity;
+    }
+
+    public float getInverseMass() {
+        return inverseMass;
+    }
+
+    public void setForce(Vector2D force) {
+        this.force = force;
+    }
+
+    public float getMass() {
+        return mass;
+    }
+
+    public void setMass(float mass) {
+        this.inverseMass = 1f/mass;
+        this.mass = mass;
+    }
+
+    public Vector2D getAcceleration() {
+        return acceleration;
+    }
+
+    public void setAcceleration(Vector2D acceleration) {
+        this.acceleration = acceleration;
+    }
+
+    public Vector2D getForce() {
+        return force;
     }
 }

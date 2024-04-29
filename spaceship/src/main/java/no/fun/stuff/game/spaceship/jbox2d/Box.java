@@ -11,9 +11,11 @@ public class Box extends Rect {
     private float mass = 1.0f;
     private float inversMass = 1.0f/mass;
     private Vector2D gravity = new Vector2D(0.0f, -9.81f);
+    private Vector2D oldPos = new Vector2D();
     public Box(Vector2D size, Vector2D pos) {
         super(size, pos);
     }
+
 
 
     @Override

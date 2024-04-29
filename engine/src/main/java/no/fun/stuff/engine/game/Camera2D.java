@@ -22,20 +22,6 @@ public class Camera2D extends SceneObject {
 		dirty = true;
 	}
 
-//	public Camera2D(final Vector2D screenSize) {
-//		this.screenSize = screenSize;
-//		this.viewPort = new Vector2D();
-//		final Vector2D defaultUp = new Vector2D(0, 1.0f);
-//		viewModel.setUpVector(defaultUp);
-//		inversViewModel.transpose(viewModel);
-//		scale.scale(1.0f);
-//		inversScale.scale(1.0f);
-//		translate.translate(position);
-//		inversTranslate.set(translate.getCopy());
-//		inversTranslate.invertTranslate();
-//		recalculateCameraSpace();
-//		recalculateWorldSpace();
-//	}
 	public Camera2D(final Vector2D screenSize, final Vector2D viewPort) {
 		this.screenSize = screenSize;
 		this.viewPort = viewPort;
@@ -59,51 +45,28 @@ public class Camera2D extends SceneObject {
 
 
 
-//	public void recalculateCameraSpace() {
-//		toCameraSpace.clear();
-//		toCameraSpace.set(inversViewModel.fastMulCopy(inversScale).fastMulCopy(inversTranslate).getCopy());
-//	}
-//
-//	public void recalculateWorldSpace() {
-//		toWorldSpace.clear();
-//		toWorldSpace.set(translate.fastMulCopy(scale).fastMulCopy(viewModel).getCopy());
-//	}
 
 	public Matrix3x3 getViewModel() {
 		return viewModel;
 	}
 
-//	public Matrix3x3 getInversViewModel() {
-//		return inversViewModel;
-//	}
 
 	public Matrix3x3 getScale() {
 		return scale;
 	}
 
-//	public Matrix3x3 getInversScale() {
-//		return inversScale;
-//	}
 
 	public Matrix3x3 getTranslate() {
 		return translate;
 	}
 
-//	public Matrix3x3 getInversTranslate() {
-//		return inversTranslate;
-//	}
 
 	public Vector2D getPosition() {
 		return position;
 	}
 
-//	public Matrix3x3 getToCameraSpace() {
-//		return toCameraSpace;
-//	}
 
-//	public Matrix3x3 getToWorldSpace() {
-//		return toWorldSpace;
-//	}
-
-
+	public Vector2D getViewPort() {
+		return viewPort;
+	}
 }

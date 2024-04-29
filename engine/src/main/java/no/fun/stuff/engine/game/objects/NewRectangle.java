@@ -32,7 +32,7 @@ public class NewRectangle extends Body implements Clickable {
     }
     @Override
     public void update(SceneObject parent, float dt) {
-
+        this.rotate(0.01f);
     }
 
     @Override

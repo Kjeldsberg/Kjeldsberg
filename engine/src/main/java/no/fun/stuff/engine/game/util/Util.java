@@ -20,6 +20,21 @@ public class Util {
 		}
 		return abs <= 0.01000f;
 	}
+	public static float clamp(float value, float min, float max) {
+		if(min == max) {
+			return value;
+		}
+		if(max < min) {
+			throw  new RuntimeException("Max is grater than min.");
+		}
+		if(value < min) {
+			return min;
+		}
+		if(value > max) {
+			return max;
+		}
+		return value;
+	}
 	private static final Vector2D b = new Vector2D();
 	public static void lerp(float delta, final Vector2D p0, Vector2D p1, final Vector2D result) {
 		Vector2D a = result;

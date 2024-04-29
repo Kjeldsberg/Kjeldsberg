@@ -7,7 +7,8 @@ import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.game.Camera2D;
 import no.fun.stuff.engine.game.Clickable;
 import no.fun.stuff.engine.game.objects.*;
-import no.fun.stuff.engine.game.physics.collition.CollisionInfo;
+import no.fun.stuff.engine.game.physics.Integrator;
+import no.fun.stuff.engine.game.physics.collition.Collision;
 import no.fun.stuff.engine.game.physics.collition.SAT;
 import no.fun.stuff.engine.matrix.Vector2D;
 import no.fun.stuff.engine.triangle.TriangleScene;
@@ -30,44 +31,49 @@ public class SATMain extends AbstractGame {
         Vector2D viewPort = new Vector2D(20.0f, 15.0f);
         lookAtCamera = new Camera2D(screenSize, viewPort);
 
-        Triangle triangle = new ShowNormalTriangle(new Vector2D(0.0f, 0.0f),
-                new Vector2D(0.0f, 1.0f),
-                new Vector2D(1.0f, 0.0f), 0xffaa11aa);
-        Triangle  triangle2 = new ShowNormalTriangle(new Vector2D(0.0f, 0.0f),
-                new Vector2D(0.0f, 1.0f),
-                new Vector2D(1.0f, 0.0f), 0xffaaaaaa);
-        scene.addChild(triangle);
-        scene.addChild(triangle2);
-        Triangle triangl = new Triangle(new Vector2D(0.0f, 0.0f),
-                new Vector2D(0.0f, 1.0f),
-                new Vector2D(1.0f, 0.0f), 0xff0000aa);
-        scene.addChild(triangl);
-        for (int i = 0; i < 1; i++) {
+//        Triangle triangle = new ShowNormalTriangle(new Vector2D(0.0f, 0.0f),
+//                new Vector2D(0.0f, 1.0f),
+//                new Vector2D(1.0f, 0.0f), 0xffaa11aa);
+//        Triangle  triangle2 = new ShowNormalTriangle(new Vector2D(0.0f, 0.0f),
+//                new Vector2D(0.0f, 1.0f),
+//                new Vector2D(1.0f, 0.0f), 0xffaaaaaa);
+//        triangle.setMass(1.5f);
+//        scene.addChild(triangle);
+//        scene.addChild(triangle2);
+//        Triangle triangl = new Triangle(new Vector2D(0.0f, 0.0f),
+//                new Vector2D(0.0f, 1.0f),
+//                new Vector2D(1.0f, 0.0f), 0xff0000aa);
+//        scene.addChild(triangl);
+        for (int i = 0; i < 10; i++) {
             Triangle triangle1 = new Triangle(new Vector2D(0.0f, 0.0f),
                     new Vector2D(0.0f, 1.0f),
                     new Vector2D(1.0f, 0.0f), 0xffaa11aa);
-            float x = (float) Math.random() * viewPort.getX();
-            float y = (float) Math.random() * viewPort.getY();
-            triangle1.moveTo(x,y);
+            final Vector2D triangle1Pos = new Vector2D(
+            (float) Math.random() * viewPort.getX(),
+            (float) Math.random() * viewPort.getY());
+
+            triangle1.moveTo(triangle1Pos);
             scene.addChild(triangle1);
         }
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10; i++) {
             NewRectangle rectangle = new NewRectangle(1f, 1f);
-            float x = (float) Math.random() * viewPort.getX();
-            float y = (float) Math.random() * viewPort.getY();
-            rectangle.moveTo(x, y);
+            final Vector2D randPos = new Vector2D(
+                    (float) Math.random() * viewPort.getX(),
+                    (float) Math.random() * viewPort.getY());
+            rectangle.setMass(20.1f);
+            rectangle.moveTo(randPos);
             scene.addChild(rectangle);
         }
-        for (int i = 0; i < 1; i++) {
-            float x = (float) Math.random() * viewPort.getX();
-            float y = (float) Math.random() * viewPort.getY();
+        for (int i = 0; i < 10; i++) {
             Circle circle = new Circle(0.5f, 0xff99aa22);
-
-            circle.moveTo(x, y);
+            final Vector2D randPos = new Vector2D(
+                    (float) Math.random() * viewPort.getX(),
+                    (float) Math.random() * viewPort.getY());
+//            circle.setPos(randPos);
+            circle.setMass(1.5f);
+            circle.moveTo(randPos);
             scene.addChild(circle);
         }
-//        triangle.moveTo((float) Math.random() * viewPort.getX(), (float) Math.random() * viewPort.getY());
-//        triangle2.moveTo((float) Math.random() * viewPort.getX(), (float) Math.random() * viewPort.getY());
         scene.setCamera(lookAtCamera);
 
     }
@@ -87,7 +93,6 @@ public class SATMain extends AbstractGame {
         }
         float dx = 0;
         float dy = 0;
-        float speed = 7f;
         if (input.isKey(KeyEvent.VK_LEFT)) {
             dx--;
         }
@@ -100,31 +105,35 @@ public class SATMain extends AbstractGame {
         if (input.isKey(KeyEvent.VK_DOWN)) {
             dy++;
         }
+        float force = 60f;
         Vector2D direction = new Vector2D(dx, dy);
         direction.normaize();
-        direction.mul(speed * dt);
 
         if (input.isButton(MouseEvent.BUTTON1)) {
-            Vector2D position = new Vector2D(input.getMouseX(), input.getMouseY());
             clickable.clear();
+            Vector2D position = new Vector2D(input.getMouseX(), input.getMouseY());
             clickable.addAll(scene.checkPicked(position));
         }
         if (clickable.size() > 0) {
             for (Clickable cli : clickable) {
-                Vector2D pos = new Vector2D();
-                pos.setX(input.getMouseX());
-                pos.setY(input.getMouseY());
-                ((Body) cli).move(direction);
+//                ((Body) cli).move(direction);
                 if (cli instanceof ShowNormalTriangle s) {
-                    s.setTheMousePosition(pos);
+                    Vector2D mousePos = new Vector2D();
+                    mousePos.setX(input.getMouseX());
+                    mousePos.setY(input.getMouseY());
+                    s.setTheMousePosition(mousePos);
                 } else if (cli instanceof Triangle t) {
                     t.setColor((t.getColor() + 4) | 0xff000000);
                 } else if (cli instanceof NewRectangle t) {
                     int color = t.getColor() + 0x1000;
                     t.setColor(color | 0xff000000);
-                } else if (cli instanceof Circle t) {
-                    int color = t.getColor() + 0x1000;
-                    t.setColor(color | 0xff000000);
+                } else if (cli instanceof Circle c) {
+                    Vector2D acc = direction.mul(force);
+                    c.getForce().setXY(acc);
+//                    c.set(acc);
+//                    c.setForce(direction.mul(10f));
+                    int color = c.getColor() + 0x1000;
+                    c.setColor(color | 0xff000000);
                 }
             }
         }
@@ -137,85 +146,36 @@ public class SATMain extends AbstractGame {
 //            clickable = null;
 //        }
         input.updata();
-        for (int i = 0; i < scene.getChild().size() - 1; i++) {
-            Body shapeA = (Body) scene.getChild().get(i);
-            for (int j = i + 1; j < scene.getChild().size(); j++) {
-
-                Body shapeB = (Body) scene.getChild().get(j);
-
-                if (shapeA.getShapeType() == Body.Shape.Polygon) {
-                    if (shapeB.getShapeType() == Body.Shape.Polygon) {
-                        CollisionInfo collide = sat.polygonCollide(shapeA.toWorldCoordinate(), shapeB.toWorldCoordinate());
-                        if (collide.isCollide()) {
-                            float len = collide.getDepth() / 2f;
-                            Vector2D scaleA = collide.getNormal().scale(len);
-                            Vector2D scaleB = collide.getNormal().scale(-len);
-                            shapeA.move(scaleA);
-                            shapeB.move(scaleB);
-                        }
-                    }
-                    if (shapeB.getShapeType().equals(Body.Shape.Circle)) {
-                        final Vector2D[] circleWorld = shapeB.toWorldCoordinate();
-                        Vector2D[] worldCoordinate = shapeA.toWorldCoordinate();
-                        final CollisionInfo collide = sat.circlePolygonCollide(worldCoordinate, circleWorld[0], circleWorld[1].getY());
-                        if (collide.isCollide()) {
-                            float len = collide.getDepth() / 2f;
-                            Vector2D scaleA = collide.getNormal().scale(len);
-                            Vector2D scaleB = collide.getNormal().scale(-len);
-                            shapeA.move(scaleA);
-                            shapeB.move(scaleB);
-                        }
-                    }
-                }
-                if (shapeA.getShapeType() == Body.Shape.Circle) {
-                    if (shapeB.getShapeType() == Body.Shape.Circle) {
-                        final Vector2D[] circleAWorld = shapeA.toWorldCoordinate();
-                        final Vector2D[] circleBWorld = shapeB.toWorldCoordinate();
-                        CollisionInfo collide = sat.circleCircleCollide(circleAWorld[0], circleAWorld[1].getY(),
-                                circleBWorld[0], circleBWorld[1].getY());
-                        if (collide.isCollide()) {
-                            float len = collide.getDepth() / 2f;
-                            Vector2D scaleA = collide.getNormal().scale(len);
-                            Vector2D scaleB = collide.getNormal().scale(-len);
-                            shapeA.move(scaleA);
-                            shapeB.move(scaleB);
-                        }
-                    }
-                    if (shapeB.getShapeType().equals(Body.Shape.Polygon)) {
-                        final Vector2D[] circleWorld = shapeA.toWorldCoordinate();
-                        final CollisionInfo collide = sat.circlePolygonCollide(shapeB.toWorldCoordinate(), circleWorld[0], circleWorld[1].getY());
-                        if (collide.isCollide()) {
-                            float len = collide.getDepth() / 2f;
-                            Vector2D scaleA = collide.getNormal().scale(len);
-                            Vector2D scaleB = collide.getNormal().scale(-len);
-                            shapeA.move(scaleA);
-                            shapeB.move(scaleB);
-                        }
-                    }
-                }
-
-//            if(shapeA instanceof Triangle a && shapeB instanceof Circle b ||
-//                    shapeA instanceof Circle b1 && shapeB instanceof Triangle a1) {
-//                Vector2D[] worldCoordinateA = a.toWorldCoordinate();
-//                Vector2D[] worldCoordinateB = b.toWorldCoordinate();
-//                CollisionInfo collide = sat.collide(worldCoordinateA, worldCoordinateB);
-//                if(collide.isCollide()) {
-//                    float len = collide.getDepth() / 2f;
-//                    Vector2D scaleA = collide.getNormal().scale(len);
-//                    Vector2D scaleB = collide.getNormal().scale(-len);
-//                    a.move(scaleA);
-//                    b.move(scaleB);
-//                }
-//            }
+        Collision collision = new Collision();
+        collision.collision(scene, dt);
+        Integrator integrator = new Integrator();
+        for(SceneObject s : scene.getChild()) {
+            if(s instanceof Body b) {
+                integrator.integrate(b, dt);
             }
-
         }
-//        triangle.gety(rotate);
         scene.update(null, dt);
-//        input.updata();
+        wrapScreen(scene);
 
     }
+    private void wrapScreen(SceneObject sceneObject) {
+        for(int i=0;i< sceneObject.getChild().size();i++) {
+            SceneObject sceneObject1 = sceneObject.getChild().get(i);
+            if(sceneObject1 instanceof Body b) {
+                Vector2D motionVector = sceneObject1.getTranslate().getMotionVector();
+                Vector2D screenSize = lookAtCamera.getViewPort();
+                if(motionVector.getX() < 0f)
+                    b.moveTo(motionVector.add(new Vector2D(screenSize.getX(), 0)));
+                if(motionVector.getX() > screenSize.getX())
+                    b.moveTo(motionVector.minus(new Vector2D(screenSize.getX(), 0)));
+                if(motionVector.getY() < 0f)
+                    b.moveTo(motionVector.add(new Vector2D(0, screenSize.getY())));
+                if(motionVector.getY() > screenSize.getY())
+                    b.moveTo(motionVector.minus(new Vector2D(0,screenSize.getY())));
 
+            }
+        }
+    }
     @Override
     public void render(GameContainer gc, Renderer r) {
         scene.render(null, gc.getRenderer());
