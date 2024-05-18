@@ -56,8 +56,8 @@ public class Renderer {
         for (int xx = -ra; xx <= 0; x += 1.0f, xx++) {
             int y = (int) Math.sqrt(radius2 - x * x);
             float y1 = center.getY();
-            int thePlussx = (int)(center.getX() + x);
-            int theMinusx = (int)(center.getX() - x);
+            int thePlussx = (int)(center.getX() + xx);
+            int theMinusx = (int)(center.getX() - xx);
             for (int i = -y; i < y; i++) {
                 int ypos = (int) (y1 + i);
                 setPixel(thePlussx, ypos, color);

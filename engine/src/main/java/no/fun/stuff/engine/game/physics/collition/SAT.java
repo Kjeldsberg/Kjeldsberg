@@ -5,39 +5,70 @@ import no.fun.stuff.engine.matrix.Vector2D;
 
 public class SAT {
 
-
-    public CollisionInfo polygonCollide(final Vector2D[] objectA,
-                                        final Vector2D[] objectB) {
+    public CollisionInfo polygonCollide(final Body objA,
+                                        final Body objB) {
         CollisionInfo collisionInfo = new CollisionInfo();
-        collisionInfo.setCollide(true);
+        collisionInfo.setCollide(false);
         collisionInfo.setDepth(Float.MAX_VALUE);
-        final MinMax obja = new MinMax();
-        final MinMax objb = new MinMax();
+        final Vector2D[] objectA = objA.toWorldCoordinate();
+        final Vector2D[] objectB = objB.toWorldCoordinate();
+        final MinMax minMaxa = new MinMax();
+        final MinMax minMaxb = new MinMax();
         Vector2D normal = new Vector2D();
         for (int i = 0; i < objectA.length; i++) {
             int index = i == objectA.length - 1 ? 0 : i + 1;
             final Vector2D edge = objectA[index].minus(objectA[i]);
             normal.setXY(edge.getY(), -edge.getX());
             normal.normaize();
-            projectToAxis(objectB, normal, objb);
-            projectToAxis(objectA, normal, obja);
+            projectToAxis(objectA, normal, minMaxa);
+            projectToAxis(objectB, normal, minMaxb);
 
-            boolean separation = checkForSeparation(collisionInfo, obja, objb, normal);
-            if (separation) return collisionInfo;
+            if (minMaxa.min >= minMaxb.max || minMaxb.min >= minMaxa.max) {
+                collisionInfo.setCollide(false);
+                return collisionInfo;
+            }
+            float distance = Math.min(minMaxb.max - minMaxa.min, minMaxa.max - minMaxb.min);
+            if (distance < collisionInfo.getDepth()) {
+                collisionInfo.setDepth(distance);
+                collisionInfo.getNormal().setXY(normal);
+            }
+
+        }
+        for (int i = 0; i < objectB.length; i++) {
+            int index = i == objectB.length - 1 ? 0 : i + 1;
+            final Vector2D edge = objectB[index].minus(objectB[i]);
+            normal.setXY(edge.getY(), -edge.getX());
+            normal.normaize();
+            projectToAxis(objectA, normal, minMaxa);
+            projectToAxis(objectB, normal, minMaxb);
+            if (minMaxa.min >= minMaxb.max || minMaxb.min >= minMaxa.max) {
+                collisionInfo.setCollide(false);
+                return collisionInfo;
+            }
+            float distance = Math.min(minMaxb.max - minMaxa.min, minMaxa.max - minMaxb.min);
+            if (distance < collisionInfo.getDepth()) {
+                collisionInfo.setDepth(distance);
+                collisionInfo.getNormal().setXY(normal);
+            }
+        }
+        if(collisionInfo.getDepth() < 0.0f){
+            int test = 0;
         }
 
-        Vector2D centerVec = Body.getCenter(objectB).minus(Body.getCenter(objectA));
+        Vector2D centerVec = objB.getPos().minus(objA.getPos());
         float dot = centerVec.dot(collisionInfo.getNormal());
-        if (dot > 0) {
+        if (dot > 0.0f) {
             collisionInfo.getNormal().mul(-1f);
         }
+        collisionInfo.setCollide(true);
         return collisionInfo;
     }
     
-    public CollisionInfo circlePolygonCollide(final Vector2D[] poly, final Vector2D circleCenter, float radius) {
+    public CollisionInfo circlePolygonCollide(final Body shapeA, final Vector2D circleCenter, float radius) {
         CollisionInfo collisionInfo = new CollisionInfo();
         final MinMax obja = new MinMax();
         final MinMax objb = new MinMax();
+        Vector2D[] poly = shapeA.toWorldCoordinate();
         final Vector2D normal = new Vector2D();
         for (int i = 0; i < poly.length; i++) {
             int index = i == poly.length - 1 ? 0 : i + 1;
@@ -56,10 +87,10 @@ public class SAT {
         projectToCircle(circleCenter, radius, axis, obja);
         boolean separation = checkForSeparation(collisionInfo, obja, objb, axis);
         if (separation) return collisionInfo;
-        Vector2D center = circleCenter.minus(Body.getCenter(poly));
+        Vector2D center = circleCenter.minus(shapeA.getPos());
         float dot = center.dot(collisionInfo.getNormal());
-        if (dot > 0.0) {
-            collisionInfo.getNormal().mul(-1);
+        if (dot > 0.0f) {
+            collisionInfo.getNormal().mul(-1f);
         }
         return collisionInfo;
     }
@@ -118,19 +149,24 @@ public class SAT {
     }
 
     private void projectToAxis(final Vector2D[] vertices, final Vector2D axis, final MinMax minMax) {
-        float max = -Float.MAX_VALUE;
-        float min = Float.MAX_VALUE;
+        minMax.min = Float.MAX_VALUE;
+        minMax.max = -Float.MAX_VALUE;
         for (Vector2D vertex : vertices) {
             float dot = vertex.dot(axis);
-            if (max < dot) max = dot;
-            if (min > dot) min = dot;
+            if (minMax.max < dot) minMax.max = dot;
+            if (minMax.min > dot) minMax.min = dot;
         }
-        minMax.min = min;
-        minMax.max = max;
+//        minMax.min = min;
+//        minMax.max = max;
     }
 
     static class MinMax {
         public float min = Float.MAX_VALUE, max = -Float.MAX_VALUE;
+
+        public MinMax() {
+            this.min = Float.MAX_VALUE;
+            this.max = -Float.MAX_VALUE;
+        }
     }
 
 }

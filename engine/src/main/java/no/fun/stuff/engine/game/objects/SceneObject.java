@@ -25,7 +25,6 @@ public abstract class SceneObject {
 	protected Matrix3x3 forInverseRotate = new Matrix3x3();
 	protected float angle;
     protected boolean dead = false;
-    protected boolean dirty = false;
 
     public abstract void update(final SceneObject parent, float dt);
 

@@ -1,5 +1,6 @@
 package no.fun.stuff.engine.game.objects;
 
+import no.fun.stuff.engine.game.physics.collition.BoundingBox;
 import no.fun.stuff.engine.matrix.Vector2D;
 
 public abstract class Body extends SceneObject {
@@ -14,15 +15,16 @@ public abstract class Body extends SceneObject {
     private float density = 1.0f;
     private float mass = 1.0f;
     private float inverseMass = 1/mass;
+    private float radius;
     private Vector2D force = new Vector2D();
     private Vector2D velocity = new Vector2D();
     private Vector2D acceleration = new Vector2D();
     protected Shape shapeType;
     private boolean reCalculateCoordinate = true;
     private boolean isStatic = false;
-    private Vector2D center = new Vector2D();
     protected Vector2D[] localCoordinate;
     protected Vector2D[] worldCoordinate;
+    private BoundingBox boundingBox;
 
     public Vector2D[] toWorldCoordinate() {
         if(reCalculateCoordinate) {
@@ -128,5 +130,35 @@ public abstract class Body extends SceneObject {
         if(aStatic) {
             inverseMass = 0;
         }
+    }
+    public Vector2D minXY() {
+        float minx = Float.MAX_VALUE;
+        float maxx = -Float.MAX_VALUE;
+        float miny = Float.MAX_VALUE;
+        float maxy = -Float.MAX_VALUE;
+        for(Vector2D w : worldCoordinate) {
+            float y = w.getY();
+            float x = w.getX();
+            if(y < miny) miny = y;
+            if(y > maxy) maxy = y;
+            if(x < minx) minx = x;
+            if(x > maxx) maxx = x;
+        }
+        return new Vector2D((maxx - minx), (maxy - miny));
+    }
+
+    public BoundingBox getBoundingBox() {
+        return boundingBox;
+    }
+
+    public void setBoundingBox(final BoundingBox boundingBox) {
+        this.boundingBox = boundingBox;
+    }
+    public float getRadius() {
+        return radius;
+    }
+
+    public void setRadius(float radius) {
+        this.radius = radius;
     }
 }

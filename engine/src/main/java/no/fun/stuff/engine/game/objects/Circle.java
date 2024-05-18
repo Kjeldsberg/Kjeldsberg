@@ -2,30 +2,28 @@ package no.fun.stuff.engine.game.objects;
 
 import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.game.Clickable;
+import no.fun.stuff.engine.game.physics.collition.BoundingBox;
 import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Vector2D;
 
 public class Circle extends Body implements Clickable {
-    private final Vector2D position;
+    private Vector2D position;
     private final float radius;
     private int color;
     private final Vector2D up;
     int counter = 0;
 
     public Circle(final Vector2D position, float radius, int color) {
+        this(radius, color);
         this.position = position;
-        this.radius = radius;
-        this.color = color;
-        this.shapeType = Shape.Circle;
-        up = new Vector2D(0.0f, radius);
-        localCoordinate = new Vector2D[]{position, up};
-        worldCoordinate = new Vector2D[] {new Vector2D(), new Vector2D()};
+        moveTo(position);
     }
     public Circle(float radius, int color) {
         this.position = new Vector2D();
         this.radius = radius;
         this.color = color;
         this.shapeType = Shape.Circle;
+        this.setBoundingBox(new BoundingBox(pos, new Vector2D(radius, radius)));
         up = new Vector2D(0.0f, radius);
         localCoordinate = new Vector2D[]{position, up};
         worldCoordinate = new Vector2D[]{new Vector2D(), new Vector2D()};
@@ -60,8 +58,7 @@ public class Circle extends Body implements Clickable {
         Vector2D radius = scaleMatrix.mul(localCoordinate[1]);
         Vector2D screenPos = viewModel.mul(localCoordinate[0]);
         renderer.drawText("counter: " + counter++, 50, 500, 0xffffffff);
-        int c = isStatic() ? 0xff111111 : color;
-        renderer.drawCircle(screenPos, radius.getY(), c);
+        renderer.drawCircle(screenPos, radius.getY(), color);
     }
 
     @Override
@@ -84,4 +81,7 @@ public class Circle extends Body implements Clickable {
         this.color = color;
     }
 
+    public float getRadius() {
+        return radius;
+    }
 }

@@ -36,6 +36,9 @@ public class Camera2D extends SceneObject {
 	}
 	@Override
 	public void update(SceneObject parent, float dt) {
+		if(dirty) {
+			model.fastMul(scale, rotate, translate);
+		}
 	}
 
 	@Override

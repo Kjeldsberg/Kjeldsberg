@@ -3,6 +3,7 @@ package no.fun.stuff.engine.game.objects;
 import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.game.Clickable;
 import no.fun.stuff.engine.game.RecClickedOn;
+import no.fun.stuff.engine.game.physics.collition.BoundingBox;
 import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Vector2D;
 
@@ -29,9 +30,11 @@ public class NewRectangle extends Body implements Clickable {
         worldCoordinate[2] = new Vector2D();
         worldCoordinate[3] = new Vector2D();
         clickedOn = new RecClickedOn(this);
+        this.setBoundingBox(new BoundingBox(pos, new Vector2D(halfWidth, halfHeight)));
     }
     @Override
     public void update(SceneObject parent, float dt) {
+        setBoundingBox(new BoundingBox(getPos(), minXY()));
 //        this.rotate(0.01f);
     }
 
@@ -39,12 +42,10 @@ public class NewRectangle extends Body implements Clickable {
     public void render(SceneObject parent, Renderer r) {
         calculateViewModel(parent);
         if(wireframe) {
-            int c = isStatic() ? 0xff111111 : color;
-
-            drawLine(viewModel.mul(localCoordinate[0]), viewModel.mul(localCoordinate[1]), r, c);
-            drawLine(viewModel.mul(localCoordinate[1]), viewModel.mul(localCoordinate[2]), r, c);
-            drawLine(viewModel.mul(localCoordinate[2]), viewModel.mul(localCoordinate[3]), r, c);
-            drawLine(viewModel.mul(localCoordinate[3]), viewModel.mul(localCoordinate[0]), r, c);
+            drawLine(viewModel.mul(localCoordinate[0]), viewModel.mul(localCoordinate[1]), r, color);
+            drawLine(viewModel.mul(localCoordinate[1]), viewModel.mul(localCoordinate[2]), r, color);
+            drawLine(viewModel.mul(localCoordinate[2]), viewModel.mul(localCoordinate[3]), r, color);
+            drawLine(viewModel.mul(localCoordinate[3]), viewModel.mul(localCoordinate[0]), r, color);
         }
     }
     private void drawLine(final Vector2D v1, final Vector2D v2, final Renderer r, int c) {

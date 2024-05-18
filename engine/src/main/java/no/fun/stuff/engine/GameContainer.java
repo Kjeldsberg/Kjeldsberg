@@ -27,10 +27,15 @@ public class GameContainer implements Runnable{
 	public void stop() {
 		
 	}
-	
+	private int fps = 0;
+
+	public int getFps() {
+		return fps;
+	}
+
 	@Override
 	public void run() {
-		boolean render = false;	
+		boolean render;// = false;
 		running = true;
 		double firstTime = 0;
 		double lastTime = System.nanoTime() / 1000000000.0d;
@@ -39,7 +44,6 @@ public class GameContainer implements Runnable{
 		double unprocessedTime = 0;
 		double frameTime = 0	;
 		int frames = 0;
-		int fps = 0;
 
 		game.init(this);
 		while(running) {
@@ -50,7 +54,7 @@ public class GameContainer implements Runnable{
 			unprocessedTime += passedTime;
 			frameTime += passedTime;
 			
-			while(unprocessedTime >= UPDATE_CAP) {
+			while(unprocessedTime >= UPDATE_CAP && !render) {
 				unprocessedTime -= UPDATE_CAP;
 				render = true;
 				game.update(this, (float)UPDATE_CAP);

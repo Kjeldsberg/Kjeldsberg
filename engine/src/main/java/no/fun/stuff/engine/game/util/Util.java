@@ -52,5 +52,14 @@ public class Util {
 		b.mul(delta);
 		a.pluss(b);
 	}
-
+	public static float rand(float min, float max) {
+		if(min > max) {
+			float t = min;
+			min = max;
+			max = t;
+		}
+		float range = max - min;
+		double v = Math.random() * range;
+		return (float)v + min;
+	}
 }

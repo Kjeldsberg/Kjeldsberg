@@ -8,7 +8,7 @@ import no.fun.stuff.engine.matrix.Vector2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Integrator {
+public class Integrator implements Integrate {
     private final List<Vector2D> forces;
     private final Vector2D oldPos;
     private final Vector2D pos;
@@ -19,16 +19,29 @@ public class Integrator {
         pos = new Vector2D();
     }
 
+    private Vector2D new_pos = new Vector2D();
+    private Vector2D new_acc = new Vector2D();
+    private Vector2D new_vel = new Vector2D();
     public void integrate(final Body body, float dt) {
+        if(body.isStatic()) {
+            return;
+        }
         Vector2D pos = body.getPos();
-        Vector2D vel = new Vector2D(body.getVelocity()).mul(dt);
-        Vector2D acc = new Vector2D(body.getAcceleration()).mul(dt * dt * 0.5f);
-        Vector2D new_pos = new Vector2D(pos).add(vel).add(acc);
-        Vector2D new_acc = applyForces(body);
-        Vector2D new_vel = body.getVelocity().add(acc.add(new_acc).mul(dt * 0.5f));
+        Vector2D velocity = body.getVelocity();
+        Vector2D vel = new Vector2D(velocity).mul(dt);
+
+        float halfDT = dt * 0.5f;
+        Vector2D acceleration = body.getAcceleration();
+        Vector2D acc = new Vector2D(acceleration).mul(dt * halfDT);
+//        Vector2D new_pos = new Vector2D(pos).add(vel).add(acc);
+        new_pos.setXY(pos);
+        new_pos.pluss(vel);
+        new_pos.pluss(acc);
+        new_acc.setXY(applyForces(body));
+        Vector2D new_vel = velocity.add(acc.add(new_acc).mul(halfDT));
         body.getPos().setXY(new_pos);
-        body.getVelocity().setXY(new_vel);
-        body.getAcceleration().setXY(acc);
+        velocity.setXY(new_vel);
+        acceleration.setXY(acc);
         body.moveTo(new_pos);
 //        oldPos.setXY(temp_x, temp_y);
     }
@@ -43,6 +56,9 @@ public class Integrator {
             if(!Util.compare(0f, force.getX())) {
                 int test = 0;
             }
+        }
+        for(final Vector2D force : forces) {
+            mul.pluss(force);
         }
         return mul;
     }

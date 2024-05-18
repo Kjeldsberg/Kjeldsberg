@@ -34,7 +34,6 @@ public class TriangleRendererReversed {
         p1p0.setNewEgde(p1, p0);
         p2p0.setNewEgde(p2, p0);
 
-        if (toLeft) {
             if (p1.getY() > p2.getY()) {
                 longSide = p1p0;    //new SideScan(p1, p0);
                 upperLeft = p2p0;//new SideScan(p2, p0);
@@ -61,7 +60,6 @@ public class TriangleRendererReversed {
                     drawLeftSegments(upperLeft, lowerLeft, longSide, color);
                 }
             }
-        }
     }
 
 
