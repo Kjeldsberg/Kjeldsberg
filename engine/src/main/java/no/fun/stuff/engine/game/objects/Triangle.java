@@ -3,7 +3,6 @@ package no.fun.stuff.engine.game.objects;
 import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.game.Clickable;
 import no.fun.stuff.engine.game.TriangleClickedOn;
-import no.fun.stuff.engine.game.physics.collition.BoundingBox;
 import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Vector2D;
 
@@ -46,13 +45,11 @@ public class Triangle extends Body implements Clickable {
         for (float v : len) {
             if(v > length) length = v;
         }
-        this.setBoundingBox(new BoundingBox(pos, new Vector2D(length , length)));
     }
 
     @Override
     public void update(SceneObject parent, float dt) {
         toWorldCoordinate();
-        getBoundingBox().setHalfXY(minXY().scale(0.5f));
 //        translate.translate(worldCenter);
 //        rotate.rotate(-0.001f);
 //        translate.translate(pos);

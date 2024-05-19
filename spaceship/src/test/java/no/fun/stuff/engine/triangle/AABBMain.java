@@ -97,7 +97,9 @@ public class AABBMain extends AbstractGame {
                 } else if (cli instanceof NewRectangle t) {
                     Vector2D acc = direction.mul(force);
                     t.move(acc);
-                    boolean collide = AABB.collide((Body) scene.getChild().get(0), (Body) scene.getChild().get(1));
+                    boolean collide = collision.intersectBoundingBoxes(((Body) scene.getChild().get(0)).getBoundingBox(),
+                            ((Body) scene.getChild().get(1)).getBoundingBox());
+//                    boolean collide = AABB.collide((Body) scene.getChild().get(0), (Body) scene.getChild().get(1));
                     if(collide)
                         ((NewRectangle)scene.getChild().get(0)).setColor(0xffff2222);
                     else
@@ -132,7 +134,7 @@ public class AABBMain extends AbstractGame {
             Body a = (Body) scene.getChild().get(i);
             for(int j=i+1;j<scene.getChild().size();j++) {
                 Body b = (Body) scene.getChild().get(j);
-                if(AABB.collide(a, b)) {
+                if(collision.intersectBoundingBoxes(a.getBoundingBox(), b.getBoundingBox())) {
                     r.drawText("Kollisjon!", 400, 10, 0xffeeeeee);
                 }
             }

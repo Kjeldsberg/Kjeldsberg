@@ -25,7 +25,8 @@ public class Collision {
                     if(shapeA.isStatic() && shapeB.isStatic()) {
                         continue;
                     }
-                    if(!AABB.collide(shapeA, shapeB)) {
+
+                    if(!intersectBoundingBoxes(shapeA.getBoundingBox(), shapeB.getBoundingBox())) {
                         continue;
                     }
                     if (shapeA.getShapeType() == Body.Shape.Polygon) {
@@ -82,6 +83,11 @@ public class Collision {
             }
             collisions.clear();
         }
+    }
+    public  boolean intersectBoundingBoxes(BoundingBox a, BoundingBox b) {
+        boolean noSparation = a.maxx <= b.minx || b.maxx <= a.minx ||
+                a.maxy <= b.miny || b.maxy <= a.miny;
+        return !noSparation;
     }
 
     public List<CollisionInfo> getCollisions() {

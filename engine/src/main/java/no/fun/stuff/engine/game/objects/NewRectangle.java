@@ -30,11 +30,9 @@ public class NewRectangle extends Body implements Clickable {
         worldCoordinate[2] = new Vector2D();
         worldCoordinate[3] = new Vector2D();
         clickedOn = new RecClickedOn(this);
-        this.setBoundingBox(new BoundingBox(pos, new Vector2D(halfWidth, halfHeight)));
     }
     @Override
     public void update(SceneObject parent, float dt) {
-        setBoundingBox(new BoundingBox(getPos(), minXY()));
 //        this.rotate(0.01f);
     }
 

@@ -21,6 +21,7 @@ public abstract class Body extends SceneObject {
     private Vector2D acceleration = new Vector2D();
     protected Shape shapeType;
     private boolean reCalculateCoordinate = true;
+    private boolean reCalculateBoundingBox = true;
     private boolean isStatic = false;
     protected Vector2D[] localCoordinate;
     protected Vector2D[] worldCoordinate;
@@ -46,27 +47,29 @@ public abstract class Body extends SceneObject {
     public void rotate(float angle) {
         this.angle += angle;
         reCalculateCoordinate = true;
+        reCalculateBoundingBox = true;
     }
     public void rotateTo(float angle) {
         this.angle = angle;
         reCalculateCoordinate = true;
+        reCalculateBoundingBox = true;
     }
     public void moveTo(final Vector2D position) {
         pos.setXY(position);
         reCalculateCoordinate = true;
+        reCalculateBoundingBox = true;
     }
     public void moveTo(float x, float y) {
         pos.setXY(x, y);
         reCalculateCoordinate = true;
+        reCalculateBoundingBox = true;
     }
     public void move(final Vector2D motionVector) {
         pos.pluss(motionVector);
         reCalculateCoordinate = true;
+        reCalculateBoundingBox = true;
     }
 
-    public Vector2D[] getVertex() {
-        return null;
-    }
     public static Vector2D  getCenter(final Vector2D[] vertex) {
         float sumX = 0;
         float sumy = 0;
@@ -131,23 +134,36 @@ public abstract class Body extends SceneObject {
             inverseMass = 0;
         }
     }
-    public Vector2D minXY() {
-        float minx = Float.MAX_VALUE;
-        float maxx = -Float.MAX_VALUE;
-        float miny = Float.MAX_VALUE;
-        float maxy = -Float.MAX_VALUE;
-        for(Vector2D w : worldCoordinate) {
-            float y = w.getY();
-            float x = w.getX();
-            if(y < miny) miny = y;
-            if(y > maxy) maxy = y;
-            if(x < minx) minx = x;
-            if(x > maxx) maxx = x;
-        }
-        return new Vector2D((maxx - minx), (maxy - miny));
-    }
-
     public BoundingBox getBoundingBox() {
+        this.toWorldCoordinate();
+        if(reCalculateBoundingBox) {
+            reCalculateBoundingBox = false;
+            if(Shape.Polygon.equals(shapeType)) {
+                float minx = Float.MAX_VALUE;
+                float maxx = -Float.MAX_VALUE;
+                float miny = Float.MAX_VALUE;
+                float maxy = -Float.MAX_VALUE;
+                for(Vector2D w : worldCoordinate) {
+                    float y = w.getY();
+                    float x = w.getX();
+                    if(y < miny) miny = y;
+                    if(y > maxy) maxy = y;
+                    if(x < minx) minx = x;
+                    if(x > maxx) maxx = x;
+                }
+                boundingBox = new BoundingBox(minx, maxx, miny, maxy);
+            } else if(Shape.Circle.equals(shapeType)) {
+                float r = worldCoordinate[1].getY();
+                Vector2D p = worldCoordinate[0];
+                float minx = p.getX() - r;
+                float maxx = p.getX() + r;
+                float miny = p.getY() - r;
+                float maxy = p.getY() + r;
+                boundingBox = new BoundingBox(minx, maxx, miny, maxy);
+            }else {
+                throw new RuntimeException("No shape found.");
+            }
+        }
         return boundingBox;
     }
 

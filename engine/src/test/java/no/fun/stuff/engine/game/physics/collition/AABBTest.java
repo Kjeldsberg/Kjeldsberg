@@ -9,18 +9,19 @@ class AABBTest {
 
     @Test
     void collide() {
+        Collision collision = new Collision();
         NewRectangle rectangle = new NewRectangle(2f, 2f);
         NewRectangle rectangle2 = new NewRectangle(2f, 2f);
-        assertTrue(AABB.collide(rectangle2, rectangle));
+        assertTrue(collision.intersectBoundingBoxes(rectangle2.getBoundingBox(), rectangle.getBoundingBox()));
         rectangle.moveTo(1f, 0f);
-        assertTrue(AABB.collide(rectangle2, rectangle));
+        assertTrue(collision.intersectBoundingBoxes(rectangle2.getBoundingBox(), rectangle.getBoundingBox()));
         rectangle.moveTo(2f, 0f);
-        assertFalse(AABB.collide(rectangle2, rectangle));
+        assertFalse(collision.intersectBoundingBoxes(rectangle2.getBoundingBox(), rectangle.getBoundingBox()));
 
         rectangle.moveTo(0f, 1f);
-        assertTrue(AABB.collide(rectangle2, rectangle));
+        assertTrue(collision.intersectBoundingBoxes(rectangle2.getBoundingBox(), rectangle.getBoundingBox()));
         rectangle.moveTo(0f, 2f);
-        assertFalse(AABB.collide(rectangle2, rectangle));
+        assertFalse(collision.intersectBoundingBoxes(rectangle2.getBoundingBox(), rectangle.getBoundingBox()));
 
     }
 }

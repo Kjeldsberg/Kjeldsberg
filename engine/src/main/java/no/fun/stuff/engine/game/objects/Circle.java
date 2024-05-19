@@ -2,20 +2,20 @@ package no.fun.stuff.engine.game.objects;
 
 import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.game.Clickable;
-import no.fun.stuff.engine.game.physics.collition.BoundingBox;
 import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Vector2D;
 
 public class Circle extends Body implements Clickable {
     private Vector2D position;
     private final float radius;
+    private float radiusInWorldCoordinate;
     private int color;
     private final Vector2D up;
     int counter = 0;
 
     public Circle(final Vector2D position, float radius, int color) {
         this(radius, color);
-        this.position = position;
+        this.position.setXY(position);
         moveTo(position);
     }
     public Circle(float radius, int color) {
@@ -23,12 +23,13 @@ public class Circle extends Body implements Clickable {
         this.radius = radius;
         this.color = color;
         this.shapeType = Shape.Circle;
-        this.setBoundingBox(new BoundingBox(pos, new Vector2D(radius, radius)));
         up = new Vector2D(0.0f, radius);
-        localCoordinate = new Vector2D[]{position, up};
+        localCoordinate = new Vector2D[]{new Vector2D(), up};
         worldCoordinate = new Vector2D[]{new Vector2D(), new Vector2D()};
     }
-
+    public float getRadiusInWorldCoordinate() {
+        return worldCoordinate[1].getY();
+    }
     @Override
     public Vector2D[] toWorldCoordinate() {
         if(isReCalculateCoordinate()) {
