@@ -22,17 +22,10 @@ public class SAT {
             normal.normaize();
             projectToAxis(objectA, normal, minMaxa);
             projectToAxis(objectB, normal, minMaxb);
-
-            if (minMaxa.min >= minMaxb.max || minMaxb.min >= minMaxa.max) {
-                collisionInfo.setCollide(false);
+            boolean separation = checkForSeparation(collisionInfo, minMaxa, minMaxb, normal);
+            if (separation) {
                 return collisionInfo;
             }
-            float distance = Math.min(minMaxb.max - minMaxa.min, minMaxa.max - minMaxb.min);
-            if (distance < collisionInfo.getDepth()) {
-                collisionInfo.setDepth(distance);
-                collisionInfo.getNormal().setXY(normal);
-            }
-
         }
         for (int i = 0; i < objectB.length; i++) {
             int index = i == objectB.length - 1 ? 0 : i + 1;
@@ -41,14 +34,9 @@ public class SAT {
             normal.normaize();
             projectToAxis(objectA, normal, minMaxa);
             projectToAxis(objectB, normal, minMaxb);
-            if (minMaxa.min >= minMaxb.max || minMaxb.min >= minMaxa.max) {
-                collisionInfo.setCollide(false);
+            boolean separation = checkForSeparation(collisionInfo, minMaxa, minMaxb, normal);
+            if(separation) {
                 return collisionInfo;
-            }
-            float distance = Math.min(minMaxb.max - minMaxa.min, minMaxa.max - minMaxb.min);
-            if (distance < collisionInfo.getDepth()) {
-                collisionInfo.setDepth(distance);
-                collisionInfo.getNormal().setXY(normal);
             }
         }
         if(collisionInfo.getDepth() < 0.0f){
@@ -156,8 +144,6 @@ public class SAT {
             if (minMax.max < dot) minMax.max = dot;
             if (minMax.min > dot) minMax.min = dot;
         }
-//        minMax.min = min;
-//        minMax.max = max;
     }
 
     static class MinMax {

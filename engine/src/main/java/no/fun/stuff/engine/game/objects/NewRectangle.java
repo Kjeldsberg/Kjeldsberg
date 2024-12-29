@@ -3,7 +3,6 @@ package no.fun.stuff.engine.game.objects;
 import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.game.Clickable;
 import no.fun.stuff.engine.game.RecClickedOn;
-import no.fun.stuff.engine.game.physics.collition.BoundingBox;
 import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Vector2D;
 
@@ -19,6 +18,11 @@ public class NewRectangle extends Body implements Clickable {
         this. width = width;
         float halfWidth = width/2f;
         float halfHeight = height/2f;
+        this.setArea(width*height);
+        this.setMass(getArea() * getDensity());
+        this.setInertia((1f / 12) * getMass() * (width * width + height * height));
+        this.setInertiaInverse(1f/getInertia());
+        this.setRestitution(0.6f);
         localCoordinate = new Vector2D[4];
         worldCoordinate = new Vector2D[4];
         localCoordinate[0] = new Vector2D(-halfWidth, -halfHeight);
@@ -33,7 +37,10 @@ public class NewRectangle extends Body implements Clickable {
     }
     @Override
     public void update(SceneObject parent, float dt) {
-//        this.rotate(0.01f);
+        if(!isStatic()) {
+            float test = getAngularVelocity() * dt;
+            this.rotate(test);
+        }
     }
 
     @Override

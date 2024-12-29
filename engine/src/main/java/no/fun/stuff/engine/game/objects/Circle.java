@@ -11,11 +11,13 @@ public class Circle extends Body implements Clickable {
     private float radiusInWorldCoordinate;
     private int color;
     private final Vector2D up;
+    private boolean drawDirectionLine = true;
     int counter = 0;
 
     public Circle(final Vector2D position, float radius, int color) {
         this(radius, color);
         this.position.setXY(position);
+        init();
         moveTo(position);
     }
     public Circle(float radius, int color) {
@@ -23,9 +25,17 @@ public class Circle extends Body implements Clickable {
         this.radius = radius;
         this.color = color;
         this.shapeType = Shape.Circle;
+        init();
         up = new Vector2D(0.0f, radius);
         localCoordinate = new Vector2D[]{new Vector2D(), up};
         worldCoordinate = new Vector2D[]{new Vector2D(), new Vector2D()};
+    }
+    private void init() {
+        setArea(radius * radius * (float)Math.PI);
+        this.setMass(getArea() * getDensity());
+        setInertia((1f / 2f) * getMass() * radius * radius);
+        setInertiaInverse(1f/getInertia());
+        setRestitution(0.5f);
     }
     public float getRadiusInWorldCoordinate() {
         return worldCoordinate[1].getY();
@@ -42,6 +52,9 @@ public class Circle extends Body implements Clickable {
     }
     @Override
     public void update(SceneObject parent, float dt) {
+        if(!isStatic()) {
+            this.rotate(getAngularVelocity()*dt);
+        }
     }
 
     @Override
@@ -58,8 +71,16 @@ public class Circle extends Body implements Clickable {
         }
         Vector2D radius = scaleMatrix.mul(localCoordinate[1]);
         Vector2D screenPos = viewModel.mul(localCoordinate[0]);
+        Vector2D edgePoint = viewModel.mul(localCoordinate[1]);
         renderer.drawText("counter: " + counter++, 50, 500, 0xffffffff);
         renderer.drawCircle(screenPos, radius.getY(), color);
+        if(drawDirectionLine) {
+            Vector2D egde = edgePoint.minus(screenPos);
+            float len = egde.length();
+            egde.normaize();
+            Vector2D eg = screenPos.add(egde.scale(len));
+            DrawUtil.drawLine(screenPos, eg, renderer, 0xff000000);
+        }
     }
 
     @Override

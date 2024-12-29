@@ -51,6 +51,9 @@ public class Vector2D {
 	public float length() {
 		return (float)Math.sqrt(x*x + y*y);
 	}
+	public float lengthSquare() {
+		return x*x + y*y;
+	}
 	public Point toPoint() {
 		return new Point(x, y);
 	}

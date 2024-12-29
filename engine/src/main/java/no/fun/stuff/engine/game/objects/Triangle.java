@@ -45,11 +45,23 @@ public class Triangle extends Body implements Clickable {
         for (float v : len) {
             if(v > length) length = v;
         }
+        float b = localCoordinate[2].minus(localCoordinate[0]).length();
+        float h = localCoordinate[1].minus(localCoordinate[0]).length();
+        setArea(b*h/2f);
+        setDensity(0.6f);
+        setMass(getArea()*getDensity());
+//        Inerta = 1/36 * b * h^3
+        setInertia(b*h*h*h/36f);
+        setInertiaInverse(1/getInertia());
+        setRestitution(0.4f);
     }
 
     @Override
     public void update(SceneObject parent, float dt) {
-        toWorldCoordinate();
+        if(!isStatic()) {
+            this.rotate(getAngularVelocity()*dt);
+            toWorldCoordinate();
+        }
 //        translate.translate(worldCenter);
 //        rotate.rotate(-0.001f);
 //        translate.translate(pos);

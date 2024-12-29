@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Integrator implements Integrate {
-    private final List<Vector2D> forces;
+    protected final List<Vector2D> forces;
     private final Vector2D oldPos;
     private final Vector2D pos;
 
@@ -24,9 +24,12 @@ public class Integrator implements Integrate {
     private Vector2D new_vel = new Vector2D();
     public void integrate(final Body body, float dt) {
         if(body.isStatic()) {
+            body.getVelocity().setXY(0f, 0f);
+            body.setAngularVelocity(0f);
             return;
         }
         Vector2D pos = body.getPos();
+        body.getOldPos().setXY(body.getPos());
         Vector2D velocity = body.getVelocity();
         Vector2D vel = new Vector2D(velocity).mul(dt);
 

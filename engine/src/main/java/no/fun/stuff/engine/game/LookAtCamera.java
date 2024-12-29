@@ -1,10 +1,11 @@
 package no.fun.stuff.engine.game;
 
 import no.fun.stuff.engine.Renderer;
+import no.fun.stuff.engine.game.objects.Body;
 import no.fun.stuff.engine.game.objects.SceneObject;
 import no.fun.stuff.engine.matrix.Vector2D;
 
-public class LookAtCamera extends SceneObject {
+public class LookAtCamera extends Body {
     private SceneObject lookatObject = null;
     private final Vector2D screenSize;
     private float zoom = 1.0f;
@@ -52,8 +53,8 @@ public class LookAtCamera extends SceneObject {
 //            Vector2D currentScale = scale.getScale().pluss(zoom,zoom);
 //            scale.scale(currentScale);
 //        }
-        final Vector2D pos = new Vector2D(lookatObject.getPos().getX(), lookatObject.getPos().getY());
-        pos.setXY(pos);
+//        final Vector2D pos = new Vector2D(lookatObject.getPos().getX(), lookatObject.getPos().getY());
+//        pos.setXY(pos);
         dirty = true;
     }
 
@@ -65,9 +66,10 @@ public class LookAtCamera extends SceneObject {
 
         if (dirty) {
             Vector2D halfScreen = new Vector2D(screenSize.getX() * 0.5f, screenSize.getY() * 0.5f);
-            final Vector2D minus = halfScreen.minus(pos);
-
-            translate.translate(minus);
+            final Vector2D minus = halfScreen.minus(lookatObject.getPos());
+            moveTo(minus);
+//            getPos().setXY(minus);
+//            getTranslate().translate(minus);
             calculateModel();
             dirty = false;
         }

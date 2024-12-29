@@ -71,4 +71,21 @@ public class CollisionInfo {
         this.shapeB = shapeB;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CollisionInfo that = (CollisionInfo) o;
+
+        if (!shapeA.equals(that.shapeA)) return false;
+        return shapeB.equals(that.shapeB);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = shapeA.hashCode();
+        result = 31 * result + shapeB.hashCode();
+        return result;
+    }
 }

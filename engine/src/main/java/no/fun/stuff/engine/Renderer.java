@@ -58,7 +58,7 @@ public class Renderer {
             float y1 = center.getY();
             int thePlussx = (int)(center.getX() + xx);
             int theMinusx = (int)(center.getX() - xx);
-            for (int i = -y; i < y; i++) {
+            for (int i = -y; i <= y; i++) {
                 int ypos = (int) (y1 + i);
                 setPixel(thePlussx, ypos, color);
                 setPixel(theMinusx, ypos, color);

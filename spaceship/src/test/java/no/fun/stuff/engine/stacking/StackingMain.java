@@ -7,6 +7,7 @@ import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.game.Camera2D;
 import no.fun.stuff.engine.game.objects.*;
 import no.fun.stuff.engine.game.physics.Integrator;
+import no.fun.stuff.engine.game.physics.VerletIntegrate;
 import no.fun.stuff.engine.game.physics.collition.Collision;
 import no.fun.stuff.engine.game.physics.collition.CollisionInfo;
 import no.fun.stuff.engine.game.util.Util;
@@ -38,7 +39,8 @@ public class StackingMain extends AbstractGame {
         integrator.addForce(new Vector2D(0f, 9.81f));
         NewRectangle rectangle = new NewRectangle(viewPort.getX() * 0.9f, viewPort.getY() * 0.1f);
         rectangle.setStatic(true);
-        rectangle.moveTo(viewPort.getX() * 0.5f, viewPort.getY() * 0.9f);
+        rectangle.initPos(new Vector2D(viewPort.getX() * 0.5f, viewPort.getY() * 0.9f));
+        scene.addChild(rectangle);
         Triangle triangle = new Triangle(new Vector2D(0.0f, 0.0f),
                 new Vector2D(0.0f, 1.0f),
                 new Vector2D(1.0f, 0.0f), 0xffaa11aa);
@@ -46,8 +48,14 @@ public class StackingMain extends AbstractGame {
         triangle.moveTo(viewPort.getX() * 0.5f, viewPort.getY() * 0.7f);
         triangle.getScale().scale(2f);
         scene.addChild(triangle);
-
-        scene.addChild(rectangle);
+        Circle circle = new Circle(2f, 0xff11ee22);
+        circle.initPos(new Vector2D(viewPort.getX() * 0.5f, viewPort.getY() * 0.7f));
+//        scene.addChild(circle);
+//        NewRectangle rectangle1 = new NewRectangle(Util.rand(0.75f, 1.25f), Util.rand(0.75f, 1.25f));
+        NewRectangle rectangle1 = new NewRectangle(5.0f, 4.0f);
+        rectangle1.initPos(new Vector2D(viewPort.getX() * 0.5f, viewPort.getY() * 0.7f));
+        rectangle1.rotateTo(3.14f/4f);
+//        scene.addChild(rectangle1);
     }
 
     @Override
@@ -55,6 +63,10 @@ public class StackingMain extends AbstractGame {
         long start = System.currentTimeMillis();
         updateNummer++;
         final Input input = gc.getInput();
+        boolean keyUp = input.isKeyUp(MouseEvent.BUTTON1);
+        if(keyUp) {
+            int test = 0;
+        }
         boolean buttonDown = input.isButtonDown(MouseEvent.BUTTON1);
         boolean buttonDown2 = input.isButtonDown(MouseEvent.BUTTON2);
         boolean buttonDown3 = input.isButtonDown(MouseEvent.BUTTON3);
@@ -70,14 +82,14 @@ public class StackingMain extends AbstractGame {
                         new Vector2D(0f, 1f),
                         new Vector2D(1f, 0f)
                         , 0xffee4444);
-                triangle.moveTo(worldPosition);
+                triangle.initPos(worldPosition);
             } else if (rand > 2.0) {
 
             }
         }
         if(buttonDown2) {
             NewRectangle rectangle = new NewRectangle(Util.rand(0.75f, 1.25f), Util.rand(0.75f, 1.25f));
-            rectangle.moveTo(worldPosition);
+            rectangle.initPos(worldPosition);
             rectangle.rotateTo(3.14f/4f);
             scene.addChild(rectangle);
 
@@ -86,7 +98,7 @@ public class StackingMain extends AbstractGame {
             Triangle triangle = new Triangle(new Vector2D(0.0f, 0.0f),
                     new Vector2D(0.0f, 1.0f),
                     new Vector2D(1.0f, 0.0f), 0xffaa11aa);
-            triangle.moveTo(worldPosition);
+            triangle.initPos(worldPosition);
             triangle.getScale().scale(2f);
                 scene.addChild(triangle);
 
@@ -120,10 +132,6 @@ public class StackingMain extends AbstractGame {
     int size = 0;
     @Override
     public void render(GameContainer gc, Renderer r) {
-//        for (SceneObject s : contactPointList) {
-//            s.render(camera2D, r);
-//        }
-//        contactPointList.clear();
         scene.render(null, gc.getRenderer());
 
         r.drawText("Frametime: " + frameTime/1000.0 , 10, 100, 0xffffffff);
@@ -139,6 +147,13 @@ public class StackingMain extends AbstractGame {
             startTime = System.currentTimeMillis();
             aSecond = currTime;
         }
+        for (Vector2D s : collision.getContactPoints()) {
+            Vector2D screen = camera2D.getModel().mul(s);
+            DrawUtil.drawBox(screen, 10f, 0xff667766, r);
+        }
+        collision.getContactPoints().clear();
+        contactPointList.clear();
+
         for(SceneObject o : scene.getChild()) {
             if(o.getPos().getY() > viewPort.getY()) {
                 o.setDead(true);

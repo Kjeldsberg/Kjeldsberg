@@ -15,7 +15,11 @@ public abstract class Body extends SceneObject {
     private float density = 1.0f;
     private float mass = 1.0f;
     private float inverseMass = 1/mass;
+    private float inertia;
+    private float inertiaInverse;
+    private float area;
     private float radius;
+    private Vector2D oldPos = new Vector2D();
     private Vector2D force = new Vector2D();
     private Vector2D velocity = new Vector2D();
     private Vector2D acceleration = new Vector2D();
@@ -27,6 +31,15 @@ public abstract class Body extends SceneObject {
     protected Vector2D[] worldCoordinate;
     private BoundingBox boundingBox;
 
+    public float getAngularVelocity() {
+        return angularVelocity;
+    }
+
+    public void setAngularVelocity(float angularVelocity) {
+        this.angularVelocity = angularVelocity;
+    }
+
+    private float angularVelocity;
     public Vector2D[] toWorldCoordinate() {
         if(reCalculateCoordinate) {
             calculateModel();
@@ -35,11 +48,13 @@ public abstract class Body extends SceneObject {
         }
         return worldCoordinate;
     }
-
+    public void initPos(final Vector2D initPos) {
+        pos.setXY(initPos);
+        oldPos.setXY(initPos);
+    }
     public boolean isReCalculateCoordinate() {
         return reCalculateCoordinate;
     }
-
     public void setReCalculateCoordinate(boolean reCalculateCoordinate) {
         this.reCalculateCoordinate = reCalculateCoordinate;
     }
@@ -89,6 +104,14 @@ public abstract class Body extends SceneObject {
 
     public float getRestitution() {
         return restitution;
+    }
+
+    public Vector2D getOldPos() {
+        return oldPos;
+    }
+
+    public void setOldPos(Vector2D oldPos) {
+        this.oldPos = oldPos;
     }
 
     public Vector2D getVelocity() {
@@ -176,5 +199,40 @@ public abstract class Body extends SceneObject {
 
     public void setRadius(float radius) {
         this.radius = radius;
+    }
+    public float getInertia() {
+        return inertia;
+    }
+
+    public void setInertia(float inertia) {
+        this.inertia = inertia;
+    }
+
+    public float getInertiaInverse() {
+        return inertiaInverse;
+    }
+
+    public void setInertiaInverse(float inertiaInverse) {
+        this.inertiaInverse = inertiaInverse;
+    }
+
+    public float getArea() {
+        return area;
+    }
+
+    public void setArea(float area) {
+        this.area = area;
+    }
+
+    public float getDensity() {
+        return density;
+    }
+
+    public void setDensity(float density) {
+        this.density = density;
+    }
+
+    public void setRestitution(float restitution) {
+        this.restitution = restitution;
     }
 }
