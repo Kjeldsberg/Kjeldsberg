@@ -5,6 +5,7 @@ import no.fun.stuff.engine.matrix.Vector2D;
 
 public class SAT {
 
+    private Vector2D normal = new Vector2D();
     public CollisionInfo polygonCollide(final Body objA,
                                         final Body objB) {
         CollisionInfo collisionInfo = new CollisionInfo();
@@ -14,7 +15,6 @@ public class SAT {
         final Vector2D[] objectB = objB.toWorldCoordinate();
         final MinMax minMaxa = new MinMax();
         final MinMax minMaxb = new MinMax();
-        Vector2D normal = new Vector2D();
         for (int i = 0; i < objectA.length; i++) {
             int index = i == objectA.length - 1 ? 0 : i + 1;
             final Vector2D edge = objectA[index].minus(objectA[i]);

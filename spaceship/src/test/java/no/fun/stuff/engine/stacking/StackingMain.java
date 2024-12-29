@@ -41,6 +41,16 @@ public class StackingMain extends AbstractGame {
         rectangle.setStatic(true);
         rectangle.initPos(new Vector2D(viewPort.getX() * 0.5f, viewPort.getY() * 0.9f));
         scene.addChild(rectangle);
+        NewRectangle leftRank = new NewRectangle(viewPort.getX() * 0.6f, viewPort.getY() * 0.05f);
+        leftRank.setStatic(true);
+        leftRank.initPos(new Vector2D(viewPort.getX() * 0.3f, viewPort.getY() * 0.5f));
+        leftRank.rotate(3.14f/6);
+        scene.addChild(leftRank);
+        NewRectangle rightRank = new NewRectangle(viewPort.getX() * 0.6f, viewPort.getY() * 0.05f);
+        rightRank.setStatic(true);
+        rightRank.initPos(new Vector2D(viewPort.getX() * 0.8f, viewPort.getY() * 0.2f));
+        rightRank.rotate(-3.14f/5);
+        scene.addChild(rightRank);
         Triangle triangle = new Triangle(new Vector2D(0.0f, 0.0f),
                 new Vector2D(0.0f, 1.0f),
                 new Vector2D(1.0f, 0.0f), 0xffaa11aa);

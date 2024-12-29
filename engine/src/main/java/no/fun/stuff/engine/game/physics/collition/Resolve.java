@@ -99,7 +99,6 @@ public class Resolve {
             float j = -(1f + e) * contactVelocityMag;
             j /= denominator;
             j /= (float)contactCount;
-            System.out.println("the J: " + j);
             Vector2D impulse = normal.scale(j);
 
             holder.impulse.get(i).setXY(impulse);
@@ -124,10 +123,6 @@ public class Resolve {
 //            float angularVelocityB = angularVelocity1 + vb;
             shapeA.setAngularVelocity(angularVelocity);
             shapeB.setAngularVelocity(angularVelocity1);
-//            shapeA.setAngularVelocity(angularVelocityA);
-//            shapeB.setAngularVelocity(angularVelocityB);
-//            shapeA.rotate(angularVelocityA);
-//            shapeB.rotate(angularVelocityB);
         }
     }
 
