@@ -5,6 +5,8 @@ import no.fun.stuff.engine.game.physics.collition.CollisionInfo;
 import no.fun.stuff.engine.game.util.Util;
 import no.fun.stuff.engine.matrix.Vector2D;
 
+import static no.fun.stuff.engine.game.util.Util.compareVector;
+
 public class ContactPoint {
     private static ClosestPoint closestPoint = new ClosestPoint();
     static class ClosestPoint {
@@ -116,11 +118,6 @@ public class ContactPoint {
         info.getContact1().setXY(tcp.cp);
         info.setContactCount(1);
         return tcp.cp;
-    }
-    public static boolean compareVector(final Vector2D a, final Vector2D b) {
-        boolean compareX = Util.compare(a.getX(), b.getX());
-        boolean compareY = Util.compare(a.getY(), b.getY());
-        return compareY && compareX;
     }
 
     public static ClosestPoint closestPointOnSegment(final Vector2D p,

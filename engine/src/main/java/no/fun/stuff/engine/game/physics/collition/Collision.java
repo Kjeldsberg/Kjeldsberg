@@ -6,9 +6,7 @@ import no.fun.stuff.engine.game.physics.ContactPoint;
 import no.fun.stuff.engine.matrix.Vector2D;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Collision {
     public static final int maxIteration = 128;
@@ -32,7 +30,7 @@ public class Collision {
                 Resolve.easyResolve(c.getShapeA(), c.getShapeB(), c);
 //                if(Resolve.easyResolve(c.getShapeA(), c.getShapeB(), c)) {
                 ContactPoint.findContactsPoints(c);
-                    Resolve.impulseWithRotation(c);
+                    Resolve.impulseWithRotationAndFriction(c);
 //                Resolve.impulse(c);
                     if (c.getContactCount() > 0) {
                         contactPoints.add(c.getContact1());

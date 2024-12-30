@@ -5,6 +5,16 @@ import no.fun.stuff.engine.matrix.Vector2D;
 public class Util {
 	public static float epsilon = 0.00001f;
 	public static final float ONE_MINUS_THRESHOLD = 1.0f - epsilon;
+	public static boolean compareVector(final Vector2D a, final Vector2D b) {
+		boolean compareX = Util.compare(a.getX(), b.getX());
+		boolean compareY = Util.compare(a.getY(), b.getY());
+		return compareY && compareX;
+	}
+	public static boolean compareVector(final Vector2D a, final Vector2D b, float epsilon) {
+		boolean compareX = Util.compare(a.getX(), b.getX(), epsilon);
+		boolean compareY = Util.compare(a.getY(), b.getY(), epsilon);
+		return compareY && compareX;
+	}
 
 	public static boolean compare(float a, float b, float epsilon) {
 		return Math.abs(a-b) <= epsilon * Math.max(1.0f,  Math.max(Math.abs(a), Math.abs(b)));

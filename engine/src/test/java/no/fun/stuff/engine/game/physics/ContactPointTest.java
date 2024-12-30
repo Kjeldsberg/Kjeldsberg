@@ -5,6 +5,7 @@ import no.fun.stuff.engine.game.physics.collition.CollisionInfo;
 import no.fun.stuff.engine.matrix.Vector2D;
 import org.junit.jupiter.api.Test;
 
+import static no.fun.stuff.engine.game.util.Util.compareVector;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ContactPointTest {
@@ -23,11 +24,11 @@ class ContactPointTest {
         Vector2D point = new Vector2D(-0.5f, -1.0f);
         Vector2D point2 = new Vector2D(0.5f, -1.0f);
 
-        boolean b = ContactPoint.compareVector(vector2DS[0], point);
-        boolean b1 = ContactPoint.compareVector(vector2DS[0], point2);
+        boolean b = compareVector(vector2DS[0], point);
+        boolean b1 = compareVector(vector2DS[0], point2);
         boolean yeah = b | b1;
-        boolean d = ContactPoint.compareVector(vector2DS[1], point);
-        boolean d1 = ContactPoint.compareVector(vector2DS[1], point2);
+        boolean d = compareVector(vector2DS[1], point);
+        boolean d1 = compareVector(vector2DS[1], point2);
         boolean yeah2 = d | d1;
         assertTrue(yeah2 && yeah);
     }
@@ -63,7 +64,7 @@ class ContactPointTest {
         assertEquals( vector2DS.length , 1);
         Vector2D point = new Vector2D(0.0f, 2.0f);
 
-        boolean b = ContactPoint.compareVector(vector2DS[0], point);
+        boolean b = compareVector(vector2DS[0], point);
         assertTrue(b);
     }
 }

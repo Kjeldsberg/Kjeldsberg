@@ -48,7 +48,7 @@ public class Triangle extends Body implements Clickable {
         float b = localCoordinate[2].minus(localCoordinate[0]).length();
         float h = localCoordinate[1].minus(localCoordinate[0]).length();
         setArea(b*h/2f);
-        setDensity(0.6f);
+        setDensity(0.8f);
         setMass(getArea()*getDensity());
 //        Inerta = 1/36 * b * h^3
         setInertia(b*h*h*h/36f);

@@ -19,6 +19,9 @@ public abstract class Body extends SceneObject {
     private float inertiaInverse;
     private float area;
     private float radius;
+    // friction between 0.0 og 1.0;
+    private float staticFriction = 0.6f;
+    private float dynamicFriction = 0.4f;
     private Vector2D oldPos = new Vector2D();
     private Vector2D force = new Vector2D();
     private Vector2D velocity = new Vector2D();
@@ -234,5 +237,13 @@ public abstract class Body extends SceneObject {
 
     public void setRestitution(float restitution) {
         this.restitution = restitution;
+    }
+
+    public float getStaticFriction() {
+        return staticFriction;
+    }
+
+    public float getDynamicFriction() {
+        return dynamicFriction;
     }
 }

@@ -5,6 +5,7 @@ import no.fun.stuff.engine.game.util.Util;
 public class Vector2D {
 	private float x, y;
 
+	public static final Vector2D ZERO = new Vector2D(0f, 0f);
 	public Vector2D(final Point p) {
 		this.x = p.getX();
 		this.y = p.getY();
