@@ -1,4 +1,4 @@
-package no.fun.stuff.engine.triangle;
+package no.fun.stuff.game.spaceship;
 
 import no.fun.stuff.engine.GameContainer;
 import no.fun.stuff.engine.Renderer;

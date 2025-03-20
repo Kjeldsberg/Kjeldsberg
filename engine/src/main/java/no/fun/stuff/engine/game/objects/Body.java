@@ -1,15 +1,19 @@
 package no.fun.stuff.engine.game.objects;
 
 import no.fun.stuff.engine.game.physics.collition.BoundingBox;
+import no.fun.stuff.engine.game.util.Util;
 import no.fun.stuff.engine.matrix.Vector2D;
 
 public abstract class Body extends SceneObject {
     public enum Shape {
         Polygon, Circle
     }
-    public static float MinDensity = 0.5f;     // g/cm^3
-    public static float MaxDensity = 21.4f;
-
+    private final static float mag = 1.0f;
+    public static final float MinDensity = 0.5f;     // g/cm^3
+    public static final float MaxDensity = 21.4f;
+    public static final float WaterDensity = 1.0f * mag;
+    public static final float AluminiumDensity = 2.7f * mag;
+    public static final float IronDensity = 7.87f * mag;
     // restitution mellom 0.0 og 1.0;
     private float restitution = 0.5f;
     private float density = 1.0f;
@@ -29,11 +33,12 @@ public abstract class Body extends SceneObject {
     protected Shape shapeType;
     private boolean reCalculateCoordinate = true;
     private boolean reCalculateBoundingBox = true;
+    private boolean reCalculateOldPosition = false;
     private boolean isStatic = false;
     protected Vector2D[] localCoordinate;
     protected Vector2D[] worldCoordinate;
     private BoundingBox boundingBox;
-
+    public abstract Vector2D applyForces();
     public float getAngularVelocity() {
         return angularVelocity;
     }
@@ -84,6 +89,11 @@ public abstract class Body extends SceneObject {
     }
     public void move(final Vector2D motionVector) {
         pos.pluss(motionVector);
+        reCalculateCoordinate = true;
+        reCalculateBoundingBox = true;
+    }
+    public void scale(float scale) {
+        getScale().scale(scale);
         reCalculateCoordinate = true;
         reCalculateBoundingBox = true;
     }
@@ -156,28 +166,13 @@ public abstract class Body extends SceneObject {
 
     public void setStatic(boolean aStatic) {
         isStatic = aStatic;
-        if(aStatic) {
-            inverseMass = 0;
-        }
     }
     public BoundingBox getBoundingBox() {
         this.toWorldCoordinate();
         if(reCalculateBoundingBox) {
             reCalculateBoundingBox = false;
             if(Shape.Polygon.equals(shapeType)) {
-                float minx = Float.MAX_VALUE;
-                float maxx = -Float.MAX_VALUE;
-                float miny = Float.MAX_VALUE;
-                float maxy = -Float.MAX_VALUE;
-                for(Vector2D w : worldCoordinate) {
-                    float y = w.getY();
-                    float x = w.getX();
-                    if(y < miny) miny = y;
-                    if(y > maxy) maxy = y;
-                    if(x < minx) minx = x;
-                    if(x > maxx) maxx = x;
-                }
-                boundingBox = new BoundingBox(minx, maxx, miny, maxy);
+                boundingBox = loopThroughWorldCordinate();
             } else if(Shape.Circle.equals(shapeType)) {
                 float r = worldCoordinate[1].getY();
                 Vector2D p = worldCoordinate[0];
@@ -187,10 +182,27 @@ public abstract class Body extends SceneObject {
                 float maxy = p.getY() + r;
                 boundingBox = new BoundingBox(minx, maxx, miny, maxy);
             }else {
-                throw new RuntimeException("No shape found.");
+                boundingBox = loopThroughWorldCordinate();
+//                throw new RuntimeException("No shape found.");
             }
         }
         return boundingBox;
+    }
+
+    private BoundingBox loopThroughWorldCordinate() {
+        float minx = Float.MAX_VALUE;
+        float maxx = -Float.MAX_VALUE;
+        float miny = Float.MAX_VALUE;
+        float maxy = -Float.MAX_VALUE;
+        for(Vector2D w : worldCoordinate) {
+            float y = w.getY();
+            float x = w.getX();
+            if(y < miny) miny = y;
+            if(y > maxy) maxy = y;
+            if(x < minx) minx = x;
+            if(x > maxx) maxx = x;
+        }
+        return new BoundingBox(minx, maxx, miny, maxy);
     }
 
     public void setBoundingBox(final BoundingBox boundingBox) {
@@ -236,14 +248,35 @@ public abstract class Body extends SceneObject {
     }
 
     public void setRestitution(float restitution) {
+        boolean upper = restitution > 1.0f;
+        boolean lower = restitution < 0.0f;
         this.restitution = restitution;
+        if(upper) {
+            this.restitution = 1.0f;
+        }else if(lower) {
+            this.restitution = 0.0f;
+        }
     }
 
     public float getStaticFriction() {
         return staticFriction;
     }
+    public void setStaticFriction(float staticFriction) {
+        this.staticFriction = Util.clamp(staticFriction, 0f, 1.0f);
+    }
 
     public float getDynamicFriction() {
         return dynamicFriction;
+    }
+    public void setDynamicFriction(float dynamicFriction) {
+        this.dynamicFriction = Util.clamp(dynamicFriction, 0f, 1f);
+    }
+
+    public boolean isReCalculateOldPosition() {
+        return reCalculateOldPosition;
+    }
+
+    public void setReCalculateOldPosition(boolean reCalculateOldPosition) {
+        this.reCalculateOldPosition = reCalculateOldPosition;
     }
 }

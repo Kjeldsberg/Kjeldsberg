@@ -21,24 +21,42 @@ public class Collision {
 
     public void collision(final SceneObject scene, float dt) {
         boolean moreToResolve = true;
-//        for (int i = 0; i < 128 && moreToResolve; i++) {
+        for (int i = 0; i < 5 && moreToResolve; i++) {
             findAllPossibleCollision(scene);
             List<CollisionInfo> collides2 = accurateCollisionCheck(collisions);
             collisions.clear();
             collisions.addAll(collides2);
-            for (CollisionInfo c : collides2) {
-                Resolve.easyResolve(c.getShapeA(), c.getShapeB(), c);
-//                if(Resolve.easyResolve(c.getShapeA(), c.getShapeB(), c)) {
+            collides2.clear();
+            for (CollisionInfo c : collisions) {
+                if(c.getShapeA().isStatic()) {
+                    c.getShapeA().getVelocity().setXY(Vector2D.ZERO);
+                    c.getShapeA().setAngularVelocity(0);
+                }
+                if(c.getShapeB().isStatic()) {
+                    c.getShapeB().getVelocity().setXY(Vector2D.ZERO);
+                    c.getShapeB().setAngularVelocity(0);
+                }
+                boolean noResolve = Resolve.easyResolve(c.getShapeA(), c.getShapeB(), c);
+                if(!noResolve) {
+                    collides2.add(c);
+                }
+//                if(noResolve) {
                 ContactPoint.findContactsPoints(c);
-                    Resolve.impulseWithRotationAndFriction(c);
+                Resolve.impulseWithRotationAndFriction(c);
+//                    Resolve.impulseWithRotation(c);
 //                Resolve.impulse(c);
                     if (c.getContactCount() > 0) {
                         contactPoints.add(c.getContact1());
+                    } if(c.getContactCount() > 1) {
+                        contactPoints.add(c.getContact2());
                     }
 //                }
             }
-            moreToResolve = collides2.size() > 0;
-//        }
+            if(collides2.size() > 0) {
+                collisions.removeAll(collides2);
+            }
+            moreToResolve = collisions.size() > 0;
+        }
 
     }
 
@@ -112,7 +130,7 @@ public class Collision {
         }
     }
 
-    public boolean intersectBoundingBoxes(BoundingBox a, BoundingBox b) {
+    public boolean intersectBoundingBoxes(final BoundingBox a, final BoundingBox b) {
         boolean noSeparation = a.maxx <= b.minx || b.maxx <= a.minx ||
                 a.maxy <= b.miny || b.maxy <= a.miny;
         return !noSeparation;

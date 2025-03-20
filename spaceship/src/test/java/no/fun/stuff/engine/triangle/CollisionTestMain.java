@@ -7,6 +7,7 @@ import no.fun.stuff.engine.game.LookAtCamera;
 import no.fun.stuff.engine.game.objects.NewRectangle;
 import no.fun.stuff.engine.game.objects.SceneObject;
 import no.fun.stuff.engine.matrix.Vector2D;
+import no.fun.stuff.game.spaceship.TriangleScene;
 
 public class CollisionTestMain extends AbstractGame {
     public static final float HEIGHT = 4f;

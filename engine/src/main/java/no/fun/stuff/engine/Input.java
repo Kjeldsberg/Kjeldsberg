@@ -20,6 +20,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, M
 
 	private int mouseX, mouseY;
 	private int scroll;
+	private double preciseScroll;
 
 	public Input(final GameContainer container) {
 		this.gc = container;
@@ -83,7 +84,6 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, M
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		int tset = 0;
 
 	}
 
@@ -113,6 +113,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, M
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
+		preciseScroll = e.getPreciseWheelRotation();
 		scroll = e.getWheelRotation();
 
 	}
@@ -145,4 +146,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, M
 		return scroll;
 	}
 
+	public double getPreciseScroll() {
+		return preciseScroll;
+	}
 }

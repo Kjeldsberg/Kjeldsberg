@@ -10,13 +10,17 @@ public class Triangle extends Body implements Clickable {
     private Vector2D p1, p2, p3, localCenter;
     private int color;
     private TriangleClickedOn clickedOn;
-
+    private boolean wireFrame = false;
     public Triangle(final Vector2D p0, final Vector2D p1, final Vector2D p2, int color) {
         this.p1 = p0;
         this.p2 = p1;
         this.p3 = p2;
         this.color = color;
         init();
+    }
+
+    public void setWireFrame(boolean wireFrame) {
+        this.wireFrame = wireFrame;
     }
 
     public Triangle() {
@@ -28,13 +32,15 @@ public class Triangle extends Body implements Clickable {
 
     private void init() {
         shapeType = Shape.Polygon;
-        localCenter = new Vector2D((p1.getX() + p2.getX() + p3.getX()) / 3.0f, (p1.getY() + p2.getY() + p3.getY()) / 3.0f);
+        localCoordinate = new Vector2D[]{p1, p2, p3};
+        localCenter = getCenter(localCoordinate);
         Vector2D center = new Vector2D();
         center.sub(localCenter);
-        localCoordinate = new Vector2D[]{p1, p2, p3};
         for (final Vector2D v : localCoordinate) {
             v.pluss(center);
         }
+        localCenter.setXY(getCenter(localCoordinate));
+
         worldCoordinate = new Vector2D[]{new Vector2D(), new Vector2D(), new Vector2D()};
         clickedOn = new TriangleClickedOn(this);
         float len[] = {
@@ -45,15 +51,22 @@ public class Triangle extends Body implements Clickable {
         for (float v : len) {
             if(v > length) length = v;
         }
+        reCalculateProperties();
+//        setRestitution(0.4f);
+    }
+
+    public void reCalculateProperties() {
         float b = localCoordinate[2].minus(localCoordinate[0]).length();
         float h = localCoordinate[1].minus(localCoordinate[0]).length();
-        setArea(b*h/2f);
-        setDensity(0.8f);
+
+        setArea(b * h /2f);
+//        setDensity(Body.AluminiumDensity);
         setMass(getArea()*getDensity());
 //        Inerta = 1/36 * b * h^3
-        setInertia(b*h*h*h/36f);
+
+        setInertia((1f / (12*2)) * getMass() * (b * b + h * h));
+//        setInertia(getMass() * b * h * h * h /36f);
         setInertiaInverse(1/getInertia());
-        setRestitution(0.4f);
     }
 
     @Override
@@ -71,10 +84,21 @@ public class Triangle extends Body implements Clickable {
     public void render(SceneObject parent, Renderer r) {
         calculateViewModel(parent);
         int c = isStatic() ? 0xff111111 : color;
-        r.fillTriangle(
-                getViewModel().mul(localCoordinate[0]),
-                getViewModel().mul(localCoordinate[1]),
-                getViewModel().mul(localCoordinate[2]), c);
+        if(wireFrame) {
+            r.drawLine(getViewModel().mul(localCoordinate[0]),
+                    getViewModel().mul(localCoordinate[1]), c);
+            r.drawLine(getViewModel().mul(localCoordinate[1]),
+                    getViewModel().mul(localCoordinate[2]), c);
+            r.drawLine(getViewModel().mul(localCoordinate[2]),
+                    getViewModel().mul(localCoordinate[0]), c);
+
+        }   else {
+
+            r.fillTriangle(
+                    getViewModel().mul(localCoordinate[0]),
+                    getViewModel().mul(localCoordinate[1]),
+                    getViewModel().mul(localCoordinate[2]), c);
+        }
     }
 
     public int getColor() {
@@ -95,5 +119,10 @@ public class Triangle extends Body implements Clickable {
     public boolean clickedOn(Vector2D position, final Matrix3x3 cameraMatrix) {
         toWorldCoordinate();
         return clickedOn.clickedOn(position, cameraMatrix);
+    }
+
+    @Override
+    public Vector2D applyForces() {
+        return Vector2D.ZERO;
     }
 }

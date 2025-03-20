@@ -47,4 +47,9 @@ public class Rectangle extends Body {
 		p.drawRect(word, r);
 
 	}
+
+	@Override
+	public Vector2D applyForces() {
+		return Vector2D.ZERO;
+	}
 }

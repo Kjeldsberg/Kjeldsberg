@@ -11,11 +11,12 @@ import no.fun.stuff.engine.game.physics.Integrator;
 import no.fun.stuff.engine.game.physics.collition.Collision;
 import no.fun.stuff.engine.game.physics.collition.SAT;
 import no.fun.stuff.engine.matrix.Vector2D;
-import no.fun.stuff.engine.triangle.TriangleScene;
+import no.fun.stuff.game.spaceship.TriangleScene;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SATMain extends AbstractGame {
@@ -24,7 +25,7 @@ public class SATMain extends AbstractGame {
     private Camera2D lookAtCamera;
     private final List<Clickable> clickable = new ArrayList<>();
     private final SAT sat = new SAT();
-    private Integrator integrator = new Integrator();
+    private Integrator integrator = new Integrator(Arrays.asList(new Vector2D(0f, 9.81f)));
     class SATTriangle extends Triangle {
         @Override
         public void render(SceneObject parent, Renderer r) {
@@ -39,7 +40,7 @@ public class SATMain extends AbstractGame {
         Vector2D screenSize = new Vector2D(gc.getWith(), gc.getHeight());
         Vector2D viewPort = new Vector2D(20.0f, 15.0f);
         lookAtCamera = new Camera2D(screenSize, viewPort);
-        integrator = new Integrator();
+//        integrator = new Integrator();
 //        integrator.addForce(new Vector2D(0f, 9.81f));
 
 //        Triangle triangle = new ShowNormalTriangle(new Vector2D(0.0f, 0.0f),

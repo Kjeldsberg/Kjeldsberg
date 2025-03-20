@@ -93,7 +93,7 @@ public class Resolve {
             holder.rb.get(i).setXY(rb);
             if (contactVelocityMag < 0.0f) {
 
-                continue;
+                 continue;
             }
             float raPerpDotN = raPerp.dot(normal);
             float rbPerpDotN = rbPerp.dot(normal);
@@ -157,20 +157,20 @@ public class Resolve {
             float denominator = shapeA.getInverseMass() + shapeB.getInverseMass() +
                     (raPerpDotT * raPerpDotT) * shapeA.getInertiaInverse() +
                     (rbPerpDotT * rbPerpDotT) * shapeB.getInertiaInverse();
-            float jt = -relativeVelocity.dot(tagent);;
+            float jt = -relativeVelocity.dot(tagent);
             jt /= denominator;
             jt /= (float)contactCount;
 
 
             float j = holder.jList[i];
             boolean b = Math.abs(jt) <= j * sf;
-//            Vector2D frictionImpulse = b ? tagent.scale(-j*df) : tagent.scale(jt);
-            Vector2D frictionImpulse = new Vector2D(tagent);
-            if(Math.abs(jt) <= j * sf) {
-                frictionImpulse.mul(-j*df);
-            }else {
-                frictionImpulse.mul(jt);
-            }
+            Vector2D frictionImpulse = b ? tagent.scale(-j*df) : tagent.scale(jt);
+//            Vector2D frictionImpulse = new Vector2D(tagent);
+//            if(Math.abs(jt) <= j * sf) {
+//                frictionImpulse.mul(-j*df);
+//            }else {
+//                frictionImpulse.mul(jt);
+//            }
 ////            frictionImpulse = tagent.scale(jt);
 
             holder.frictionImpulse.get(i).setXY(frictionImpulse);
@@ -195,6 +195,8 @@ public class Resolve {
 //            float angularVelocityB = angularVelocity1 + vb;
             shapeA.setAngularVelocity(angularVelocity);
             shapeB.setAngularVelocity(angularVelocity1);
+            shapeA.setReCalculateOldPosition(true);
+            shapeB.setReCalculateOldPosition(true);
         }
     }
 

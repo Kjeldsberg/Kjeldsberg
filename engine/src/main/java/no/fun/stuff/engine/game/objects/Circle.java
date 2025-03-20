@@ -40,6 +40,12 @@ public class Circle extends Body implements Clickable {
     public float getRadiusInWorldCoordinate() {
         return worldCoordinate[1].getY();
     }
+
+    @Override
+    public Vector2D applyForces() {
+        return Vector2D.ZERO;
+    }
+
     @Override
     public Vector2D[] toWorldCoordinate() {
         if(isReCalculateCoordinate()) {

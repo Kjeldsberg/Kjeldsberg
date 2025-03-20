@@ -9,9 +9,9 @@ import no.fun.stuff.engine.game.Camera2D;
 import no.fun.stuff.engine.game.Clickable;
 import no.fun.stuff.engine.game.objects.Triangle;
 import no.fun.stuff.engine.game.objects.*;
-import no.fun.stuff.engine.game.physics.collition.AABB;
 import no.fun.stuff.engine.game.physics.collition.Collision;
 import no.fun.stuff.engine.matrix.Vector2D;
+import no.fun.stuff.game.spaceship.TriangleScene;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -39,7 +39,8 @@ public class AABBMain extends AbstractGame {
         Triangle triangle = new DrawBoundingBoxTriangle(new Vector2D(0.0f, 0.0f),
                     new Vector2D(0.0f, 1.0f),
                     new Vector2D(1.0f, 0.0f), 0xff2222ee);
-        triangle.moveTo(3f,3f);
+        triangle.moveTo(20f,15f);
+        triangle.scale(5);
         scene.addChild(triangle);
         DrawBoundingBoxCircle drawBoundingBoxCircle = new DrawBoundingBoxCircle(1f, 0xff2222ff);
         drawBoundingBoxCircle.moveTo(4f,4f);

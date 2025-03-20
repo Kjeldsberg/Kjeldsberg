@@ -9,6 +9,7 @@ import no.fun.stuff.engine.game.LookAtCamera;
 import no.fun.stuff.engine.game.objects.Circle;
 import no.fun.stuff.engine.game.objects.Grid;
 import no.fun.stuff.engine.matrix.Vector2D;
+import no.fun.stuff.game.spaceship.TriangleScene;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;

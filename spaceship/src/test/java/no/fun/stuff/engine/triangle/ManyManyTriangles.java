@@ -5,6 +5,7 @@ import no.fun.stuff.engine.GameContainer;
 import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.game.LookAtCamera;
 import no.fun.stuff.engine.matrix.Vector2D;
+import no.fun.stuff.game.spaceship.TriangleScene;
 
 import java.awt.event.KeyEvent;
 

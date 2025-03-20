@@ -142,23 +142,11 @@ public class SpaceShip extends SceneObject {
 	}
 
 	void drawLine(final Vector2D h0, final Vector2D h1, final Renderer r) {
-		int tempcamX = r.getCamX();
-		int tempcamY = r.getCamY();
-		r.setCamX(0);
-		r.setCamY(0);
 		r.drawBresenhamLine((int)h0.getX(), (int)h0.getY(), (int)h1.getX(), (int)h1.getY(), 0xffff0000);
-		r.setCamX(tempcamX);
-		r.setCamY(tempcamY);
 	}
 
 	void drawRec(final Vector2D h0, int color, final Renderer r) {
-		int tempcamX = r.getCamX();
-		int tempcamY = r.getCamY();
-		r.setCamX(0);
-		r.setCamY(0);
 		r.drawFillRec((int)h0.getX(), (int)h0.getY(), 16, 16, color);
-		r.setCamX(tempcamX);
-		r.setCamY(tempcamY);
 	}
 
 	void drawRec2(final Vector2D h0, int color, final Renderer r) {

@@ -18,11 +18,24 @@ public class NewRectangle extends Body implements Clickable {
         this. width = width;
         float halfWidth = width/2f;
         float halfHeight = height/2f;
-        this.setArea(width*height);
-        this.setMass(getArea() * getDensity());
-        this.setInertia((1f / 12) * getMass() * (width * width + height * height));
-        this.setInertiaInverse(1f/getInertia());
-        this.setRestitution(0.6f);
+        setStatic(false);
+        recalckProperties(width, height);
+        this.clickedOn = new RecClickedOn(this);
+        initCoordinates(halfWidth, halfHeight);
+    }
+    public NewRectangle(float width, float height, boolean isStatic) {
+        this.shapeType = Shape.Polygon;
+        this.height = height;
+        this. width = width;
+        float halfWidth = width/2f;
+        float halfHeight = height/2f;
+        setStatic(isStatic);
+        recalckProperties(width, height);
+        initCoordinates(halfWidth, halfHeight);
+        this.clickedOn = new RecClickedOn(this);
+    }
+
+    private void initCoordinates(float halfWidth, float halfHeight) {
         localCoordinate = new Vector2D[4];
         worldCoordinate = new Vector2D[4];
         localCoordinate[0] = new Vector2D(-halfWidth, -halfHeight);
@@ -33,8 +46,21 @@ public class NewRectangle extends Body implements Clickable {
         worldCoordinate[1] = new Vector2D();
         worldCoordinate[2] = new Vector2D();
         worldCoordinate[3] = new Vector2D();
-        clickedOn = new RecClickedOn(this);
     }
+
+    public void recalckProperties(float width, float height) {
+        this.setArea(width * height);
+        if(isStatic()) {
+            this.setMass(0f);
+            this.setInertia(0);
+            this.setInertiaInverse(0);
+        } else {
+            this.setMass(getArea() * getDensity());
+            this.setInertia((1f / 12) * getMass() * (width * width + height * height));
+            this.setInertiaInverse(1f/getInertia());
+        }
+    }
+
     @Override
     public void update(SceneObject parent, float dt) {
         if(!isStatic()) {
@@ -67,5 +93,18 @@ public class NewRectangle extends Body implements Clickable {
     @Override
     public boolean clickedOn(final Vector2D position, final Matrix3x3 cameraMatrix) {
         return this.clickedOn.clickedOn(position, cameraMatrix);
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    @Override
+    public Vector2D applyForces() {
+        return Vector2D.ZERO;
     }
 }

@@ -7,14 +7,12 @@ import no.fun.stuff.engine.matrix.Vector2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Grid extends SceneObject {
+public class Grid extends Body {
     private int columns;
     private int rows;
     private float width;
     private float height;
     private final List<Vector2D> points;
-    final private Vector2D[] localCoordinates;
-    private Vector2D[] worldCoordinates;
 
     public Grid(int columns, int rows, float width, float height) {
         this.columns = columns;
@@ -25,7 +23,7 @@ public class Grid extends SceneObject {
         float totalHeight = rows * height;
         float halfWidth = totalWidth / 2;
         float halfHeight = totalHeight / 2;
-
+        setStatic(true);
         Vector2D upperLeft = new Vector2D(-halfWidth, -halfHeight);
         Vector2D upperRight = new Vector2D(halfWidth, -halfHeight);
         Vector2D lowerLeft = new Vector2D(-halfWidth, halfHeight);
@@ -52,20 +50,32 @@ public class Grid extends SceneObject {
             points.add(new Vector2D(result2));
 
         }
-        localCoordinates = new Vector2D[points.size()];
-        worldCoordinates = new Vector2D[points.size()];
-        points.toArray(localCoordinates);
-        for (int i = 0; i < worldCoordinates.length; i++) {
-            worldCoordinates[i] = new Vector2D();
+        localCoordinate = new Vector2D[points.size()];
+        worldCoordinate = new Vector2D[points.size()];
+        points.toArray(localCoordinate);
+        for (int i = 0; i < worldCoordinate.length; i++) {
+            worldCoordinate[i] = new Vector2D();
         }
 
     }
-
+    public Vector2D[] getLocalCoordiate() {
+        return localCoordinate;
+    }
     @Override
     public void update(SceneObject parent, float dt) {
 
     }
-
+//    @Override
+//    public void scale(float scaleValue) {
+//        Vector2D center = Body.getCenter(localCoordinate);
+//
+//
+//        for(int i=0;i<centerList.size();i++) {
+//            triangleList.get(i).moveTo(centerList.get(i).mul(scale));
+//            triangleList.get(i).scale(scale);
+//        }
+//
+//    }
     @Override
     public void render(SceneObject parent, Renderer r) {
         calculateModel();
@@ -75,12 +85,16 @@ public class Grid extends SceneObject {
         } else {
             viewModel.set(getModel());
         }
-        viewModel.mul(localCoordinates, worldCoordinates);
-        for(int i = 0; i<worldCoordinates.length; i+=2) {
-            final Vector2D left = worldCoordinates[i];
-            final Vector2D right = worldCoordinates[i+1];
-            r.drawBresenhamLine((int)left.getX(), (int)left.getY(), (int)right.getX(),(int)right.getY(), 0xffffffff);
+        viewModel.mul(localCoordinate, worldCoordinate);
+        for(int i = 0; i<worldCoordinate.length; i+=2) {
+            final Vector2D left = worldCoordinate[i];
+            final Vector2D right = worldCoordinate[i+1];
+            r.drawBresenhamLine((int)left.getX(), (int)left.getY(), (int)right.getX(),(int)right.getY(), 0xff101010);
         }
     }
 
+    @Override
+    public Vector2D applyForces() {
+        return Vector2D.ZERO;
+    }
 }

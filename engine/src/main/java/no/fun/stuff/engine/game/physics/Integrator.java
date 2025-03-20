@@ -13,8 +13,8 @@ public class Integrator implements Integrate {
     private final Vector2D oldPos;
     private final Vector2D pos;
 
-    public Integrator() {
-        forces = new ArrayList<>();
+    public Integrator(final List<Vector2D> forces) {
+        this.forces = forces;
         oldPos = new Vector2D();
         pos = new Vector2D();
     }
@@ -49,7 +49,7 @@ public class Integrator implements Integrate {
 //        oldPos.setXY(temp_x, temp_y);
     }
     public Vector2D applyForces(Body a) {
-        Vector2D mul = new Vector2D(a.getForce()).mul(a.getInverseMass());
+        Vector2D mul = new Vector2D(a.getForce());
         if(a instanceof Circle x) {
             int est = 0;
             Vector2D force = a.getForce();
@@ -61,7 +61,7 @@ public class Integrator implements Integrate {
             }
         }
         for(final Vector2D force : forces) {
-            mul.pluss(force);
+            mul.pluss(force.scale(a.getInverseMass()));
         }
         return mul;
     }

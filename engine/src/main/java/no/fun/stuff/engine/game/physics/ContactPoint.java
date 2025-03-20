@@ -86,15 +86,15 @@ public class ContactPoint {
             final Vector2D b = worldCoordinateA[i == worldCoordinateA.length - 1 ? 0 : i + 1];
             for(int j = 0; j< worldCoordinateB.length; j++) {
                 closestPointOnSegment(worldCoordinateB[j], a, b, closestPoint);
-                if(tcp.dist > closestPoint.dist) {
-                    tcp.set(closestPoint);
-                    tcp.count = 1;
-                } else if(Util.compare(closestPoint.dist, tcp.dist)) {
-                    boolean samePoint = compareVector(closestPoint.cp, tcp.cp);
+                if(Util.compare(closestPoint.dist, tcp.dist, 0.00005f)) {
+                    boolean samePoint = compareVector(closestPoint.cp, tcp.cp, 0.00005f);
                     if(!samePoint) {
                         tcp.cp2.setXY(closestPoint.cp);
                         tcp.count = 2;
                     }
+                } else if(tcp.dist > closestPoint.dist) {
+                    tcp.set(closestPoint);
+                    tcp.count = 1;
                 }
             }
         }

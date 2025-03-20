@@ -36,7 +36,6 @@ public class Renderer {
     private int ambientcolor = 0xffffffff;
     private int zDept = 0;
     private boolean processing = false;
-    private int camX, camY;
 
     public Renderer(GameContainer container) {
         pW = container.getWith();
@@ -54,7 +53,7 @@ public class Renderer {
         float x = -positiveRadius;
         int ra = (int) positiveRadius;
         for (int xx = -ra; xx <= 0; x += 1.0f, xx++) {
-            int y = (int) Math.sqrt(radius2 - x * x);
+                int y = (int) Math.sqrt(radius2 - x * x);
             float y1 = center.getY();
             int thePlussx = (int)(center.getX() + xx);
             int theMinusx = (int)(center.getX() - xx);
@@ -175,9 +174,6 @@ public class Renderer {
     }
 
     public void drawText(String text, int offx, int offy, int color) {
-        offx -= camX;
-        offy -= camY;
-
         int len = text.length();
         int imageWith = font.getFontImage().getW();
         int offset = 0;
@@ -196,8 +192,6 @@ public class Renderer {
     }
 
     public void drawImageTile(final ImageTile image, int offx, int offy, int tileX, int tileY) {
-        offx -= camX;
-        offy -= camY;
 
         if (image.isAlfa() && !processing) {
             imageRequests.add(new ImageRequest(image.getTileImage(tileX, tileY), zDept, offx, offy));
@@ -244,9 +238,6 @@ public class Renderer {
     }
 
     public void drawImage(final Image image, int offx, int offy) {
-        offx -= camX;
-        offy -= camY;
-
         if (image.isAlfa() && !processing) {
             imageRequests.add(new ImageRequest(image, zDept, offx, offy));
             return;
@@ -290,10 +281,11 @@ public class Renderer {
             }
         }
     }
+    public void drawLine(final Vector2D p1, final Vector2D p2, int color) {
+        drawBresenhamLine((int)p1.getX(), (int)p1.getY(), (int)p2.getX(), (int)p2.getY(), color);
+    }
 
     public void drawRect(int offx, int offy, int width, int height, int color) {
-        offx -= camX;
-        offy -= camY;
         for (int y = 0; y <= height; y++) {
             setPixel(offx, y + offy, color);
             setPixel(offx + width, y + offy, color);
@@ -364,8 +356,6 @@ public class Renderer {
 //		if (newHeight + offy > pW) {
 //			newHeight -= (newHeight + offy - pH);
 //		}
-        offx -= camX;
-        offy -= camY;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 setPixel(offx + x, offy + y, color);
@@ -379,8 +369,6 @@ public class Renderer {
     }
 
     private void drawLightRequest(Light l, int offx, int offy) {
-        offx -= camX;
-        offy -= camY;
 
         for (int i = 0; i <= l.getDiameter(); i++) {
             drawLightLine(l, l.getRadius(), l.getRadius(), i, 0, offx, offy);
@@ -442,20 +430,5 @@ public class Renderer {
         this.ambientcolor = ambientcolor;
     }
 
-    public int getCamX() {
-        return camX;
-    }
-
-    public void setCamX(int camX) {
-        this.camX = camX;
-    }
-
-    public int getCamY() {
-        return camY;
-    }
-
-    public void setCamY(int camY) {
-        this.camY = camY;
-    }
 
 }

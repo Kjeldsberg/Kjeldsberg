@@ -47,6 +47,7 @@ public class Util {
 	}
 	private static final Vector2D b = new Vector2D();
 	public static void lerp(float delta, final Vector2D p0, Vector2D p1, final Vector2D result) {
+		//p0 + (p1 - p0)delta
 		Vector2D a = result;
 		if(delta <= epsilon) {
 			a.setXY(p0);
