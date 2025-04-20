@@ -1,9 +1,6 @@
 package no.fun.stuff.engine;
 
-import java.awt.BorderLayout;
-import java.awt.Canvas;
-import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
@@ -34,10 +31,19 @@ public class Window {
 		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
 		frame.setVisible(true);
-		
+
 		canvas.createBufferStrategy(2);
 		bs = canvas.getBufferStrategy();
 		g = bs.getDrawGraphics();
+
+	}
+	public void setFullScreen() {
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		GraphicsEnvironment graphics =
+				GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice device = graphics.getDefaultScreenDevice();
+		device.setFullScreenWindow(frame);
+		frame.setResizable(true);
 
 	}
 

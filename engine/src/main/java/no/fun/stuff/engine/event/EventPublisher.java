@@ -1,11 +1,8 @@
-package no.fun.stuff.game.tool.ploygon.plotter;
+package no.fun.stuff.engine.event;
 
 import java.util.HashMap;
 import java.util.Map;
 
-interface Subscriber {
-    void update(String event, Object data);
-}
 public class EventPublisher {
     private Map<String, Subscriber> subscriberList = new HashMap<>();
     public void publishEvent(String name, Object obj) {

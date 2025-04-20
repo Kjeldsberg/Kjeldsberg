@@ -1,17 +1,22 @@
 package no.fun.stuff.engine.game;
 
 import no.fun.stuff.engine.Renderer;
+import no.fun.stuff.engine.game.objects.Body;
+import no.fun.stuff.engine.game.objects.NewRectangle;
 import no.fun.stuff.engine.game.objects.SceneObject;
+import no.fun.stuff.engine.game.physics.collition.BoundingBox;
 import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Vector2D;
 
-public class Camera2D extends SceneObject {
+public class Camera2D extends Body {
 
 	private final Vector2D position = new Vector2D();
 	private SceneObject lookatObject = null;
 	private boolean dirty = false;
 	private final Vector2D screenSize;
 	private final Vector2D viewPort;
+	private final NewRectangle cameraBoundingBox;
+
 	private float zoom = 1.0f;
 	public float getZoom() {
 		return zoom;
@@ -27,6 +32,8 @@ public class Camera2D extends SceneObject {
 		this.viewPort = viewPort;
 		float scaleX = screenSize.getX() / viewPort.getX();
 		float scaleY = screenSize.getY() / viewPort.getY();
+		cameraBoundingBox = new NewRectangle(viewPort.getX(), viewPort.getY());
+		cameraBoundingBox.getScale().scale(new Vector2D(scaleX, scaleY));
 		getScale().scale(new Vector2D(scaleX, scaleY));
 		calculateModel();
 	}
@@ -72,4 +79,15 @@ public class Camera2D extends SceneObject {
 	public Vector2D getViewPort() {
 		return viewPort;
 	}
-}
+
+	@Override
+	public Vector2D applyForces() {
+		return Vector2D.ZERO;
+	}
+	@Override
+	public BoundingBox getBoundingBox() {
+		return cameraBoundingBox.getBoundingBox();
+	}
+
+
+	}

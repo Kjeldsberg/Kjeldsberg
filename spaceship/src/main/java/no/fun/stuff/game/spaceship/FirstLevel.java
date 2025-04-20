@@ -5,21 +5,20 @@ import no.fun.stuff.engine.GameContainer;
 import no.fun.stuff.engine.Input;
 import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.game.LookAtCamera;
-import no.fun.stuff.engine.game.objects.Body;
-import no.fun.stuff.engine.game.objects.NewRectangle;
-import no.fun.stuff.engine.game.objects.SceneObject;
-import no.fun.stuff.engine.game.objects.Triangle;
+import no.fun.stuff.engine.game.objects.*;
 import no.fun.stuff.engine.game.physics.Integrate;
 import no.fun.stuff.engine.game.physics.VerletWithVelocityIntegration;
 import no.fun.stuff.engine.game.physics.collition.Collision;
+import no.fun.stuff.engine.game.physics.collition.CollisionInfo;
 import no.fun.stuff.engine.matrix.Vector2D;
 
 import java.awt.event.KeyEvent;
 import java.util.List;
 
 public class FirstLevel extends AbstractGame {
+    public static final int STEP_COUNT = 4;
     private final TriangleScene scene = new TriangleScene();
-    private final Collision collision = new Collision();
+    //private final Collision collision = new Collision();
     private LookAtCamera camera2D;
     private static GameContainer gc;
     private Vector2D viewPort;
@@ -28,57 +27,121 @@ public class FirstLevel extends AbstractGame {
     private TheShip theShip = new TheShip(new Vector2D(0f, 0f),
             new Vector2D(-2.0f, 5f),
             new Vector2D(2.0f, 5f), 0xff00aabb);
+    private Triangle startPlace = new Triangle(new Vector2D(-4f, 0f), new Vector2D(0f, 1f), new Vector2D(4f, 0f),  0xffffff99);
+    private Triangle endPlace = new Triangle(new Vector2D(-4f, 0f), new Vector2D(0f, 1f), new Vector2D(4f, 0f),  0xffffff99);
+    private final Collision collision = new ThePostCollisionTest(theShip, endPlace);
+    private final Vector2D shipStartPosition = new Vector2D();
     private Level1 level1 = new Level1();
+    private TimeManager timeManager = new TimeManager();
+    private ScoreBoard scoreBoard = new ScoreBoard();
+    private ScoreBoard workingScoreBoard = new ScoreBoard();
+    class ScoreBoard{
+        private int wallCrash;
+        private int resets;
+        public void addWallCrash() {
+            wallCrash++;
+        }
+        public void addResets() {
+            resets++;
+        }
+        public void clear() {
+            wallCrash = 0;
+            resets = 0;
+        }
+        public int getWallCrash() {
+            return wallCrash;
+        }
+
+        public int getResets() {
+            return resets;
+        }
+    }
+    class ThePostCollisionTest extends Collision {
+        private Body theShip;
+        private Body theEndPlace;
+
+        public ThePostCollisionTest(Body theShip, Body theEndPlace) {
+            this.theShip = theShip;
+            this.theEndPlace = theEndPlace;
+        }
+        @Override
+        public void postCollision(List<CollisionInfo> collidedObjectsList) {
+            boolean foundShip = false;
+            boolean foundEndPlace = false;
+            for (CollisionInfo info : collidedObjectsList) {
+                boolean gotTheShip = info.getShapeA() == theShip || info.getShapeB() == theShip;
+                boolean gotTheEndPlace = info.getShapeA() == theEndPlace || info.getShapeB() == theEndPlace;
+                boolean endReached = gotTheEndPlace && gotTheShip;
+                if(endReached) {
+                    //System.out.println("Collision.");
+                    timeManager.stop();
+                }
+                if(!endReached && gotTheShip) {
+                    scoreBoard.addWallCrash();
+                }
+            }
+        }
+    }
+    class TimeManager {
+        private long time;
+        private long startTime;
+        private boolean started = false;
+        public boolean isStarted() {
+            return started;
+        }
+        public void start() {
+            startTime = System.currentTimeMillis();
+            started = true;
+        }
+        public void reSet() {
+            if(!started) {
+                time = 0L;
+            }
+        }
+        public void stop() {
+            started = false;
+        }
+
+        public long getTime() {
+            if(started) {
+                time = System.currentTimeMillis() - startTime;
+            }
+            return time;
+        }
+    }
     @Override
     public void init(GameContainer gc) {
 
-        viewPort = new Vector2D(800/4f, 600/4f);
+        viewPort = new Vector2D(gc.getWith()/7f, gc.getHeight()/7f);
+        endPlace.setWireFrame(false);
+        endPlace.setRestitution(0.1f);
+        endPlace.scale(5f);
+        endPlace.setStatic(true);
+        startPlace.setWireFrame(false);
+        startPlace.setRestitution(0.1f);
+        startPlace.scale(5f);
+        startPlace.setStatic(true);
+        Vector2D endPosition = new Vector2D(140f, 80);
+        startPlace.moveTo(endPosition);
+        scene.addChild(startPlace);
         camera2D = new LookAtCamera(theShip, new Vector2D(gc.getWith(), gc.getHeight()), viewPort);
-        Vector2D worldview = viewPort.scale(1);
         scene.setCamera(camera2D);
-        scene.addChild(grid);
+        //scene.addChild(grid);
         level1.scale(1.0f);
         level1.setStatic(true);
-//        scene.addChild(level1);
-        List<Triangle> triangleList = level1.getTriangleList();
-        for(final Triangle t : triangleList) {
-            scene.addChild(t);
-        }
-        NewRectangle leftSide = new NewRectangle(worldview.getX() * 0.1f, worldview.getY(), true);
-        leftSide.initPos(new Vector2D(0f, worldview.getY()/2f));
-        leftSide.setStaticFriction(0.01f);
-//        scene.addChild(leftSide);
-        NewRectangle rightSide = new NewRectangle(worldview.getX() * 0.1f, worldview.getY(), true);
-        rightSide.initPos(new Vector2D(worldview.getX(), worldview.getY()/2f));
-        scene.addChild(rightSide);
-        NewRectangle button = new NewRectangle(worldview.getX(), worldview.getY()*0.1f, true);
-        button.initPos(new Vector2D(worldview.getX()*0.5f, worldview.getY()));
-        button.setRestitution(0.9f);
-        button.setStatic(true);
-        scene.addChild(button);
-//        rectangle = new NewRectangle(Util.rand(0.75f, 1.25f), Util.rand(0.75f, 1.25f));
-////            rightSide.setStatic(true);
-//        rectangle.initPos(new Vector2D(viewPort.getX()*0.7f, viewPort.getY()*0.8F));
-//        rectangle.setRestitution(0.9f);
-
         scene.addChild(theShip);
-        Vector2D position = new Vector2D(viewPort.getX() * 0.5f, viewPort.getY() * 0.1f);
-//        theShip.moveTo(position);
+        scene.addChild(endPlace);
+        scene.addChild(startPlace);
         camera2D.moveTo(new Vector2D());
         theShip.rotateTo(0.1f);
-        theShip.moveTo(new Vector2D(0f, -40f));
+        Vector2D position = new Vector2D(140f, -4f);
+        shipStartPosition.setXY(endPosition.add(new Vector2D(0f, -5f)));
+        theShip.moveTo(shipStartPosition);
+        endPlace.moveTo(position.add(new Vector2D(0f, 4f)));
+
         theShip.setDensity(Body.WaterDensity);
-//        camera2D.lookAt(theShip);
-//        ((VerletWithVelocityIntegration)integrator).addForce(((VerletWithVelocityIntegration)integrator).getGravity());//        triangle.set
-        float width = 1f;
-        float height = 3;
-        NewRectangle test = new NewRectangle(width,width);
-        test.initPos(new Vector2D(viewPort.getX()*0.5f, 0f));
-        test.rotate(3.14f*0.21f);
-//        test.setDensity(Body.AluminiumDensity);
-        test.setDensity(20f);
-        test.setRestitution(1.0f);
-        test.recalckProperties(width, width);
+        List<Triangle> triangleList = level1.getTriangleList();
+        scene.getChild().addAll(triangleList);
 
     }
 
@@ -91,64 +154,69 @@ public class FirstLevel extends AbstractGame {
         theShip.setRightPress(input.isKey(KeyEvent.VK_RIGHT));
         if (input.isKey(KeyEvent.VK_SPACE)) {
             theShip.setAngle(0f);
+            workingScoreBoard.addResets();
         }
-//        if (input.isButtonDown(MouseEvent.BUTTON1)) {
-//            Circle circle = new Circle(Util.rand(1f, 3f), 0xffccbbbb);
-//            Vector2D mousePosition = new Vector2D((float) input.getMouseX(), (float) input.getMouseY());
-//            circle.moveTo(camera2D.calculateInverseModel().mul(mousePosition));
-//            scene.addChild(circle);
-//        }
-//        if (input.isButtonDown(MouseEvent.BUTTON3)) {
-////            NewRectangle rectangle = new NewRectangle(Util.rand(1f, 3f), Util.rand(1f, 3f));
-//            Triangle rectangle = new Triangle(new Vector2D(0f, -1f), new Vector2D(-1f, 1f), new Vector2D(1f, 1f), 0xffaabbcc);
-//            rectangle.setColor(0xffccbbaa);
-//            Vector2D mousePosition = new Vector2D((float) input.getMouseX(), (float) input.getMouseY());
-//            rectangle.moveTo(camera2D.calculateInverseModel().mul(mousePosition));
-//            scene.addChild(rectangle);
-//        }
+
         boolean keyup = input.isKey(KeyEvent.VK_UP);
         theShip.setUpPress(keyup);
+        if(keyup && !timeManager.isStarted() ) {
+            timeManager.start();
+        }
+        boolean keyR = input.isKey(KeyEvent.VK_R);
+        if(keyR) {
+            theShip.getVelocity().setXY(Vector2D.ZERO);
+            theShip.setAngularVelocity(0f);
+            theShip.moveTo(shipStartPosition);
+        }
+        boolean keyS = input.isKey(KeyEvent.VK_S);
+        if(keyS) {
+            workingScoreBoard.clear();
+            theShip.getVelocity().setXY(Vector2D.ZERO);
+            theShip.setAngularVelocity(0f);
+            theShip.moveTo(shipStartPosition);
+        }
+        scoreBoard.clear();
+        float deltaDT = dt/STEP_COUNT;
+        for (int i = 0; i < STEP_COUNT; i++) {
+            scene.update(null, deltaDT);
 
-        for(SceneObject s : scene.getChild()) {
-            if(s instanceof Body b) {
-                integrator.integrate(b, dt);
+            for(SceneObject s : scene.getChild()) {
+                if(s instanceof Body b) {
+                    integrator.integrate(b, deltaDT);
+                }
             }
+            collision.collision(scene, deltaDT);
         }
-        collision.collision(scene, dt);
+        boolean hasShipCollideWithWall = scoreBoard.getWallCrash() > 0;
+        boolean hasUserResetTheShip = scoreBoard.getResets() > 0;
+        if(hasShipCollideWithWall) {
+            workingScoreBoard.addWallCrash();
+        }
+        if(hasUserResetTheShip){
+            workingScoreBoard.addResets();
+        }
 
-//        for(SceneObject o : scene.getChild()) {
-//            if(o.getPos().getY() > viewPort.getY()) {
-//                o.setDead(true);
-//            }
-//        }
-        scene.update(null, dt);
-        for(Vector2D p : collision.getContactPoints()) {
-            NewRectangle newRectangle = new NewRectangle(10, 10);
-            newRectangle.setStatic(true);
-//            newRectangle.initPos(p);
-            newRectangle.moveTo(p);
-            newRectangle.setColor(0xffffffff);
-            newRectangle.render(camera2D, gc.getRenderer());
-//            Vector2D[] w = newRectangle.toWorldCoordinate();
-//            drawLine(w[0], w[1], gc.getRenderer(), 0xffffffff);
-//            drawLine(w[1], w[2], gc.getRenderer(), 0xffffffff);
-//            drawLine(w[2], w[3], gc.getRenderer(), 0xffffffff);
-//            drawLine(w[3], w[0], gc.getRenderer(), 0xffffffff);
-        }
     }
 
     @Override
     public void render(GameContainer gc, Renderer r) {
         scene.render(camera2D, r);
-//        grid.render(camera2D, r);
-//        theShip.render(camera2D, r);
-
+        Float aLong = Float.valueOf(timeManager.getTime() / 1000f);
+        r.drawText("Time: " + aLong, 0, 50, 0xffbbbbbb);
+        Integer wallCrash = Integer.valueOf(workingScoreBoard.getWallCrash());
+        r.drawText("Wall crash: " + wallCrash, 0, 70, 0xffbbbbbb);
+        Integer resets = Integer.valueOf(workingScoreBoard.getResets());
+        r.drawText("Resets: " + resets, 0, 90, 0xffbbbbbb);
     }
     public static void main(final String[] args) {
         gc = new GameContainer(new FirstLevel());
-        gc.setWith(800);
-        gc.setHeight(600);
-        gc.setScale(1.0f);
+//        gc.setWith(900);
+//        gc.setHeight(450);
+        gc.setWith(1280);
+        gc.setHeight(720);
+        gc.setWith(1368);
+        gc.setHeight(768);
+        gc.setScale(1f);
         gc.start();
     }
 

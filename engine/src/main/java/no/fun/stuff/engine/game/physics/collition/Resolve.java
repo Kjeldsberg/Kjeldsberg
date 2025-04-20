@@ -8,14 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Resolve {
-    private static ImpulseHolder holder = new ImpulseHolder();
-    /**
-     *
-     * @param shapeA
-     * @param shapeB
-     * @param collide
-     * @return true for further calculation, false otherwise.
-     */
+    private static final ImpulseHolder holder = new ImpulseHolder();
     static class ImpulseHolder {
         List<Vector2D> ra = new ArrayList<>();
         List<Vector2D> rb = new ArrayList<>();
@@ -34,15 +27,27 @@ public class Resolve {
         }
         public void clearAll() {
             for(int i=0;i<2;i++) {
-                ra.get(i).setXY(0f, 0f);
-                rb.get(i).setXY(0f, 0f);
-                impulse.get(i).setXY(0f, 0f);
-                frictionImpulse.get(i).setXY(0f, 0f);
+                ra.get(i).setXY(Vector2D.ZERO);
+                rb.get(i).setXY(Vector2D.ZERO);
+                impulse.get(i).setXY(Vector2D.ZERO);
+                frictionImpulse.get(i).setXY(Vector2D.ZERO);
                 jList[i] = 0f;
             }
         }
     }
-    public static boolean easyResolve(final Body shapeA, final Body shapeB, final CollisionInfo collide) {
+    public static void setStaticBodiesToStill(Body ...bodys) {
+        for(final Body b : bodys) {
+            if(b.isStatic()) {
+                if(b.isStatic()) {
+                    b.getVelocity().setXY(Vector2D.ZERO);
+                    b.setAngularVelocity(0);
+                }
+            }
+        }
+    }
+    public static boolean easyResolve(final CollisionInfo collide) {
+        final Body shapeA = collide.getShapeA();
+        final Body shapeB = collide.getShapeB();
         Vector2D minus = shapeB.getVelocity().minus(shapeA.getVelocity());
         Vector2D normal = collide.getNormal();
         if(minus.dot(normal) < 0f) {
@@ -110,8 +115,8 @@ public class Resolve {
         }
         for(int i = 0;i<contactCount;i++) {
             Vector2D impulse = holder.impulse.get(i);
-            Vector2D ra = holder.ra.get(i);
-            Vector2D rb = holder.rb.get(i);
+            Vector2D ra = new Vector2D(holder.ra.get(i));
+            Vector2D rb = new Vector2D(holder.rb.get(i));
 
             Vector2D velocityA = shapeA.getVelocity();
             Vector2D velocityB = shapeB.getVelocity();
@@ -131,8 +136,10 @@ public class Resolve {
         }
         for (int i = 0; i < contactCount; i++) {
 
-            Vector2D ra = contactList[i].minus(shapeA.getPos());
-            Vector2D rb = contactList[i].minus(shapeB.getPos());
+//            Vector2D ra = contactList[i].minus(shapeA.getPos());
+//            Vector2D rb = contactList[i].Yminus(shapeA.getPos());
+            Vector2D ra = holder.ra.get(i);
+            Vector2D rb = holder.rb.get(i);
             Vector2D raPerp = new Vector2D(-ra.getY(), ra.getX());
             Vector2D rbPerp = new Vector2D(-rb.getY(), rb.getX());
 
@@ -149,8 +156,8 @@ public class Resolve {
             } else {
                 tagent.normaize();
             }
-            holder.ra.get(i).setXY(ra);
-            holder.rb.get(i).setXY(rb);
+//            holder.ra.get(i).setXY(ra);
+//            holder.rb.get(i).setXY(rb);
             float raPerpDotT = raPerp.dot(tagent);
             float rbPerpDotT = rbPerp.dot(tagent);
 
@@ -210,9 +217,6 @@ public class Resolve {
         float e = Math.min(shapeA.getRestitution(), shapeB.getRestitution());
         Vector2D[] contactList = new Vector2D[]{contact1, contact2};
         holder.clearAll();
-        if(contactCount == 2) {
-            int test = 0;
-        }
         for (int i = 0; i < contactCount; i++) {
 
             Vector2D ra = contactList[i].minus(shapeA.getPos());
@@ -281,7 +285,6 @@ public class Resolve {
         if(dot < 0f) {
             return;
         }
-        float length = collide.getNormal().length();
 
         float j = -(1f + e) * dot / (shapeA.getInverseMass() + shapeB.getInverseMass());
 

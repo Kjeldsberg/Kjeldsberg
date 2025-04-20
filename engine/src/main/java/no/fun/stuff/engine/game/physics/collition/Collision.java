@@ -24,19 +24,13 @@ public class Collision {
         for (int i = 0; i < 5 && moreToResolve; i++) {
             findAllPossibleCollision(scene);
             List<CollisionInfo> collides2 = accurateCollisionCheck(collisions);
+            postCollision(collides2);
             collisions.clear();
             collisions.addAll(collides2);
             collides2.clear();
             for (CollisionInfo c : collisions) {
-                if(c.getShapeA().isStatic()) {
-                    c.getShapeA().getVelocity().setXY(Vector2D.ZERO);
-                    c.getShapeA().setAngularVelocity(0);
-                }
-                if(c.getShapeB().isStatic()) {
-                    c.getShapeB().getVelocity().setXY(Vector2D.ZERO);
-                    c.getShapeB().setAngularVelocity(0);
-                }
-                boolean noResolve = Resolve.easyResolve(c.getShapeA(), c.getShapeB(), c);
+                Resolve.setStaticBodiesToStill(c.getShapeA(), c.getShapeB());
+                boolean noResolve = Resolve.easyResolve(c);
                 if(!noResolve) {
                     collides2.add(c);
                 }
@@ -58,6 +52,9 @@ public class Collision {
             moreToResolve = collisions.size() > 0;
         }
 
+    }
+
+    public void postCollision(List<CollisionInfo> collidedObjectsList) {
     }
 
     private List<CollisionInfo> accurateCollisionCheck(final List<CollisionInfo> wideCollision) {
@@ -120,7 +117,7 @@ public class Collision {
                     continue;
                 }
 
-                if (intersectBoundingBoxes(shapeA.getBoundingBox(), shapeB.getBoundingBox())) {
+                if (BoundingBox.intersectBoundingBoxes(shapeA.getBoundingBox(), shapeB.getBoundingBox())) {
                     CollisionInfo ci = new CollisionInfo();
                     ci.setShapeA(shapeA);
                     ci.setShapeB(shapeB);
@@ -130,11 +127,6 @@ public class Collision {
         }
     }
 
-    public boolean intersectBoundingBoxes(final BoundingBox a, final BoundingBox b) {
-        boolean noSeparation = a.maxx <= b.minx || b.maxx <= a.minx ||
-                a.maxy <= b.miny || b.maxy <= a.miny;
-        return !noSeparation;
-    }
 
     public List<CollisionInfo> getCollisions() {
         return collisions;

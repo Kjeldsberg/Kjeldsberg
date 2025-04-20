@@ -60,8 +60,9 @@ public class Triangle extends Body implements Clickable {
         float h = localCoordinate[1].minus(localCoordinate[0]).length();
 
         setArea(b * h /2f);
-//        setDensity(Body.AluminiumDensity);
+        setDensity(Body.WaterDensity);
         setMass(getArea()*getDensity());
+
 //        Inerta = 1/36 * b * h^3
 
         setInertia((1f / (12*2)) * getMass() * (b * b + h * h));

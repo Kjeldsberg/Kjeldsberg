@@ -15,7 +15,6 @@ public class DrawBoundingBoxTriangle extends Triangle {
     }
     public void update(final SceneObject sceneObject, float dt) {
         super.update(sceneObject, dt);
-        rotate(0.001f);
     }
     @Override
     public void render(SceneObject parent, Renderer r) {

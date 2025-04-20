@@ -3,7 +3,10 @@ package no.fun.stuff.engine.game;
 import no.fun.stuff.engine.Input;
 import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.game.objects.Body;
+import no.fun.stuff.engine.game.objects.NewRectangle;
 import no.fun.stuff.engine.game.objects.SceneObject;
+import no.fun.stuff.engine.game.physics.collition.BoundingBox;
+import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Vector2D;
 
 import java.awt.event.KeyEvent;
@@ -15,6 +18,7 @@ public class LookAtCamera extends Body {
     private Input input;
     private Vector2D viewPort = new Vector2D(40.0f, 30.0f);
     private Vector2D halfViewPort = new Vector2D(viewPort.getX() * 0.5f, viewPort.getY() * 0.5f);
+    private final NewRectangle cameraBoundingBox;
 
     private boolean zoomDirty = false;
     public float getZoom() {
@@ -23,11 +27,6 @@ public class LookAtCamera extends Body {
     public void setZoom(float zoom) {
         Vector2D pluss = scale.getScale().pluss(zoom, zoom);
         scale.scale(pluss);
-        dirty = true;
-    }
-    private boolean dirty;
-    public LookAtCamera(Vector2D screenSize) {
-        this.screenSize = screenSize;
     }
     public LookAtCamera(final SceneObject lookAtObject, final Vector2D screenSize) {
         this.screenSize = screenSize;
@@ -35,6 +34,7 @@ public class LookAtCamera extends Body {
         float scaleX = screenSize.getX() / viewPort.getX();
         float scaleY = screenSize.getY() / viewPort.getY();
         getScale().scale(new Vector2D(scaleX, scaleY));
+        cameraBoundingBox = new NewRectangle(viewPort.getX(), viewPort.getY());
     }
     public LookAtCamera(final SceneObject lookAtObject,
                         final Vector2D screenSize,
@@ -47,8 +47,8 @@ public class LookAtCamera extends Body {
         float scaleX = screenSize.getX() / viewPort.getX();
         float scaleY = screenSize.getY() / viewPort.getY();
         getScale().scale(new Vector2D(scaleX, scaleY));
+        cameraBoundingBox = new NewRectangle(viewPort.getX(), viewPort.getY());
     }
-
     @Override
     public void update(SceneObject parent, float dt) {
         if (lookatObject == null) {
@@ -71,6 +71,7 @@ public class LookAtCamera extends Body {
 
         Vector2D viewScale = getScale().getScale();
         Vector2D objectPos = lookatObject.getPos();
+        cameraBoundingBox.moveTo(objectPos);
         Vector2D cameraPos = new Vector2D(  (halfViewPort.getX() - objectPos.getX()) * viewScale.getX(),
                                             (halfViewPort.getY() - objectPos.getY()) * viewScale.getY());
         moveTo(cameraPos);
@@ -82,7 +83,7 @@ public class LookAtCamera extends Body {
             return;
         }
         calculateModel();
-
+        setReCalculateCoordinate(true);
     }
 
     @Override
@@ -92,5 +93,9 @@ public class LookAtCamera extends Body {
 
     public void setInput(Input input) {
         this.input = input;
+    }
+    @Override
+    public BoundingBox getBoundingBox() {
+        return cameraBoundingBox.getBoundingBox();
     }
 }

@@ -119,16 +119,21 @@ public class StackingMain extends AbstractGame {
                     new Vector2D(1.0f, 1.0f), color);
             triangle.initPos(worldPosition);
             triangle.getScale().scale(Util.rand(1f, 2f));
-                scene.addChild(triangle);
+            scene.addChild(triangle);
 
         }
-        for(SceneObject s : scene.getChild()) {
-            if(s instanceof Body b) {
-                integrator.integrate(b, dt);
+        int step = 2;
+        float deltaDT=dt/step;
+        for (int i = 0; i < step; i++) {
+            for(SceneObject s : scene.getChild()) {
+                if(s instanceof Body b) {
+                    integrator.integrate(b, deltaDT);
+                }
             }
+            collision.collision(scene, deltaDT);
+            scene.update(null, deltaDT);
+
         }
-        collision.collision(scene, dt);
-        scene.update(null, dt);
         updateTime = System.currentTimeMillis() - start;
         List<CollisionInfo> collisions = collision.getCollisions();
         for(CollisionInfo info : collisions) {

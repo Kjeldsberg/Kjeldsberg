@@ -9,6 +9,7 @@ import no.fun.stuff.engine.game.Camera2D;
 import no.fun.stuff.engine.game.Clickable;
 import no.fun.stuff.engine.game.objects.Triangle;
 import no.fun.stuff.engine.game.objects.*;
+import no.fun.stuff.engine.game.physics.collition.BoundingBox;
 import no.fun.stuff.engine.game.physics.collition.Collision;
 import no.fun.stuff.engine.matrix.Vector2D;
 import no.fun.stuff.game.spaceship.TriangleScene;
@@ -98,7 +99,7 @@ public class AABBMain extends AbstractGame {
                 } else if (cli instanceof NewRectangle t) {
                     Vector2D acc = direction.mul(force);
                     t.move(acc);
-                    boolean collide = collision.intersectBoundingBoxes(((Body) scene.getChild().get(0)).getBoundingBox(),
+                    boolean collide = BoundingBox.intersectBoundingBoxes(((Body) scene.getChild().get(0)).getBoundingBox(),
                             ((Body) scene.getChild().get(1)).getBoundingBox());
 //                    boolean collide = AABB.collide((Body) scene.getChild().get(0), (Body) scene.getChild().get(1));
                     if(collide)
@@ -135,7 +136,7 @@ public class AABBMain extends AbstractGame {
             Body a = (Body) scene.getChild().get(i);
             for(int j=i+1;j<scene.getChild().size();j++) {
                 Body b = (Body) scene.getChild().get(j);
-                if(collision.intersectBoundingBoxes(a.getBoundingBox(), b.getBoundingBox())) {
+                if(BoundingBox.intersectBoundingBoxes(a.getBoundingBox(), b.getBoundingBox())) {
                     r.drawText("Kollisjon!", 400, 10, 0xffeeeeee);
                 }
             }

@@ -4,9 +4,8 @@ import no.fun.stuff.engine.GameContainer;
 import no.fun.stuff.engine.Renderer;
 import no.fun.stuff.engine.game.Clickable;
 import no.fun.stuff.engine.game.objects.Body;
-import no.fun.stuff.engine.game.objects.Circle;
 import no.fun.stuff.engine.game.objects.SceneObject;
-import no.fun.stuff.engine.game.physics.Integrator;
+import no.fun.stuff.engine.game.physics.collition.BoundingBox;
 import no.fun.stuff.engine.matrix.Matrix3x3;
 import no.fun.stuff.engine.matrix.Vector2D;
 
@@ -15,7 +14,7 @@ import java.util.List;
 
 public class TriangleScene extends SceneObject {
     private GameContainer gc;
-    private SceneObject camera;
+    private Body camera;
     private Clickable clicedOn = null;
     private List<Clickable> clickedList = new ArrayList<>();
     public List<Clickable> checkPicked(final Vector2D clickedScreenPosition) {
@@ -50,12 +49,21 @@ public class TriangleScene extends SceneObject {
         if(camera != null) {
             camera.render(parent, r);
         }
+        final BoundingBox cameraBoundingBox = camera.getBoundingBox();
         for(SceneObject obj: this.child) {
-            obj.render(camera, r);
+            if(obj instanceof Body b) {
+                final BoundingBox boundingBox = b.getBoundingBox();
+                boolean drawObject = BoundingBox.intersectBoundingBoxes(boundingBox, cameraBoundingBox);
+                if(drawObject) {
+                    obj.render(camera, r);
+                }
+            } else {
+                obj.render(camera, r);
+            }
         }
     }
 
-    public void setCamera(SceneObject camera) {
+    public void setCamera(Body camera) {
         this.camera = camera;
     }
 

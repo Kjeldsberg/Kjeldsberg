@@ -1,6 +1,5 @@
 package no.fun.stuff.engine.game.physics.collition;
 
-import no.fun.stuff.engine.matrix.Vector2D;
 
 public class BoundingBox {
     public float minx;
@@ -13,6 +12,11 @@ public class BoundingBox {
         this.maxx = maxx;
         this.miny = miny;
         this.maxy = maxy;
+    }
+    public static boolean intersectBoundingBoxes(final BoundingBox a, final BoundingBox b) {
+        boolean noSeparation = a.maxx <= b.minx || b.maxx <= a.minx ||
+                a.maxy <= b.miny || b.maxy <= a.miny;
+        return !noSeparation;
     }
 
 }

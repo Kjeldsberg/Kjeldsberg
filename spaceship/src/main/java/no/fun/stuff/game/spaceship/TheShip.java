@@ -137,7 +137,7 @@ public class TheShip extends Triangle {
     @Override
     public void update(SceneObject parent, float dt) {
 
-        final Vector2D theRocketForce = new Vector2D(rightNormal).scale(steeringRocketForce);
+        final Vector2D theRocketForce = new Vector2D(rightNormal).scale(steeringRocketForce/FirstLevel.STEP_COUNT);
         if (leftPress) {
             float angularVelocity = getAngularVelocity();
             float v = rlPrep.cross(theRocketForce) * getInertiaInverse();
